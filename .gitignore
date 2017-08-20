@@ -1,0 +1,16 @@
+# ignore databases
+
+# User-specific files
+
+*.suo
+*.user
+*.sln.docstates
+
+# Build results
+
+[Dd]ebug/
+[Rr]elease/
+x64/
+build/
+[Bb]in/
+[Oo]bj/
