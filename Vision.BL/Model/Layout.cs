@@ -9,5 +9,11 @@ namespace Vision.BL.Model
     public class Layout
     {
         public Guid SelectedNode { get; set; }
+        public List<Guid> ExpandedNodes { get; set; }
+
+        public Layout()
+        {
+            ExpandedNodes = new List<Guid>();
+        }
     }
 }

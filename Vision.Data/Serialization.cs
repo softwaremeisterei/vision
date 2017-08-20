@@ -14,9 +14,10 @@ namespace Vision.Data
         {
             if (obj == null) throw new ArgumentNullException("obj");
 
+            var serializer = new DataContractJsonSerializer(obj.GetType());
+
             using (MemoryStream ms = new MemoryStream())
             {
-                var serializer = new DataContractJsonSerializer(obj.GetType());
                 serializer.WriteObject(ms, obj);
                 var json = ms.ToArray();
                 ms.Close();
@@ -24,14 +25,17 @@ namespace Vision.Data
             }
         }
 
-        public static T ParseJson<T>(string json) where T:class,new()
+        public static T ParseJson<T>(string json) where T : class, new()
         {
             var obj = new T();
-            var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
             var ser = new DataContractJsonSerializer(obj.GetType());
-            obj = ser.ReadObject(ms) as T;
-            ms.Close();
-            return obj;
+
+            using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+            {
+                obj = ser.ReadObject(ms) as T;
+                ms.Close();
+                return obj;
+            }
         }
     }
 }
