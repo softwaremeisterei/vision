@@ -20,6 +20,7 @@ namespace Vision.Forms
         private bool _dirty;
         private string _currentProjectFilename;
         FindForm _findForm;
+        private ContextMenuStrip _docMenu;
 
         public MainForm()
         {
@@ -51,14 +52,27 @@ namespace Vision.Forms
             }
         }
 
-        private void addNewNodeMenuItem_Click(object sender, EventArgs e)
+        private void addToplevelNodeMenuItem_Click(object sender, EventArgs e)
         {
-            AddNewNode();
+            AddNode();
         }
 
-        private void addNewNodeUnderMenuItem_Click(object sender, EventArgs e)
+        private void addChildNodeMenuItem_Click(object sender, EventArgs e)
         {
-            AddNewNodeUnder();
+            AddChildNode();
+        }
+
+        private void addSiblingNodeMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeView1.Nodes.Count == 0)
+            {
+                AddNode();
+            }
+            else if (treeView1.SelectedNode != null)
+            {
+                var parentNode = (Node)treeView1.SelectedNode.Parent?.Tag;
+                AddNode(parentNode);
+            }
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
@@ -71,25 +85,23 @@ namespace Vision.Forms
 
         private void treeView1_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
-            var node = (Node)e.Node.Tag;
-            node.Title = e.Label;
-            SetDirty();
+            if (e.Label != null)
+            {
+                var node = (Node)e.Node.Tag;
+                node.Title = e.Label;
+                SetDirty();
+            }
         }
 
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Right && e.Control)
             {
-                AddNewNodeUnder();
+                AddChildNode();
             }
             else if (e.KeyCode == Keys.F2)
             {
-                var treeNode = treeView1.SelectedNode;
-
-                if (treeNode != null)
-                {
-                    treeNode.BeginEdit();
-                }
+                RenameSelectedNode();
             }
             else if (e.KeyCode == Keys.Delete)
             {
@@ -100,6 +112,11 @@ namespace Vision.Forms
                     DeleteSelectedNode();
                 }
             }
+        }
+
+        private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            treeView1.SelectedNode = e.Node;
         }
 
         private void contentRichTextBox_TextChanged(object sender, EventArgs e)
@@ -185,21 +202,50 @@ namespace Vision.Forms
             }
         }
 
+        private void exportMenuItem_Click(object sender, EventArgs e)
+        {
+            Export();
+        }
+
         private void Init()
         {
             _context = new Context();
             _persistor = new Persistor();
             _findForm = new Forms.FindForm(this);
+            InitContextMenu();
+        }
+
+        private void InitContextMenu()
+        {
+            _docMenu = new ContextMenuStrip();
+            var addNodeMenuItem = new ToolStripMenuItem();
+            addNodeMenuItem.Text = "Add Node";
+            addNodeMenuItem.Click += delegate { AddChildNode(); };
+            var deleteNodeMenuItem = new ToolStripMenuItem();
+            deleteNodeMenuItem.Text = "Delete";
+            deleteNodeMenuItem.Click += delegate { DeleteSelectedNode(); };
+            var renameNodeMenuItem = new ToolStripMenuItem();
+            renameNodeMenuItem.Text = "Rename";
+            renameNodeMenuItem.Click += delegate { RenameSelectedNode(); };
+
+            _docMenu.Items.AddRange(new ToolStripMenuItem[] { addNodeMenuItem, deleteNodeMenuItem, renameNodeMenuItem });
+        }
+
+        private void RenameSelectedNode()
+        {
+            var treeNode = treeView1.SelectedNode;
+
+            if (treeNode != null)
+            {
+                treeNode.BeginEdit();
+            }
         }
 
         private void ReloadTree()
         {
             treeView1.SuspendLayout();
-
             treeView1.Nodes.Clear();
-
             ReloadNodes(null, _context.Nodes);
-
             treeView1.ResumeLayout();
         }
 
@@ -208,6 +254,7 @@ namespace Vision.Forms
             foreach (var node in nodes)
             {
                 var treeNode = new TreeNode { Text = node.Title, Tag = node };
+                treeNode.ContextMenuStrip = _docMenu;
 
                 if (parentNode != null)
                     parentNode.Nodes.Add(treeNode);
@@ -310,23 +357,26 @@ namespace Vision.Forms
             ReloadTree();
         }
 
-        private void AddNewNodeUnder()
+        private void AddChildNode()
         {
-            var treeNode = treeView1.SelectedNode;
+            var parentTreeNode = treeView1.SelectedNode;
 
-            if (treeNode != null)
+            if (parentTreeNode != null)
             {
-                var node = (Node)treeNode.Tag;
-                AddNewNode(node);
+                var parentNode = (Node)parentTreeNode.Tag;
+                AddNode(parentNode);
             }
         }
 
-        private void AddNewNode(Node parentNode = null)
+        private void AddNode(Node parentNode = null)
         {
-            _context.AddNode(parentNode, "New");
+            var node = _context.AddNode(parentNode, "New");
             UpdateLayoutData(treeView1.Nodes);
             SetDirty();
             ReloadTree();
+            var treeNode = FindTreeNodeByNodeId(node.Id);
+            treeView1.SelectedNode = treeNode;
+            treeNode.BeginEdit();
         }
 
         private void DeleteSelectedNode()
@@ -344,8 +394,18 @@ namespace Vision.Forms
                     var parentNode = (Node)treeNode.Parent.Tag;
                     _context.RemoveNode(parentNode, node);
                 }
+
                 SetDirty();
+
+                var nodeToSelect = (treeNode.NextNode?.Tag) as Node ?? (treeNode.PrevNode?.Tag) as Node ?? (treeNode.Parent?.Tag) as Node;
+
                 ReloadTree();
+
+                if (nodeToSelect != null)
+                {
+                    var prevTreeNode = FindTreeNodeByNodeId(nodeToSelect.Id);
+                    treeView1.SelectedNode = prevTreeNode;
+                }
             }
         }
 
@@ -369,7 +429,7 @@ namespace Vision.Forms
 
             var currentNodeIndex = matches.IndexOf(GetSelectedNodeId());
             var nextNodeGuid = matches[(currentNodeIndex + 1) % matches.Count];
-            var match = FindNodeById(nextNodeGuid);
+            var match = FindTreeNodeByNodeId(nextNodeGuid);
 
             if (match != null)
             {
@@ -386,7 +446,7 @@ namespace Vision.Forms
 
             var currentNodeIndex = matches.IndexOf(GetSelectedNodeId());
             var nextNodeGuid = matches[(currentNodeIndex + matches.Count - 1) % matches.Count];
-            var match = FindNodeById(nextNodeGuid);
+            var match = FindTreeNodeByNodeId(nextNodeGuid);
 
             if (match != null)
             {
@@ -436,7 +496,7 @@ namespace Vision.Forms
             return node.Id;
         }
 
-        private TreeNode FindNodeById(Guid id, TreeNodeCollection nodes = null)
+        private TreeNode FindTreeNodeByNodeId(Guid id, TreeNodeCollection nodes = null)
         {
             if (nodes == null)
             {
@@ -452,7 +512,7 @@ namespace Vision.Forms
                     return treeNode;
                 }
 
-                var match = FindNodeById(id, treeNode.Nodes);
+                var match = FindTreeNodeByNodeId(id, treeNode.Nodes);
 
                 if (match != null)
                 {
@@ -504,6 +564,21 @@ namespace Vision.Forms
 
             history.Insert(0, searchText);
             Properties.Settings.Default.Save();
+        }
+
+        private void Export()
+        {
+            var saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Text files (*.txt)|*.txt";
+            saveFileDialog.RestoreDirectory = true;
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string fileName = saveFileDialog.FileName;
+
+                var export = new Export();
+                export.ToTextFile(_context.Nodes, fileName);
+            }
         }
     }
 }

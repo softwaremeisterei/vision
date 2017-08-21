@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Export.cs" />
     <Compile Include="Model\Context.cs" />
     <Compile Include="Model\Layout.cs" />
     <Compile Include="Model\Node.cs" />

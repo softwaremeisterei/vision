@@ -44,7 +44,7 @@
             this.searchTextComboBox.Location = new System.Drawing.Point(6, 23);
             this.searchTextComboBox.Name = "searchTextComboBox";
             this.searchTextComboBox.Size = new System.Drawing.Size(336, 24);
-            this.searchTextComboBox.TabIndex = 0;
+            this.searchTextComboBox.TabIndex = 1;
             this.searchTextComboBox.TextUpdate += new System.EventHandler(this.searchTextComboBox_TextUpdate);
             // 
             // label1
@@ -53,7 +53,7 @@
             this.label1.Location = new System.Drawing.Point(3, 3);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(72, 17);
-            this.label1.TabIndex = 1;
+            this.label1.TabIndex = 0;
             this.label1.Text = "Find what:";
             // 
             // findPrevButton
@@ -73,7 +73,7 @@
             this.findNextButton.Location = new System.Drawing.Point(223, 53);
             this.findNextButton.Name = "findNextButton";
             this.findNextButton.Size = new System.Drawing.Size(119, 27);
-            this.findNextButton.TabIndex = 2;
+            this.findNextButton.TabIndex = 3;
             this.findNextButton.Text = "&Find Next";
             this.findNextButton.UseVisualStyleBackColor = true;
             this.findNextButton.Click += new System.EventHandler(this.findNextButton_Click);
@@ -84,7 +84,7 @@
             this.bookmarkAllButton.Location = new System.Drawing.Point(98, 82);
             this.bookmarkAllButton.Name = "bookmarkAllButton";
             this.bookmarkAllButton.Size = new System.Drawing.Size(119, 27);
-            this.bookmarkAllButton.TabIndex = 2;
+            this.bookmarkAllButton.TabIndex = 4;
             this.bookmarkAllButton.Text = "&Bookmark All";
             this.bookmarkAllButton.UseVisualStyleBackColor = true;
             this.bookmarkAllButton.Visible = false;
@@ -96,7 +96,7 @@
             this.findAllButton.Location = new System.Drawing.Point(223, 82);
             this.findAllButton.Name = "findAllButton";
             this.findAllButton.Size = new System.Drawing.Size(119, 27);
-            this.findAllButton.TabIndex = 2;
+            this.findAllButton.TabIndex = 5;
             this.findAllButton.Text = "Find &All";
             this.findAllButton.UseVisualStyleBackColor = true;
             this.findAllButton.Visible = false;
@@ -104,6 +104,7 @@
             // 
             // FindForm
             // 
+            this.AcceptButton = this.findNextButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(345, 89);

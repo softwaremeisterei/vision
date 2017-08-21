@@ -18,13 +18,16 @@ namespace Vision.BL.Model
             Layout = new Layout();
         }
 
-        public void AddNode(Node parentNode, string title)
+        public Node AddNode(Node parentNode, string title)
         {
             var node = new Node { Title = title };
+
             if (parentNode != null)
                 parentNode.Nodes.Add(node);
             else
                 Nodes.Add(node);
+
+            return node;
         }
 
         public void RemoveNode(Node parentNode, Node node)

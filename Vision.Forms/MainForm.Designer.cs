@@ -43,12 +43,14 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.saveFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addNewNodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addNewNodeUnderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addToplevelNodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addSiblingNodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addChildNodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.findMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findNextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findPrevMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -70,6 +72,7 @@
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
             this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
             // 
             // splitContainer1
@@ -97,11 +100,11 @@
             // collapseButton
             // 
             this.collapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.collapseButton.Location = new System.Drawing.Point(189, 3);
+            this.collapseButton.Location = new System.Drawing.Point(173, 3);
             this.collapseButton.Name = "collapseButton";
-            this.collapseButton.Size = new System.Drawing.Size(76, 27);
+            this.collapseButton.Size = new System.Drawing.Size(92, 27);
             this.collapseButton.TabIndex = 1;
-            this.collapseButton.Text = "Collapse";
+            this.collapseButton.Text = "Collapse All";
             this.collapseButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.collapseButton.UseVisualStyleBackColor = true;
             this.collapseButton.Click += new System.EventHandler(this.collapseButton_Click);
@@ -109,11 +112,11 @@
             // expandButton
             // 
             this.expandButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.expandButton.Location = new System.Drawing.Point(107, 3);
+            this.expandButton.Location = new System.Drawing.Point(75, 3);
             this.expandButton.Name = "expandButton";
-            this.expandButton.Size = new System.Drawing.Size(76, 27);
+            this.expandButton.Size = new System.Drawing.Size(92, 27);
             this.expandButton.TabIndex = 1;
-            this.expandButton.Text = "Expand";
+            this.expandButton.Text = "Expand All";
             this.expandButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.expandButton.UseVisualStyleBackColor = true;
             this.expandButton.Click += new System.EventHandler(this.expandButton_Click);
@@ -211,7 +214,8 @@
             this.toolStripSeparator2,
             this.openFileMenuItem,
             this.toolStripSeparator1,
-            this.saveFileMenuItem});
+            this.saveFileMenuItem,
+            this.exportMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
             this.fileToolStripMenuItem.Text = "&File";
@@ -219,40 +223,41 @@
             // newFileMenuItem
             // 
             this.newFileMenuItem.Name = "newFileMenuItem";
-            this.newFileMenuItem.Size = new System.Drawing.Size(173, 26);
+            this.newFileMenuItem.Size = new System.Drawing.Size(182, 26);
             this.newFileMenuItem.Text = "&New";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(170, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(179, 6);
             // 
             // openFileMenuItem
             // 
             this.openFileMenuItem.Name = "openFileMenuItem";
             this.openFileMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openFileMenuItem.Size = new System.Drawing.Size(173, 26);
-            this.openFileMenuItem.Text = "&Open";
+            this.openFileMenuItem.Size = new System.Drawing.Size(182, 26);
+            this.openFileMenuItem.Text = "&Open...";
             this.openFileMenuItem.Click += new System.EventHandler(this.openFileMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(170, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(179, 6);
             // 
             // saveFileMenuItem
             // 
             this.saveFileMenuItem.Name = "saveFileMenuItem";
             this.saveFileMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveFileMenuItem.Size = new System.Drawing.Size(173, 26);
-            this.saveFileMenuItem.Text = "&Save";
+            this.saveFileMenuItem.Size = new System.Drawing.Size(182, 26);
+            this.saveFileMenuItem.Text = "&Save...";
             this.saveFileMenuItem.Click += new System.EventHandler(this.saveFileMenuItem_Click);
             // 
             // contentToolStripMenuItem
             // 
             this.contentToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addNewNodeMenuItem,
-            this.addNewNodeUnderMenuItem,
+            this.addToplevelNodeMenuItem,
+            this.addSiblingNodeMenuItem,
+            this.addChildNodeMenuItem,
             this.toolStripSeparator3,
             this.findMenuItem,
             this.findNextMenuItem,
@@ -261,32 +266,40 @@
             this.contentToolStripMenuItem.Size = new System.Drawing.Size(73, 24);
             this.contentToolStripMenuItem.Text = "Content";
             // 
-            // addNewNodeMenuItem
+            // addToplevelNodeMenuItem
             // 
-            this.addNewNodeMenuItem.Name = "addNewNodeMenuItem";
-            this.addNewNodeMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.addNewNodeMenuItem.Size = new System.Drawing.Size(274, 26);
-            this.addNewNodeMenuItem.Text = "Add &Toplevel Node";
-            this.addNewNodeMenuItem.Click += new System.EventHandler(this.addNewNodeMenuItem_Click);
+            this.addToplevelNodeMenuItem.Name = "addToplevelNodeMenuItem";
+            this.addToplevelNodeMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.addToplevelNodeMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.addToplevelNodeMenuItem.Text = "Add &Toplevel Node";
+            this.addToplevelNodeMenuItem.Click += new System.EventHandler(this.addToplevelNodeMenuItem_Click);
             // 
-            // addNewNodeUnderMenuItem
+            // addSiblingNodeMenuItem
             // 
-            this.addNewNodeUnderMenuItem.Name = "addNewNodeUnderMenuItem";
-            this.addNewNodeUnderMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Right)));
-            this.addNewNodeUnderMenuItem.Size = new System.Drawing.Size(274, 26);
-            this.addNewNodeUnderMenuItem.Text = "Add Node &Under";
-            this.addNewNodeUnderMenuItem.Click += new System.EventHandler(this.addNewNodeUnderMenuItem_Click);
+            this.addSiblingNodeMenuItem.Name = "addSiblingNodeMenuItem";
+            this.addSiblingNodeMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
+            this.addSiblingNodeMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.addSiblingNodeMenuItem.Text = "Add &Sibling Node";
+            this.addSiblingNodeMenuItem.Click += new System.EventHandler(this.addSiblingNodeMenuItem_Click);
+            // 
+            // addChildNodeMenuItem
+            // 
+            this.addChildNodeMenuItem.Name = "addChildNodeMenuItem";
+            this.addChildNodeMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Right)));
+            this.addChildNodeMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.addChildNodeMenuItem.Text = "Add &Child Node";
+            this.addChildNodeMenuItem.Click += new System.EventHandler(this.addChildNodeMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(271, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(281, 6);
             // 
             // findMenuItem
             // 
             this.findMenuItem.Name = "findMenuItem";
             this.findMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.findMenuItem.Size = new System.Drawing.Size(274, 26);
+            this.findMenuItem.Size = new System.Drawing.Size(284, 26);
             this.findMenuItem.Text = "&Find";
             this.findMenuItem.Click += new System.EventHandler(this.findMenuItem_Click);
             // 
@@ -294,7 +307,7 @@
             // 
             this.findNextMenuItem.Name = "findNextMenuItem";
             this.findNextMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.findNextMenuItem.Size = new System.Drawing.Size(274, 26);
+            this.findNextMenuItem.Size = new System.Drawing.Size(284, 26);
             this.findNextMenuItem.Text = "Find &Next";
             this.findNextMenuItem.Click += new System.EventHandler(this.findNextMenuItem_Click);
             // 
@@ -302,9 +315,16 @@
             // 
             this.findPrevMenuItem.Name = "findPrevMenuItem";
             this.findPrevMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F3)));
-            this.findPrevMenuItem.Size = new System.Drawing.Size(274, 26);
+            this.findPrevMenuItem.Size = new System.Drawing.Size(284, 26);
             this.findPrevMenuItem.Text = "Find &Prev";
             this.findPrevMenuItem.Click += new System.EventHandler(this.findPrevMenuItem_Click);
+            // 
+            // exportMenuItem
+            // 
+            this.exportMenuItem.Name = "exportMenuItem";
+            this.exportMenuItem.Size = new System.Drawing.Size(182, 26);
+            this.exportMenuItem.Text = "E&xport...";
+            this.exportMenuItem.Click += new System.EventHandler(this.exportMenuItem_Click);
             // 
             // MainForm
             // 
@@ -345,8 +365,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem saveFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem contentToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem addNewNodeMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem addNewNodeUnderMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addToplevelNodeMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addChildNodeMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.Button expandButton;
         private RichTextBoxExtended.RichTextBoxExtended contentRichTextBox;
@@ -355,6 +375,8 @@
         private System.Windows.Forms.ToolStripMenuItem findMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findNextMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findPrevMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addSiblingNodeMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportMenuItem;
     }
 }
 
