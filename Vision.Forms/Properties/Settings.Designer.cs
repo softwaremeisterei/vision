@@ -34,5 +34,16 @@ namespace Vision.Forms.Properties {
                 this["LastProjectFile"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection SearchTextHistory {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["SearchTextHistory"]));
+            }
+            set {
+                this["SearchTextHistory"] = value;
+            }
+        }
     }
 }

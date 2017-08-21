@@ -11,9 +11,10 @@ namespace Vision.BL.Model
         public Node()
         {
             Id = Guid.NewGuid();
+            Title = string.Empty;
+            Content = string.Empty;
             Nodes = new List<Node>();
             CreatedAt = UpdatedAt = DateTime.Now;
-            Content = string.Empty;
         }
 
         public Guid Id { get; set; }

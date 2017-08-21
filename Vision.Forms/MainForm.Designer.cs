@@ -30,7 +30,9 @@
         {
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.contentRichTextBox = new System.Windows.Forms.RichTextBox();
+            this.collapseButton = new System.Windows.Forms.Button();
+            this.expandButton = new System.Windows.Forms.Button();
+            this.contentRichTextBox = new RichTextBoxExtended.RichTextBoxExtended();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -43,6 +45,10 @@
             this.contentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addNewNodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addNewNodeUnderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.findMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findNextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findPrevMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -58,9 +64,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView1.HideSelection = false;
             this.treeView1.LabelEdit = true;
-            this.treeView1.Location = new System.Drawing.Point(0, 0);
+            this.treeView1.Location = new System.Drawing.Point(0, 33);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(265, 372);
+            this.treeView1.Size = new System.Drawing.Size(265, 346);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
@@ -77,35 +83,107 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.collapseButton);
+            this.splitContainer1.Panel1.Controls.Add(this.expandButton);
             this.splitContainer1.Panel1.Controls.Add(this.treeView1);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.contentRichTextBox);
-            this.splitContainer1.Size = new System.Drawing.Size(782, 377);
+            this.splitContainer1.Size = new System.Drawing.Size(807, 382);
             this.splitContainer1.SplitterDistance = 268;
             this.splitContainer1.TabIndex = 1;
             // 
+            // collapseButton
+            // 
+            this.collapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.collapseButton.Location = new System.Drawing.Point(189, 3);
+            this.collapseButton.Name = "collapseButton";
+            this.collapseButton.Size = new System.Drawing.Size(76, 27);
+            this.collapseButton.TabIndex = 1;
+            this.collapseButton.Text = "Collapse";
+            this.collapseButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.collapseButton.UseVisualStyleBackColor = true;
+            this.collapseButton.Click += new System.EventHandler(this.collapseButton_Click);
+            // 
+            // expandButton
+            // 
+            this.expandButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.expandButton.Location = new System.Drawing.Point(107, 3);
+            this.expandButton.Name = "expandButton";
+            this.expandButton.Size = new System.Drawing.Size(76, 27);
+            this.expandButton.TabIndex = 1;
+            this.expandButton.Text = "Expand";
+            this.expandButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.expandButton.UseVisualStyleBackColor = true;
+            this.expandButton.Click += new System.EventHandler(this.expandButton_Click);
+            // 
             // contentRichTextBox
             // 
+            this.contentRichTextBox.AcceptsTab = false;
+            this.contentRichTextBox.AllowDrop = true;
             this.contentRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.contentRichTextBox.AutoWordSelection = true;
+            this.contentRichTextBox.DetectURLs = true;
             this.contentRichTextBox.Location = new System.Drawing.Point(3, 3);
             this.contentRichTextBox.Name = "contentRichTextBox";
-            this.contentRichTextBox.Size = new System.Drawing.Size(504, 371);
+            this.contentRichTextBox.ReadOnly = false;
+            // 
+            // 
+            // 
+            this.contentRichTextBox.RichTextBox.AutoWordSelection = true;
+            this.contentRichTextBox.RichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.contentRichTextBox.RichTextBox.Location = new System.Drawing.Point(0, 26);
+            this.contentRichTextBox.RichTextBox.Name = "rtb1";
+            this.contentRichTextBox.RichTextBox.Size = new System.Drawing.Size(529, 350);
+            this.contentRichTextBox.RichTextBox.TabIndex = 1;
+            this.contentRichTextBox.RichTextBox.TextChanged += new System.EventHandler(this.contentRichTextBox_TextChanged);
+            this.contentRichTextBox.ShowBold = true;
+            this.contentRichTextBox.ShowCenterJustify = true;
+            this.contentRichTextBox.ShowColors = true;
+            this.contentRichTextBox.ShowCopy = true;
+            this.contentRichTextBox.ShowCut = true;
+            this.contentRichTextBox.ShowFont = true;
+            this.contentRichTextBox.ShowFontSize = true;
+            this.contentRichTextBox.ShowItalic = true;
+            this.contentRichTextBox.ShowLeftJustify = true;
+            this.contentRichTextBox.ShowOpen = true;
+            this.contentRichTextBox.ShowPaste = true;
+            this.contentRichTextBox.ShowRedo = true;
+            this.contentRichTextBox.ShowRightJustify = true;
+            this.contentRichTextBox.ShowSave = true;
+            this.contentRichTextBox.ShowStamp = true;
+            this.contentRichTextBox.ShowStrikeout = true;
+            this.contentRichTextBox.ShowToolBarText = false;
+            this.contentRichTextBox.ShowUnderline = true;
+            this.contentRichTextBox.ShowUndo = true;
+            this.contentRichTextBox.Size = new System.Drawing.Size(529, 376);
+            this.contentRichTextBox.StampAction = RichTextBoxExtended.StampActions.EditedBy;
+            this.contentRichTextBox.StampColor = System.Drawing.Color.Blue;
             this.contentRichTextBox.TabIndex = 0;
-            this.contentRichTextBox.Text = "";
-            this.contentRichTextBox.TextChanged += new System.EventHandler(this.contentRichTextBox_TextChanged);
+            // 
+            // 
+            // 
+            this.contentRichTextBox.Toolbar.Appearance = System.Windows.Forms.ToolBarAppearance.Flat;
+            this.contentRichTextBox.Toolbar.ButtonSize = new System.Drawing.Size(16, 16);
+            this.contentRichTextBox.Toolbar.Divider = false;
+            this.contentRichTextBox.Toolbar.DropDownArrows = true;
+            this.contentRichTextBox.Toolbar.Location = new System.Drawing.Point(0, 0);
+            this.contentRichTextBox.Toolbar.Name = "tb1";
+            this.contentRichTextBox.Toolbar.ShowToolTips = true;
+            this.contentRichTextBox.Toolbar.Size = new System.Drawing.Size(529, 26);
+            this.contentRichTextBox.Toolbar.TabIndex = 0;
             // 
             // statusStrip1
             // 
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 411);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 416);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(782, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(807, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -122,7 +200,7 @@
             this.contentToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(782, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(807, 28);
             this.menuStrip1.TabIndex = 3;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -174,7 +252,11 @@
             // 
             this.contentToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addNewNodeMenuItem,
-            this.addNewNodeUnderMenuItem});
+            this.addNewNodeUnderMenuItem,
+            this.toolStripSeparator3,
+            this.findMenuItem,
+            this.findNextMenuItem,
+            this.findPrevMenuItem});
             this.contentToolStripMenuItem.Name = "contentToolStripMenuItem";
             this.contentToolStripMenuItem.Size = new System.Drawing.Size(73, 24);
             this.contentToolStripMenuItem.Text = "Content";
@@ -195,11 +277,40 @@
             this.addNewNodeUnderMenuItem.Text = "Add Node &Under";
             this.addNewNodeUnderMenuItem.Click += new System.EventHandler(this.addNewNodeUnderMenuItem_Click);
             // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(271, 6);
+            // 
+            // findMenuItem
+            // 
+            this.findMenuItem.Name = "findMenuItem";
+            this.findMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+            this.findMenuItem.Size = new System.Drawing.Size(274, 26);
+            this.findMenuItem.Text = "&Find";
+            this.findMenuItem.Click += new System.EventHandler(this.findMenuItem_Click);
+            // 
+            // findNextMenuItem
+            // 
+            this.findNextMenuItem.Name = "findNextMenuItem";
+            this.findNextMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
+            this.findNextMenuItem.Size = new System.Drawing.Size(274, 26);
+            this.findNextMenuItem.Text = "Find &Next";
+            this.findNextMenuItem.Click += new System.EventHandler(this.findNextMenuItem_Click);
+            // 
+            // findPrevMenuItem
+            // 
+            this.findPrevMenuItem.Name = "findPrevMenuItem";
+            this.findPrevMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F3)));
+            this.findPrevMenuItem.Size = new System.Drawing.Size(274, 26);
+            this.findPrevMenuItem.Text = "Find &Prev";
+            this.findPrevMenuItem.Click += new System.EventHandler(this.findPrevMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(782, 433);
+            this.ClientSize = new System.Drawing.Size(807, 438);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.splitContainer1);
@@ -235,9 +346,15 @@
         private System.Windows.Forms.ToolStripMenuItem saveFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem contentToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addNewNodeMenuItem;
-        private System.Windows.Forms.RichTextBox contentRichTextBox;
         private System.Windows.Forms.ToolStripMenuItem addNewNodeUnderMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.Button expandButton;
+        private RichTextBoxExtended.RichTextBoxExtended contentRichTextBox;
+        private System.Windows.Forms.Button collapseButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem findMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem findNextMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem findPrevMenuItem;
     }
 }
 

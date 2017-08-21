@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -12,12 +13,13 @@ using Vision.BL.Model;
 
 namespace Vision.Forms
 {
-    public partial class MainForm : Form
+    public partial class MainForm : Form, ISearchable
     {
         Context _context;
         Persistor _persistor;
         private bool _dirty;
         private string _currentProjectFilename;
+        FindForm _findForm;
 
         public MainForm()
         {
@@ -62,8 +64,9 @@ namespace Vision.Forms
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             var node = (Node)treeView1.SelectedNode.Tag;
-            contentRichTextBox.Text = node.Content;
+            contentRichTextBox.RichTextBox.Rtf = node.Content;
             _context.Layout.SelectedNode = node.Id;
+            SetDirty();
         }
 
         private void treeView1_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
@@ -106,7 +109,7 @@ namespace Vision.Forms
             if (selectedTreeNode != null)
             {
                 var node = (Node)selectedTreeNode.Tag;
-                node.Content = contentRichTextBox.Text;
+                node.Content = contentRichTextBox.RichTextBox.Rtf;
             }
 
             SetDirty();
@@ -137,11 +140,56 @@ namespace Vision.Forms
             }
         }
 
+        private void expandButton_Click(object sender, EventArgs e)
+        {
+            treeView1.ExpandAll();
+            SetDirty();
+        }
+
+        private void collapseButton_Click(object sender, EventArgs e)
+        {
+            treeView1.CollapseAll();
+            SetDirty();
+        }
+
+        private void findMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowFindDialog();
+        }
+
+        private void findNextMenuItem_Click(object sender, EventArgs e)
+        {
+            var history = GetSearchHistory();
+
+            if (!history.Any())
+            {
+                ShowFindDialog();
+            }
+            else
+            {
+                FindNext(history.First());
+            }
+        }
+
+        private void findPrevMenuItem_Click(object sender, EventArgs e)
+        {
+            var history = GetSearchHistory();
+
+            if (!history.Any())
+            {
+                ShowFindDialog();
+            }
+            else
+            {
+                FindPrev(history.First());
+            }
+        }
 
         private void Init()
         {
             _context = new Context();
             _persistor = new Persistor();
+            _findForm = new Forms.FindForm(this);
         }
 
         private void ReloadTree()
@@ -186,7 +234,7 @@ namespace Vision.Forms
         private bool SaveProject()
         {
             UpdateLayoutData(treeView1.Nodes);
-            
+
             if (_currentProjectFilename == null)
             {
                 var saveFileDialog = new SaveFileDialog();
@@ -311,5 +359,151 @@ namespace Vision.Forms
             _dirty = false;
         }
 
+
+        public void FindNext(string searchText)
+        {
+            AddToSearchHistory(searchText);
+            var matches = FindMatchingNodes(searchText);
+
+            if (!matches.Any()) return;
+
+            var currentNodeIndex = matches.IndexOf(GetSelectedNodeId());
+            var nextNodeGuid = matches[(currentNodeIndex + 1) % matches.Count];
+            var match = FindNodeById(nextNodeGuid);
+
+            if (match != null)
+            {
+                treeView1.SelectedNode = match;
+            }
+        }
+
+        public void FindPrev(string searchText)
+        {
+            AddToSearchHistory(searchText);
+            var matches = FindMatchingNodes(searchText);
+
+            if (!matches.Any()) return;
+
+            var currentNodeIndex = matches.IndexOf(GetSelectedNodeId());
+            var nextNodeGuid = matches[(currentNodeIndex + matches.Count - 1) % matches.Count];
+            var match = FindNodeById(nextNodeGuid);
+
+            if (match != null)
+            {
+                treeView1.SelectedNode = match;
+            }
+        }
+
+        public void BookmarkAll(string searchText)
+        {
+            AddToSearchHistory(searchText);
+        }
+
+        public void FindAll(string searchText)
+        {
+            AddToSearchHistory(searchText);
+        }
+
+        public string[] GetSearchHistory()
+        {
+            var obj = Properties.Settings.Default["SearchTextHistory"];
+
+            if (obj == null)
+            {
+                Properties.Settings.Default["SearchTextHistory"] = new StringCollection();
+                Properties.Settings.Default.Save();
+                return new string[0];
+            }
+
+            var result = (obj as StringCollection).Cast<String>().ToArray();
+            return result;
+        }
+
+
+        private void ShowFindDialog()
+        {
+            if (_findForm.Visible) return;
+
+            _findForm.Show();
+        }
+
+        private Guid GetSelectedNodeId()
+        {
+            if (treeView1.SelectedNode == null)
+                return Guid.Empty;
+
+            var node = (Node)treeView1.SelectedNode.Tag;
+            return node.Id;
+        }
+
+        private TreeNode FindNodeById(Guid id, TreeNodeCollection nodes = null)
+        {
+            if (nodes == null)
+            {
+                nodes = treeView1.Nodes;
+            }
+
+            foreach (TreeNode treeNode in nodes)
+            {
+                var node = (Node)treeNode.Tag;
+
+                if (node.Id == id)
+                {
+                    return treeNode;
+                }
+
+                var match = FindNodeById(id, treeNode.Nodes);
+
+                if (match != null)
+                {
+                    return match;
+                }
+            }
+
+            return null;
+        }
+
+        private List<Guid> FindMatchingNodes(string searchText, TreeNodeCollection nodes = null)
+        {
+            var result = new List<Guid>();
+
+            if (nodes == null)
+            {
+                nodes = treeView1.Nodes;
+            }
+
+            foreach (TreeNode treeNode in nodes)
+            {
+                var node = (Node)treeNode.Tag;
+
+                if (node.Title.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0
+                    || node.Content.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    result.Add(node.Id);
+                }
+
+                var subResult = FindMatchingNodes(searchText, treeNode.Nodes);
+                result.AddRange(subResult);
+            }
+
+            return result;
+        }
+
+        private static void AddToSearchHistory(string searchText)
+        {
+            var history = Properties.Settings.Default["SearchTextHistory"] as StringCollection;
+
+            if (history == null)
+            {
+                history = new StringCollection();
+                Properties.Settings.Default["SearchTextHistory"] = history;
+                Properties.Settings.Default.Save();
+            }
+
+            if (history.Count > 0 && history[0] == searchText) return;
+
+            history.Insert(0, searchText);
+            Properties.Settings.Default.Save();
+        }
     }
 }
