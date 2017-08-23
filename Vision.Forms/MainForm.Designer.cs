@@ -42,6 +42,7 @@
             this.openFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.saveFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addToplevelNodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addSiblingNodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,7 +51,6 @@
             this.findMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findNextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findPrevMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -61,6 +61,7 @@
             // 
             // treeView1
             // 
+            this.treeView1.AllowDrop = true;
             this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -69,7 +70,7 @@
             this.treeView1.Location = new System.Drawing.Point(0, 33);
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(265, 346);
-            this.treeView1.TabIndex = 0;
+            this.treeView1.TabIndex = 2;
             this.treeView1.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
@@ -96,6 +97,7 @@
             this.splitContainer1.Size = new System.Drawing.Size(807, 382);
             this.splitContainer1.SplitterDistance = 268;
             this.splitContainer1.TabIndex = 1;
+            this.splitContainer1.TabStop = false;
             // 
             // collapseButton
             // 
@@ -115,7 +117,7 @@
             this.expandButton.Location = new System.Drawing.Point(75, 3);
             this.expandButton.Name = "expandButton";
             this.expandButton.Size = new System.Drawing.Size(92, 27);
-            this.expandButton.TabIndex = 1;
+            this.expandButton.TabIndex = 0;
             this.expandButton.Text = "Expand All";
             this.expandButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.expandButton.UseVisualStyleBackColor = true;
@@ -204,7 +206,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(807, 28);
-            this.menuStrip1.TabIndex = 3;
+            this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
@@ -251,6 +253,13 @@
             this.saveFileMenuItem.Size = new System.Drawing.Size(182, 26);
             this.saveFileMenuItem.Text = "&Save...";
             this.saveFileMenuItem.Click += new System.EventHandler(this.saveFileMenuItem_Click);
+            // 
+            // exportMenuItem
+            // 
+            this.exportMenuItem.Name = "exportMenuItem";
+            this.exportMenuItem.Size = new System.Drawing.Size(182, 26);
+            this.exportMenuItem.Text = "E&xport...";
+            this.exportMenuItem.Click += new System.EventHandler(this.exportMenuItem_Click);
             // 
             // contentToolStripMenuItem
             // 
@@ -318,13 +327,6 @@
             this.findPrevMenuItem.Size = new System.Drawing.Size(284, 26);
             this.findPrevMenuItem.Text = "Find &Prev";
             this.findPrevMenuItem.Click += new System.EventHandler(this.findPrevMenuItem_Click);
-            // 
-            // exportMenuItem
-            // 
-            this.exportMenuItem.Name = "exportMenuItem";
-            this.exportMenuItem.Size = new System.Drawing.Size(182, 26);
-            this.exportMenuItem.Text = "E&xport...";
-            this.exportMenuItem.Click += new System.EventHandler(this.exportMenuItem_Click);
             // 
             // MainForm
             // 

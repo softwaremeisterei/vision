@@ -24,13 +24,23 @@ namespace Vision.Forms
 
         public MainForm()
         {
-            Init();
-
             InitializeComponent();
 
+            _context = new Context();
+            _persistor = new Persistor();
+            _findForm = new Forms.FindForm(this);
+
+            InitContextMenu();
+            InitDragDrop();
             LoadLastProject();
         }
 
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            ActiveControl = treeView1;
+            ClearDirtyFlag();
+        }
 
         private void saveFileMenuItem_Click(object sender, EventArgs e)
         {
@@ -132,11 +142,6 @@ namespace Vision.Forms
             SetDirty();
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (_dirty)
@@ -207,14 +212,6 @@ namespace Vision.Forms
             Export();
         }
 
-        private void Init()
-        {
-            _context = new Context();
-            _persistor = new Persistor();
-            _findForm = new Forms.FindForm(this);
-            InitContextMenu();
-        }
-
         private void InitContextMenu()
         {
             _docMenu = new ContextMenuStrip();
@@ -229,6 +226,70 @@ namespace Vision.Forms
             renameNodeMenuItem.Click += delegate { RenameSelectedNode(); };
 
             _docMenu.Items.AddRange(new ToolStripMenuItem[] { addNodeMenuItem, deleteNodeMenuItem, renameNodeMenuItem });
+        }
+
+        private void InitDragDrop()
+        {
+            this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(treeView_ItemDrag);
+            this.treeView1.DragEnter += new System.Windows.Forms.DragEventHandler(treeView_DragEnter);
+            this.treeView1.DragDrop += new System.Windows.Forms.DragEventHandler(treeView_DragDrop);
+        }
+
+        private void treeView_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            DoDragDrop(e.Item, DragDropEffects.Copy | DragDropEffects.Move);
+        }
+
+        private void treeView_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Copy | DragDropEffects.Move;
+        }
+
+        private void treeView_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false))
+            {
+                var treeNode = (TreeNode)e.Data.GetData("System.Windows.Forms.TreeNode");
+                var node = (Node)treeNode.Tag;
+                var parentNode = (Node)treeNode.Parent?.Tag;
+                var pt = ((TreeView)sender).PointToClient(new Point(e.X, e.Y));
+                var destinationTreeNode = ((TreeView)sender).GetNodeAt(pt);
+                var destinationNode = (Node)destinationTreeNode?.Tag;
+
+                if (parentNode != null)
+                {
+                    parentNode.Nodes.Remove(node);
+                }
+                else
+                {
+                    _context.Nodes.Remove(node);
+                }
+
+                if (destinationNode != null)
+                {
+                    destinationNode.Nodes.Add(node);
+                }
+                else
+                {
+                    _context.Nodes.Add(node);
+                }
+
+                ReloadTree();
+
+                SelectNodeById(node.Id);
+            }
+        }
+
+        private TreeNode SelectNodeById(Guid id)
+        {
+            var treeNode = FindTreeNodeByNodeId(id);
+
+            if (treeNode != null)
+            {
+                treeView1.SelectedNode = treeNode;
+            }
+
+            return treeNode;
         }
 
         private void RenameSelectedNode()
@@ -374,8 +435,7 @@ namespace Vision.Forms
             UpdateLayoutData(treeView1.Nodes);
             SetDirty();
             ReloadTree();
-            var treeNode = FindTreeNodeByNodeId(node.Id);
-            treeView1.SelectedNode = treeNode;
+            var treeNode = SelectNodeById(node.Id);
             treeNode.BeginEdit();
         }
 
@@ -403,8 +463,7 @@ namespace Vision.Forms
 
                 if (nodeToSelect != null)
                 {
-                    var prevTreeNode = FindTreeNodeByNodeId(nodeToSelect.Id);
-                    treeView1.SelectedNode = prevTreeNode;
+                    SelectNodeById(nodeToSelect.Id);
                 }
             }
         }
@@ -429,12 +488,7 @@ namespace Vision.Forms
 
             var currentNodeIndex = matches.IndexOf(GetSelectedNodeId());
             var nextNodeGuid = matches[(currentNodeIndex + 1) % matches.Count];
-            var match = FindTreeNodeByNodeId(nextNodeGuid);
-
-            if (match != null)
-            {
-                treeView1.SelectedNode = match;
-            }
+            SelectNodeById(nextNodeGuid);
         }
 
         public void FindPrev(string searchText)
@@ -446,12 +500,7 @@ namespace Vision.Forms
 
             var currentNodeIndex = matches.IndexOf(GetSelectedNodeId());
             var nextNodeGuid = matches[(currentNodeIndex + matches.Count - 1) % matches.Count];
-            var match = FindTreeNodeByNodeId(nextNodeGuid);
-
-            if (match != null)
-            {
-                treeView1.SelectedNode = match;
-            }
+            SelectNodeById(nextNodeGuid);
         }
 
         public void BookmarkAll(string searchText)
