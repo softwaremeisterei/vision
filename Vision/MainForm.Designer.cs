@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.collapseButton = new System.Windows.Forms.Button();
@@ -48,12 +49,12 @@
             this.addSiblingNodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addChildNodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.moveNodeUpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moveNodeDownMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.findMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findNextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findPrevMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.moveNodeDownMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.moveNodeUpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -310,6 +311,27 @@
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(281, 6);
             // 
+            // moveNodeUpMenuItem
+            // 
+            this.moveNodeUpMenuItem.Name = "moveNodeUpMenuItem";
+            this.moveNodeUpMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Up)));
+            this.moveNodeUpMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.moveNodeUpMenuItem.Text = "Move Node &Up";
+            this.moveNodeUpMenuItem.Click += new System.EventHandler(this.moveNodeUpMenuItem_Click);
+            // 
+            // moveNodeDownMenuItem
+            // 
+            this.moveNodeDownMenuItem.Name = "moveNodeDownMenuItem";
+            this.moveNodeDownMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Down)));
+            this.moveNodeDownMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.moveNodeDownMenuItem.Text = "Move Node &Down";
+            this.moveNodeDownMenuItem.Click += new System.EventHandler(this.moveNodeDownMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(281, 6);
+            // 
             // findMenuItem
             // 
             this.findMenuItem.Name = "findMenuItem";
@@ -334,27 +356,6 @@
             this.findPrevMenuItem.Text = "Find &Prev";
             this.findPrevMenuItem.Click += new System.EventHandler(this.findPrevMenuItem_Click);
             // 
-            // moveNodeDownMenuItem
-            // 
-            this.moveNodeDownMenuItem.Name = "moveNodeDownMenuItem";
-            this.moveNodeDownMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Down)));
-            this.moveNodeDownMenuItem.Size = new System.Drawing.Size(284, 26);
-            this.moveNodeDownMenuItem.Text = "Move Node &Down";
-            this.moveNodeDownMenuItem.Click += new System.EventHandler(this.moveNodeDownMenuItem_Click);
-            // 
-            // moveNodeUpMenuItem
-            // 
-            this.moveNodeUpMenuItem.Name = "moveNodeUpMenuItem";
-            this.moveNodeUpMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Up)));
-            this.moveNodeUpMenuItem.Size = new System.Drawing.Size(284, 26);
-            this.moveNodeUpMenuItem.Text = "Move Node &Up";
-            this.moveNodeUpMenuItem.Click += new System.EventHandler(this.moveNodeUpMenuItem_Click);
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(281, 6);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -363,6 +364,7 @@
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.splitContainer1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.Text = "Visi<o>n";

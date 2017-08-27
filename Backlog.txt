@@ -1,5 +1,3 @@
-- Export functions
-- Drag & drop nodes
 - Drag & drop data on richtextbox
 - Attachments (images, files), view attachments
 - Bookmarks

@@ -42,6 +42,26 @@ namespace Vision.Forms
             ClearDirtyFlag();
         }
 
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_dirty)
+            {
+                var dialogResult = MessageBox.Show("You have unsaved changes.\nDo you want to save before closing?", "Warning", MessageBoxButtons.YesNoCancel);
+                switch (dialogResult)
+                {
+                    case DialogResult.Yes:
+                        if (!SaveProject())
+                        {
+                            e.Cancel = true;
+                        };
+                        break;
+                    case DialogResult.Cancel:
+                        e.Cancel = true;
+                        break;
+                }
+            }
+        }
+
         private void saveFileMenuItem_Click(object sender, EventArgs e)
         {
             SaveProject();
@@ -129,113 +149,6 @@ namespace Vision.Forms
             treeView1.SelectedNode = e.Node;
         }
 
-        private void contentRichTextBox_TextChanged(object sender, EventArgs e)
-        {
-            var selectedTreeNode = treeView1.SelectedNode;
-
-            if (selectedTreeNode != null)
-            {
-                var node = (Node)selectedTreeNode.Tag;
-                node.Content = contentRichTextBox.RichTextBox.Rtf;
-            }
-
-            SetDirty();
-        }
-
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (_dirty)
-            {
-                var dialogResult = MessageBox.Show("You have unsaved changes.\nDo you want to save before closing?", "Warning", MessageBoxButtons.YesNoCancel);
-                switch (dialogResult)
-                {
-                    case DialogResult.Yes:
-                        if (!SaveProject())
-                        {
-                            e.Cancel = true;
-                        };
-                        break;
-                    case DialogResult.Cancel:
-                        e.Cancel = true;
-                        break;
-                }
-            }
-        }
-
-        private void expandButton_Click(object sender, EventArgs e)
-        {
-            treeView1.ExpandAll();
-            SetDirty();
-        }
-
-        private void collapseButton_Click(object sender, EventArgs e)
-        {
-            treeView1.CollapseAll();
-            SetDirty();
-        }
-
-        private void findMenuItem_Click(object sender, EventArgs e)
-        {
-            ShowFindDialog();
-        }
-
-        private void findNextMenuItem_Click(object sender, EventArgs e)
-        {
-            var history = GetSearchHistory();
-
-            if (!history.Any())
-            {
-                ShowFindDialog();
-            }
-            else
-            {
-                FindNext(history.First());
-            }
-        }
-
-        private void findPrevMenuItem_Click(object sender, EventArgs e)
-        {
-            var history = GetSearchHistory();
-
-            if (!history.Any())
-            {
-                ShowFindDialog();
-            }
-            else
-            {
-                FindPrev(history.First());
-            }
-        }
-
-        private void exportMenuItem_Click(object sender, EventArgs e)
-        {
-            Export();
-        }
-
-        private void InitContextMenu()
-        {
-            _docMenu = new ContextMenuStrip();
-            var addNodeMenuItem = new ToolStripMenuItem();
-            addNodeMenuItem.Text = "Add Node";
-            addNodeMenuItem.Click += delegate { AddChildNode(); };
-            var deleteNodeMenuItem = new ToolStripMenuItem();
-            deleteNodeMenuItem.Text = "Delete";
-            deleteNodeMenuItem.Click += delegate { DeleteSelectedNode(); };
-            var renameNodeMenuItem = new ToolStripMenuItem();
-            renameNodeMenuItem.Text = "Rename";
-            renameNodeMenuItem.Click += delegate { RenameSelectedNode(); };
-
-            _docMenu.Items.AddRange(new ToolStripMenuItem[] { addNodeMenuItem, deleteNodeMenuItem, renameNodeMenuItem });
-        }
-
-        private void InitDragDrop()
-        {
-            this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(treeView_ItemDrag);
-            this.treeView1.DragEnter += new System.Windows.Forms.DragEventHandler(treeView_DragEnter);
-            this.treeView1.DragOver += new System.Windows.Forms.DragEventHandler(treeView_DragOver);
-            this.treeView1.DragDrop += new System.Windows.Forms.DragEventHandler(treeView_DragDrop);
-        }
-
         private void treeView_ItemDrag(object sender, ItemDragEventArgs e)
         {
             DoDragDrop(e.Item, DragDropEffects.Copy | DragDropEffects.Move);
@@ -299,6 +212,122 @@ namespace Vision.Forms
 
                 SelectNodeById(node.Id);
             }
+        }
+
+        private void contentRichTextBox_TextChanged(object sender, EventArgs e)
+        {
+            var selectedTreeNode = treeView1.SelectedNode;
+
+            if (selectedTreeNode != null)
+            {
+                var node = (Node)selectedTreeNode.Tag;
+                node.Content = contentRichTextBox.RichTextBox.Rtf;
+            }
+
+            SetDirty();
+        }
+
+        private void expandButton_Click(object sender, EventArgs e)
+        {
+            treeView1.ExpandAll();
+            SetDirty();
+        }
+
+        private void collapseButton_Click(object sender, EventArgs e)
+        {
+            treeView1.CollapseAll();
+            SetDirty();
+        }
+
+        private void findMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowFindDialog();
+        }
+
+        private void findNextMenuItem_Click(object sender, EventArgs e)
+        {
+            var history = GetSearchHistory();
+
+            if (!history.Any())
+            {
+                ShowFindDialog();
+            }
+            else
+            {
+                FindNext(history.First());
+            }
+        }
+
+        private void findPrevMenuItem_Click(object sender, EventArgs e)
+        {
+            var history = GetSearchHistory();
+
+            if (!history.Any())
+            {
+                ShowFindDialog();
+            }
+            else
+            {
+                FindPrev(history.First());
+            }
+        }
+
+        private void exportMenuItem_Click(object sender, EventArgs e)
+        {
+            Export();
+        }
+
+        private void moveNodeDownMenuItem_Click(object sender, EventArgs e)
+        {
+            var treeNode = treeView1.SelectedNode;
+            if (treeNode == null) return;
+
+            var nextTreeNode = treeNode.NextNode;
+            if (nextTreeNode == null) return;
+
+            var node1 = (Node)treeNode.Tag;
+            var node2 = (Node)nextTreeNode.Tag;
+
+            Swap(node1, node2);
+        }
+
+        private void moveNodeUpMenuItem_Click(object sender, EventArgs e)
+        {
+            var treeNode = treeView1.SelectedNode;
+            if (treeNode == null) return;
+
+            var prevTreeNode = treeNode.PrevNode;
+            if (prevTreeNode == null) return;
+
+            var node1 = (Node)prevTreeNode.Tag;
+            var node2 = (Node)treeNode.Tag;
+
+            Swap(node1, node2);
+        }
+
+
+        private void InitContextMenu()
+        {
+            _docMenu = new ContextMenuStrip();
+            var addNodeMenuItem = new ToolStripMenuItem();
+            addNodeMenuItem.Text = "Add Node";
+            addNodeMenuItem.Click += delegate { AddChildNode(); };
+            var deleteNodeMenuItem = new ToolStripMenuItem();
+            deleteNodeMenuItem.Text = "Delete";
+            deleteNodeMenuItem.Click += delegate { DeleteSelectedNode(); };
+            var renameNodeMenuItem = new ToolStripMenuItem();
+            renameNodeMenuItem.Text = "Rename";
+            renameNodeMenuItem.Click += delegate { RenameSelectedNode(); };
+
+            _docMenu.Items.AddRange(new ToolStripMenuItem[] { addNodeMenuItem, deleteNodeMenuItem, renameNodeMenuItem });
+        }
+
+        private void InitDragDrop()
+        {
+            this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(treeView_ItemDrag);
+            this.treeView1.DragEnter += new System.Windows.Forms.DragEventHandler(treeView_DragEnter);
+            this.treeView1.DragOver += new System.Windows.Forms.DragEventHandler(treeView_DragOver);
+            this.treeView1.DragDrop += new System.Windows.Forms.DragEventHandler(treeView_DragDrop);
         }
 
         private TreeNode SelectNodeById(Guid id)
@@ -646,37 +675,8 @@ namespace Vision.Forms
             {
                 string fileName = saveFileDialog.FileName;
 
-                var export = new Export();
-                export.ToTextFile(_context.Nodes, fileName);
+                BL.Export.ToTextFile(_context.Nodes, fileName);
             }
-        }
-
-        private void moveNodeDownMenuItem_Click(object sender, EventArgs e)
-        {
-            var treeNode = treeView1.SelectedNode;
-            if (treeNode == null) return;
-
-            var nextTreeNode = treeNode.NextNode;
-            if (nextTreeNode == null) return;
-
-            var node1 = (Node)treeNode.Tag;
-            var node2 = (Node)nextTreeNode.Tag;
-
-            Swap(node1, node2);
-        }
-
-        private void moveNodeUpMenuItem_Click(object sender, EventArgs e)
-        {
-            var treeNode = treeView1.SelectedNode;
-            if (treeNode == null) return;
-
-            var prevTreeNode = treeNode.PrevNode;
-            if (prevTreeNode == null) return;
-
-            var node1 = (Node)prevTreeNode.Tag;
-            var node2 = (Node)treeNode.Tag;
-
-            Swap(node1, node2);
         }
 
         private void Swap(Node node1, Node node2)

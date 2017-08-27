@@ -11,7 +11,7 @@ namespace Vision.BL
 {
     public class Export
     {
-        public void ToTextFile(List<Node> nodes, string filename)
+        public static void ToTextFile(List<Node> nodes, string filename)
         {
             using (var stream = new FileStream(filename, FileMode.Create))
             {
@@ -22,7 +22,7 @@ namespace Vision.BL
             }
         }
 
-        private void Write(List<Node> nodes, StreamWriter writer, int indent)
+        private static void Write(List<Node> nodes, StreamWriter writer, int indent)
         {
             var indentSpaces = new String(' ', indent * 4);
             var indentSpacesContent = new String(' ', (indent + 1 )* 4);
@@ -34,7 +34,8 @@ namespace Vision.BL
                 if (!string.IsNullOrEmpty(node.Content))
                 {
                     var plainText = RichTextStripper.StripRichTextFormat(node.Content);
-                    foreach (var line in plainText.Split(new[] { "\n" }, StringSplitOptions.None))
+
+                    foreach (var line in plainText.Split('\n'))
                     {
                         writer.WriteLine("{0}{1}", indentSpacesContent, line);
                     }
