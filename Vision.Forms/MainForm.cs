@@ -232,6 +232,7 @@ namespace Vision.Forms
         {
             this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(treeView_ItemDrag);
             this.treeView1.DragEnter += new System.Windows.Forms.DragEventHandler(treeView_DragEnter);
+            this.treeView1.DragOver += new System.Windows.Forms.DragEventHandler(treeView_DragOver);
             this.treeView1.DragDrop += new System.Windows.Forms.DragEventHandler(treeView_DragDrop);
         }
 
@@ -242,7 +243,25 @@ namespace Vision.Forms
 
         private void treeView_DragEnter(object sender, DragEventArgs e)
         {
-            e.Effect = DragDropEffects.Copy | DragDropEffects.Move;
+            var pt = ((TreeView)sender).PointToClient(new Point(e.X, e.Y));
+            var destinationTreeNode = ((TreeView)sender).GetNodeAt(pt);
+            if (destinationTreeNode != null)
+            {
+                treeView1.SelectedNode = destinationTreeNode;
+            }
+        }
+
+        private void treeView_DragOver(object sender, DragEventArgs e)
+        {
+            if ((e.KeyState & 8) == 8 &&
+                   (e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else if ((e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move)
+            {
+                e.Effect = DragDropEffects.Move;
+            }
         }
 
         private void treeView_DragDrop(object sender, DragEventArgs e)
@@ -267,10 +286,12 @@ namespace Vision.Forms
 
                 if (destinationNode != null)
                 {
+                    node.Index = destinationNode.Nodes.Any() ? destinationNode.Nodes.Last().Index + 1 : 0;
                     destinationNode.Nodes.Add(node);
                 }
                 else
                 {
+                    node.Index = _context.Nodes.Any() ? _context.Nodes.Last().Index + 1 : 0;
                     _context.Nodes.Add(node);
                 }
 
@@ -312,7 +333,7 @@ namespace Vision.Forms
 
         private void ReloadNodes(TreeNode parentNode, List<Node> nodes)
         {
-            foreach (var node in nodes)
+            foreach (var node in nodes.OrderBy(n => n.Index))
             {
                 var treeNode = new TreeNode { Text = node.Title, Tag = node };
                 treeNode.ContextMenuStrip = _docMenu;
@@ -628,6 +649,45 @@ namespace Vision.Forms
                 var export = new Export();
                 export.ToTextFile(_context.Nodes, fileName);
             }
+        }
+
+        private void moveNodeDownMenuItem_Click(object sender, EventArgs e)
+        {
+            var treeNode = treeView1.SelectedNode;
+            if (treeNode == null) return;
+
+            var nextTreeNode = treeNode.NextNode;
+            if (nextTreeNode == null) return;
+
+            var node1 = (Node)treeNode.Tag;
+            var node2 = (Node)nextTreeNode.Tag;
+
+            Swap(node1, node2);
+        }
+
+        private void moveNodeUpMenuItem_Click(object sender, EventArgs e)
+        {
+            var treeNode = treeView1.SelectedNode;
+            if (treeNode == null) return;
+
+            var prevTreeNode = treeNode.PrevNode;
+            if (prevTreeNode == null) return;
+
+            var node1 = (Node)prevTreeNode.Tag;
+            var node2 = (Node)treeNode.Tag;
+
+            Swap(node1, node2);
+        }
+
+        private void Swap(Node node1, Node node2)
+        {
+            var index1 = node1.Index;
+            node1.Index = node2.Index;
+            node2.Index = index1;
+
+            SetDirty();
+
+            ReloadTree();
         }
     }
 }

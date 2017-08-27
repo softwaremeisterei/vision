@@ -51,6 +51,9 @@
             this.findMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findNextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findPrevMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moveNodeDownMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moveNodeUpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -268,6 +271,9 @@
             this.addSiblingNodeMenuItem,
             this.addChildNodeMenuItem,
             this.toolStripSeparator3,
+            this.moveNodeUpMenuItem,
+            this.moveNodeDownMenuItem,
+            this.toolStripSeparator4,
             this.findMenuItem,
             this.findNextMenuItem,
             this.findPrevMenuItem});
@@ -328,6 +334,27 @@
             this.findPrevMenuItem.Text = "Find &Prev";
             this.findPrevMenuItem.Click += new System.EventHandler(this.findPrevMenuItem_Click);
             // 
+            // moveNodeDownMenuItem
+            // 
+            this.moveNodeDownMenuItem.Name = "moveNodeDownMenuItem";
+            this.moveNodeDownMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Down)));
+            this.moveNodeDownMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.moveNodeDownMenuItem.Text = "Move Node &Down";
+            this.moveNodeDownMenuItem.Click += new System.EventHandler(this.moveNodeDownMenuItem_Click);
+            // 
+            // moveNodeUpMenuItem
+            // 
+            this.moveNodeUpMenuItem.Name = "moveNodeUpMenuItem";
+            this.moveNodeUpMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Up)));
+            this.moveNodeUpMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.moveNodeUpMenuItem.Text = "Move Node &Up";
+            this.moveNodeUpMenuItem.Click += new System.EventHandler(this.moveNodeUpMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(281, 6);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -379,6 +406,9 @@
         private System.Windows.Forms.ToolStripMenuItem findPrevMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addSiblingNodeMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem moveNodeDownMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem moveNodeUpMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
     }
 }
 

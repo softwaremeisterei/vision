@@ -20,7 +20,8 @@ namespace Vision.BL.Model
 
         public Node AddNode(Node parentNode, string title)
         {
-            var node = new Node { Title = title };
+            var index = parentNode != null ? parentNode.Nodes.Count : Nodes.Count;
+            var node = new Node { Title = title, Index = index };
 
             if (parentNode != null)
                 parentNode.Nodes.Add(node);

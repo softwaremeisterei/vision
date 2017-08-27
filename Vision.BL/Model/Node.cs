@@ -23,5 +23,6 @@ namespace Vision.BL.Model
         public List<Node> Nodes { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public int Index { get; set; }
     }
 }
