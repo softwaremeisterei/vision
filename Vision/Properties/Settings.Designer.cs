@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Vision.Forms.Properties {
+namespace Vision.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

@@ -1,4 +1,4 @@
-﻿namespace Vision.Forms
+﻿namespace Vision
 {
     public interface ISearchable
     {
