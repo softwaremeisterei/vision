@@ -189,8 +189,33 @@ namespace Vision.Forms
                     break;
                 case DisplayType.Browser:
                     _contentWebBrowser.Visible = true;
-                    _contentWebBrowser.Url = new Uri(node.Title);
+                    _contentWebBrowser.Url = new Uri(node.Url);
+                    _contentWebBrowser.DocumentCompleted += _contentWebBrowser_DocumentCompleted;
+                    _contentWebBrowser.Tag = node;
                     break;
+            }
+        }
+
+        private void _contentWebBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+            if (_contentWebBrowser.Url == null)
+            {
+                return;
+            }
+
+            var node = (Node)_contentWebBrowser.Tag;
+
+            if (node.Title == node.Url)
+            {
+                node.Title = _contentWebBrowser.DocumentTitle;
+                var treeNode = FindTreeNodeByNodeId(node.Id);
+
+                if (treeNode != null)
+                {
+                    treeNode.Text = node.Title;
+                }
+
+                SetDirty(false);
             }
         }
 
@@ -498,7 +523,9 @@ namespace Vision.Forms
 
         private void ApplySpecialNodeStyles(TreeNode treeNode)
         {
-            if (Regex.IsMatch(treeNode.Text, RegularExpressions.URL))
+            var node = (Node)treeNode.Tag;
+
+            if (node.DisplayType == DisplayType.Browser)
             {
                 treeNode.ForeColor = Color.Blue;
             }
@@ -837,10 +864,16 @@ namespace Vision.Forms
             if (Regex.IsMatch(node.Title, RegularExpressions.URL))
             {
                 node.DisplayType = DisplayType.Browser;
+
+                if (node.Url == null)
+                {
+                    node.Url = node.Title;
+                }
             }
             else
             {
                 node.DisplayType = DisplayType.RichText;
+                node.Url = null;
             }
         }
     }
