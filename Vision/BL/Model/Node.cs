@@ -15,6 +15,7 @@ namespace Vision.BL.Model
             Content = string.Empty;
             Nodes = new List<Node>();
             CreatedAt = UpdatedAt = DateTime.Now;
+            DisplayType = DisplayType.RichText;
         }
 
         public Guid Id { get; set; }
@@ -24,5 +25,7 @@ namespace Vision.BL.Model
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public int Index { get; set; }
+
+        public DisplayType DisplayType { get; set; }
     }
 }

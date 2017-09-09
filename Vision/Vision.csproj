@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BL\Model\DisplayType.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Export.cs" />
     <Compile Include="ISearchable.cs" />

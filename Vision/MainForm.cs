@@ -29,10 +29,14 @@ namespace Vision.Forms
         FindForm _findForm;
         private ContextMenuStrip _docMenu;
         private bool _ignoreTextChange;
+        private RichTextBoxExtended.RichTextBoxExtended _contentRichTextBox;
+        private WebBrowser _contentWebBrowser;
 
         public MainForm()
         {
             InitializeComponent();
+
+            InitializeContentControls();
 
             _context = new Context();
             _persistor = new Persistor();
@@ -41,6 +45,21 @@ namespace Vision.Forms
             InitContextMenu();
             InitDragDrop();
             LoadLastProject();
+        }
+
+        private void InitializeContentControls()
+        {
+            _contentRichTextBox = new RichTextBoxExtended.RichTextBoxExtended();
+            _contentWebBrowser = new WebBrowser();
+
+            _contentRichTextBox.Visible = false;
+            _contentRichTextBox.Dock = DockStyle.Fill;
+            _contentRichTextBox.RichTextBox.TextChanged += contentRichTextBox_TextChanged;
+            splitContainer1.Panel2.Controls.Add(_contentRichTextBox);
+
+            _contentWebBrowser.Visible = false;
+            _contentWebBrowser.Dock = DockStyle.Fill;
+            splitContainer1.Panel2.Controls.Add(_contentWebBrowser);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -137,12 +156,14 @@ namespace Vision.Forms
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            _contentWebBrowser.Url = null;
+
             var node = (Node)treeView1.SelectedNode.Tag;
 
             try
             {
                 _ignoreTextChange = true;
-                contentRichTextBox.RichTextBox.Rtf = node.Content;
+                DisplayContent(node);
             }
             finally
             {
@@ -153,12 +174,34 @@ namespace Vision.Forms
             SetDirty(false);
         }
 
+        private void DisplayContent(Node node)
+        {
+            foreach (Control control in splitContainer1.Panel2.Controls)
+            {
+                control.Visible = false;
+            }
+
+            switch (node.DisplayType)
+            {
+                case DisplayType.RichText:
+                    _contentRichTextBox.Visible = true;
+                    _contentRichTextBox.RichTextBox.Rtf = node.Content;
+                    break;
+                case DisplayType.Browser:
+                    _contentWebBrowser.Visible = true;
+                    _contentWebBrowser.Url = new Uri(node.Title);
+                    break;
+            }
+        }
+
         private void treeView1_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
             if (e.Label != null)
             {
+                var nodeTitle = e.Label;
                 var node = (Node)e.Node.Tag;
-                node.Title = e.Label;
+                node.Title = nodeTitle;
+                SetDefaultDisplayType(node);
                 SetDirty(true);
             }
         }
@@ -194,6 +237,8 @@ namespace Vision.Forms
             if (Regex.IsMatch(e.Node.Text, RegularExpressions.URL))
             {
                 var url = e.Node.Text;
+                ((Node)e.Node.Tag).DisplayType = DisplayType.Browser;
+                SetDirty(true);
                 Process.Start(url);
             }
         }
@@ -209,17 +254,14 @@ namespace Vision.Forms
 
         private void treeView_DragOver(object sender, DragEventArgs e)
         {
-            //Trace.WriteLine($"DragOver {DateTime.Now.Ticks}");
             if ((e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move)
             {
-                Trace.WriteLine($"MOVE {DateTime.Now.Ticks}");
                 e.Effect = DragDropEffects.Move;
                 var point = new Point(e.X, e.Y);
                 SelectNodeAtPoint(point);
             }
             else if ((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
             {
-                Trace.WriteLine($"COPY {DateTime.Now.Ticks}");
                 e.Effect = DragDropEffects.Copy;
                 var point = new Point(e.X, e.Y);
                 SelectNodeAtPoint(point);
@@ -228,16 +270,16 @@ namespace Vision.Forms
 
         private void treeView_DragDrop(object sender, DragEventArgs e)
         {
-            Trace.WriteLine($"DROP {DateTime.Now.Ticks}");
             if (e.Data.GetDataPresent(DataFormats.Text))
             {
-                Trace.WriteLine("TEXT");
                 var pt = treeView1.PointToClient(new Point(e.X, e.Y));
                 var destinationTreeNode = treeView1.GetNodeAt(pt);
 
                 var treeNode = AddNode((Node)destinationTreeNode?.Tag);
                 var node = (Node)treeNode.Tag;
-                node.Title = e.Data.GetData(DataFormats.Text).ToString();
+                string nodeTitle = e.Data.GetData(DataFormats.Text).ToString();
+                node.Title = nodeTitle;
+                SetDefaultDisplayType(node);
                 ReloadTree();
                 SelectNodeById(node.Id);
             }
@@ -285,7 +327,7 @@ namespace Vision.Forms
             if (selectedTreeNode != null)
             {
                 var node = (Node)selectedTreeNode.Tag;
-                node.Content = contentRichTextBox.RichTextBox.Rtf;
+                node.Content = _contentRichTextBox.RichTextBox.Rtf;
                 SetDirty(true);
             }
         }
@@ -787,6 +829,18 @@ namespace Vision.Forms
             if (destinationTreeNode != null)
             {
                 treeView1.SelectedNode = destinationTreeNode;
+            }
+        }
+
+        private void SetDefaultDisplayType(Node node)
+        {
+            if (Regex.IsMatch(node.Title, RegularExpressions.URL))
+            {
+                node.DisplayType = DisplayType.Browser;
+            }
+            else
+            {
+                node.DisplayType = DisplayType.RichText;
             }
         }
     }

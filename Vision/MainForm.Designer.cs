@@ -33,7 +33,6 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.collapseButton = new System.Windows.Forms.Button();
             this.expandButton = new System.Windows.Forms.Button();
-            this.contentRichTextBox = new RichTextBoxExtended.RichTextBoxExtended();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -57,7 +56,6 @@
             this.findPrevMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -95,10 +93,6 @@
             this.splitContainer1.Panel1.Controls.Add(this.collapseButton);
             this.splitContainer1.Panel1.Controls.Add(this.expandButton);
             this.splitContainer1.Panel1.Controls.Add(this.treeView1);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.contentRichTextBox);
             this.splitContainer1.Size = new System.Drawing.Size(807, 382);
             this.splitContainer1.SplitterDistance = 268;
             this.splitContainer1.TabIndex = 1;
@@ -127,64 +121,6 @@
             this.expandButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.expandButton.UseVisualStyleBackColor = true;
             this.expandButton.Click += new System.EventHandler(this.expandButton_Click);
-            // 
-            // contentRichTextBox
-            // 
-            this.contentRichTextBox.AcceptsTab = false;
-            this.contentRichTextBox.AllowDrop = true;
-            this.contentRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.contentRichTextBox.AutoWordSelection = true;
-            this.contentRichTextBox.DetectURLs = true;
-            this.contentRichTextBox.Location = new System.Drawing.Point(3, 3);
-            this.contentRichTextBox.Name = "contentRichTextBox";
-            this.contentRichTextBox.ReadOnly = false;
-            // 
-            // 
-            // 
-            this.contentRichTextBox.RichTextBox.AutoWordSelection = true;
-            this.contentRichTextBox.RichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.contentRichTextBox.RichTextBox.Location = new System.Drawing.Point(0, 26);
-            this.contentRichTextBox.RichTextBox.Name = "rtb1";
-            this.contentRichTextBox.RichTextBox.Size = new System.Drawing.Size(529, 350);
-            this.contentRichTextBox.RichTextBox.TabIndex = 1;
-            this.contentRichTextBox.RichTextBox.TextChanged += new System.EventHandler(this.contentRichTextBox_TextChanged);
-            this.contentRichTextBox.ShowBold = true;
-            this.contentRichTextBox.ShowCenterJustify = true;
-            this.contentRichTextBox.ShowColors = true;
-            this.contentRichTextBox.ShowCopy = true;
-            this.contentRichTextBox.ShowCut = true;
-            this.contentRichTextBox.ShowFont = true;
-            this.contentRichTextBox.ShowFontSize = true;
-            this.contentRichTextBox.ShowItalic = true;
-            this.contentRichTextBox.ShowLeftJustify = true;
-            this.contentRichTextBox.ShowOpen = true;
-            this.contentRichTextBox.ShowPaste = true;
-            this.contentRichTextBox.ShowRedo = true;
-            this.contentRichTextBox.ShowRightJustify = true;
-            this.contentRichTextBox.ShowSave = true;
-            this.contentRichTextBox.ShowStamp = true;
-            this.contentRichTextBox.ShowStrikeout = true;
-            this.contentRichTextBox.ShowToolBarText = false;
-            this.contentRichTextBox.ShowUnderline = true;
-            this.contentRichTextBox.ShowUndo = true;
-            this.contentRichTextBox.Size = new System.Drawing.Size(529, 376);
-            this.contentRichTextBox.StampAction = RichTextBoxExtended.StampActions.EditedBy;
-            this.contentRichTextBox.StampColor = System.Drawing.Color.Blue;
-            this.contentRichTextBox.TabIndex = 0;
-            // 
-            // 
-            // 
-            this.contentRichTextBox.Toolbar.Appearance = System.Windows.Forms.ToolBarAppearance.Flat;
-            this.contentRichTextBox.Toolbar.ButtonSize = new System.Drawing.Size(16, 16);
-            this.contentRichTextBox.Toolbar.Divider = false;
-            this.contentRichTextBox.Toolbar.DropDownArrows = true;
-            this.contentRichTextBox.Toolbar.Location = new System.Drawing.Point(0, 0);
-            this.contentRichTextBox.Toolbar.Name = "tb1";
-            this.contentRichTextBox.Toolbar.ShowToolTips = true;
-            this.contentRichTextBox.Toolbar.Size = new System.Drawing.Size(529, 26);
-            this.contentRichTextBox.Toolbar.TabIndex = 0;
             // 
             // statusStrip1
             // 
@@ -374,7 +310,6 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
@@ -403,7 +338,6 @@
         private System.Windows.Forms.ToolStripMenuItem addChildNodeMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.Button expandButton;
-        private RichTextBoxExtended.RichTextBoxExtended contentRichTextBox;
         private System.Windows.Forms.Button collapseButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem findMenuItem;
