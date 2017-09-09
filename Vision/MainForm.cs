@@ -3,24 +3,32 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Vision.BL;
 using Vision.BL.Model;
+using Vision.Lib;
 
 namespace Vision.Forms
 {
     public partial class MainForm : Form, ISearchable
     {
+        Timer _timer = new Timer();
         Context _context;
         Persistor _persistor;
-        private bool _dirty;
+        private bool _dirty = false;
+        private static bool _modified = false;
         private string _currentProjectFilename;
         FindForm _findForm;
         private ContextMenuStrip _docMenu;
+        private bool _ignoreTextChange;
 
         public MainForm()
         {
@@ -35,11 +43,30 @@ namespace Vision.Forms
             LoadLastProject();
         }
 
-
         private void MainForm_Load(object sender, EventArgs e)
         {
             ActiveControl = treeView1;
             ClearDirtyFlag();
+            SetupTimer();
+        }
+
+        private void SetupTimer()
+        {
+            _timer.Tick += new EventHandler(TimerEventProcessor);
+            _timer.Interval = 2000;
+            _timer.Start();
+        }
+
+        private void TimerEventProcessor(Object myObject,
+                                            EventArgs myEventArgs)
+        {
+            if (_modified)
+            {
+                string rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var backupFilepath = Path.Combine(rootPath, "Vision.backup.txt");
+                Export(backupFilepath);
+                _modified = false;
+            }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -84,7 +111,8 @@ namespace Vision.Forms
 
         private void addToplevelNodeMenuItem_Click(object sender, EventArgs e)
         {
-            AddNode();
+            var treeNode = AddNode();
+            treeNode.BeginEdit();
         }
 
         private void addChildNodeMenuItem_Click(object sender, EventArgs e)
@@ -96,21 +124,33 @@ namespace Vision.Forms
         {
             if (treeView1.Nodes.Count == 0)
             {
-                AddNode();
+                var treeNode = AddNode();
+                treeNode.BeginEdit();
             }
             else if (treeView1.SelectedNode != null)
             {
                 var parentNode = (Node)treeView1.SelectedNode.Parent?.Tag;
-                AddNode(parentNode);
+                var treeNode = AddNode(parentNode);
+                treeNode.BeginEdit();
             }
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             var node = (Node)treeView1.SelectedNode.Tag;
-            contentRichTextBox.RichTextBox.Rtf = node.Content;
+
+            try
+            {
+                _ignoreTextChange = true;
+                contentRichTextBox.RichTextBox.Rtf = node.Content;
+            }
+            finally
+            {
+                _ignoreTextChange = false;
+            }
+
             _context.Layout.SelectedNode = node.Id;
-            SetDirty();
+            SetDirty(false);
         }
 
         private void treeView1_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
@@ -119,7 +159,7 @@ namespace Vision.Forms
             {
                 var node = (Node)e.Node.Tag;
                 node.Title = e.Label;
-                SetDirty();
+                SetDirty(true);
             }
         }
 
@@ -149,6 +189,15 @@ namespace Vision.Forms
             treeView1.SelectedNode = e.Node;
         }
 
+        private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (Regex.IsMatch(e.Node.Text, RegularExpressions.URL))
+            {
+                var url = e.Node.Text;
+                Process.Start(url);
+            }
+        }
+
         private void treeView_ItemDrag(object sender, ItemDragEventArgs e)
         {
             DoDragDrop(e.Item, DragDropEffects.Copy | DragDropEffects.Move);
@@ -156,36 +205,49 @@ namespace Vision.Forms
 
         private void treeView_DragEnter(object sender, DragEventArgs e)
         {
-            var pt = ((TreeView)sender).PointToClient(new Point(e.X, e.Y));
-            var destinationTreeNode = ((TreeView)sender).GetNodeAt(pt);
-            if (destinationTreeNode != null)
-            {
-                treeView1.SelectedNode = destinationTreeNode;
-            }
         }
 
         private void treeView_DragOver(object sender, DragEventArgs e)
         {
-            if ((e.KeyState & 8) == 8 &&
-                   (e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
+            //Trace.WriteLine($"DragOver {DateTime.Now.Ticks}");
+            if ((e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move)
             {
-                e.Effect = DragDropEffects.Copy;
-            }
-            else if ((e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move)
-            {
+                Trace.WriteLine($"MOVE {DateTime.Now.Ticks}");
                 e.Effect = DragDropEffects.Move;
+                var point = new Point(e.X, e.Y);
+                SelectNodeAtPoint(point);
+            }
+            else if ((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
+            {
+                Trace.WriteLine($"COPY {DateTime.Now.Ticks}");
+                e.Effect = DragDropEffects.Copy;
+                var point = new Point(e.X, e.Y);
+                SelectNodeAtPoint(point);
             }
         }
 
         private void treeView_DragDrop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false))
+            Trace.WriteLine($"DROP {DateTime.Now.Ticks}");
+            if (e.Data.GetDataPresent(DataFormats.Text))
+            {
+                Trace.WriteLine("TEXT");
+                var pt = treeView1.PointToClient(new Point(e.X, e.Y));
+                var destinationTreeNode = treeView1.GetNodeAt(pt);
+
+                var treeNode = AddNode((Node)destinationTreeNode?.Tag);
+                var node = (Node)treeNode.Tag;
+                node.Title = e.Data.GetData(DataFormats.Text).ToString();
+                ReloadTree();
+                SelectNodeById(node.Id);
+            }
+            else if (e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false))
             {
                 var treeNode = (TreeNode)e.Data.GetData("System.Windows.Forms.TreeNode");
                 var node = (Node)treeNode.Tag;
                 var parentNode = (Node)treeNode.Parent?.Tag;
-                var pt = ((TreeView)sender).PointToClient(new Point(e.X, e.Y));
-                var destinationTreeNode = ((TreeView)sender).GetNodeAt(pt);
+                var pt = treeView1.PointToClient(new Point(e.X, e.Y));
+                var destinationTreeNode = treeView1.GetNodeAt(pt);
                 var destinationNode = (Node)destinationTreeNode?.Tag;
 
                 if (parentNode != null)
@@ -216,27 +278,28 @@ namespace Vision.Forms
 
         private void contentRichTextBox_TextChanged(object sender, EventArgs e)
         {
+            if (_ignoreTextChange) return;
+
             var selectedTreeNode = treeView1.SelectedNode;
 
             if (selectedTreeNode != null)
             {
                 var node = (Node)selectedTreeNode.Tag;
                 node.Content = contentRichTextBox.RichTextBox.Rtf;
+                SetDirty(true);
             }
-
-            SetDirty();
         }
 
         private void expandButton_Click(object sender, EventArgs e)
         {
             treeView1.ExpandAll();
-            SetDirty();
+            SetDirty(false);
         }
 
         private void collapseButton_Click(object sender, EventArgs e)
         {
             treeView1.CollapseAll();
-            SetDirty();
+            SetDirty(false);
         }
 
         private void findMenuItem_Click(object sender, EventArgs e)
@@ -386,6 +449,16 @@ namespace Vision.Forms
                 {
                     treeNode.Expand();
                 }
+
+                ApplySpecialNodeStyles(treeNode);
+            }
+        }
+
+        private void ApplySpecialNodeStyles(TreeNode treeNode)
+        {
+            if (Regex.IsMatch(treeNode.Text, RegularExpressions.URL))
+            {
+                treeNode.ForeColor = Color.Blue;
             }
         }
 
@@ -475,18 +548,19 @@ namespace Vision.Forms
             if (parentTreeNode != null)
             {
                 var parentNode = (Node)parentTreeNode.Tag;
-                AddNode(parentNode);
+                var treeNode = AddNode(parentNode);
+                treeNode.BeginEdit();
             }
         }
 
-        private void AddNode(Node parentNode = null)
+        private TreeNode AddNode(Node parentNode = null)
         {
             var node = _context.AddNode(parentNode, "New");
             UpdateLayoutData(treeView1.Nodes);
-            SetDirty();
+            SetDirty(true);
             ReloadTree();
             var treeNode = SelectNodeById(node.Id);
-            treeNode.BeginEdit();
+            return treeNode;
         }
 
         private void DeleteSelectedNode()
@@ -498,14 +572,16 @@ namespace Vision.Forms
                 var node = (Node)treeNode.Tag;
 
                 if (treeNode.Parent == null)
+                {
                     _context.RemoveNode(null, node);
+                }
                 else
                 {
                     var parentNode = (Node)treeNode.Parent.Tag;
                     _context.RemoveNode(parentNode, node);
                 }
 
-                SetDirty();
+                SetDirty(true);
 
                 var nodeToSelect = (treeNode.NextNode?.Tag) as Node ?? (treeNode.PrevNode?.Tag) as Node ?? (treeNode.Parent?.Tag) as Node;
 
@@ -518,9 +594,14 @@ namespace Vision.Forms
             }
         }
 
-        private void SetDirty()
+        private void SetDirty(bool contentChanged)
         {
             _dirty = true;
+
+            if (contentChanged)
+            {
+                _modified = true;
+            }
         }
 
         private void ClearDirtyFlag()
@@ -538,6 +619,7 @@ namespace Vision.Forms
 
             var currentNodeIndex = matches.IndexOf(GetSelectedNodeId());
             var nextNodeGuid = matches[(currentNodeIndex + 1) % matches.Count];
+
             SelectNodeById(nextNodeGuid);
         }
 
@@ -550,6 +632,7 @@ namespace Vision.Forms
 
             var currentNodeIndex = matches.IndexOf(GetSelectedNodeId());
             var nextNodeGuid = matches[(currentNodeIndex + matches.Count - 1) % matches.Count];
+
             SelectNodeById(nextNodeGuid);
         }
 
@@ -675,8 +758,14 @@ namespace Vision.Forms
             {
                 string fileName = saveFileDialog.FileName;
 
-                BL.Export.ToTextFile(_context.Nodes, fileName);
+                Export(fileName);
+                Process.Start(saveFileDialog.FileName);
             }
+        }
+
+        private void Export(string filename)
+        {
+            BL.Export.ToTextFile(_context.Nodes, filename);
         }
 
         private void Swap(Node node1, Node node2)
@@ -685,9 +774,20 @@ namespace Vision.Forms
             node1.Index = node2.Index;
             node2.Index = index1;
 
-            SetDirty();
+            SetDirty(true);
 
             ReloadTree();
+        }
+
+        private void SelectNodeAtPoint(Point point)
+        {
+            var pt = treeView1.PointToClient(point);
+            var destinationTreeNode = treeView1.GetNodeAt(pt);
+
+            if (destinationTreeNode != null)
+            {
+                treeView1.SelectedNode = destinationTreeNode;
+            }
         }
     }
 }

@@ -78,6 +78,7 @@
             this.treeView1.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+            this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
             this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
             // 
             // splitContainer1
@@ -285,58 +286,60 @@
             // addToplevelNodeMenuItem
             // 
             this.addToplevelNodeMenuItem.Name = "addToplevelNodeMenuItem";
-            this.addToplevelNodeMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.addToplevelNodeMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.addToplevelNodeMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.N)));
+            this.addToplevelNodeMenuItem.Size = new System.Drawing.Size(322, 26);
             this.addToplevelNodeMenuItem.Text = "Add &Toplevel Node";
             this.addToplevelNodeMenuItem.Click += new System.EventHandler(this.addToplevelNodeMenuItem_Click);
             // 
             // addSiblingNodeMenuItem
             // 
             this.addSiblingNodeMenuItem.Name = "addSiblingNodeMenuItem";
-            this.addSiblingNodeMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
-            this.addSiblingNodeMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.addSiblingNodeMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Down)));
+            this.addSiblingNodeMenuItem.Size = new System.Drawing.Size(322, 26);
             this.addSiblingNodeMenuItem.Text = "Add &Sibling Node";
             this.addSiblingNodeMenuItem.Click += new System.EventHandler(this.addSiblingNodeMenuItem_Click);
             // 
             // addChildNodeMenuItem
             // 
             this.addChildNodeMenuItem.Name = "addChildNodeMenuItem";
-            this.addChildNodeMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Right)));
-            this.addChildNodeMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.addChildNodeMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Right)));
+            this.addChildNodeMenuItem.Size = new System.Drawing.Size(322, 26);
             this.addChildNodeMenuItem.Text = "Add &Child Node";
             this.addChildNodeMenuItem.Click += new System.EventHandler(this.addChildNodeMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(281, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(319, 6);
             // 
             // moveNodeUpMenuItem
             // 
             this.moveNodeUpMenuItem.Name = "moveNodeUpMenuItem";
-            this.moveNodeUpMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Up)));
-            this.moveNodeUpMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.moveNodeUpMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.Up)));
+            this.moveNodeUpMenuItem.Size = new System.Drawing.Size(322, 26);
             this.moveNodeUpMenuItem.Text = "Move Node &Up";
             this.moveNodeUpMenuItem.Click += new System.EventHandler(this.moveNodeUpMenuItem_Click);
             // 
             // moveNodeDownMenuItem
             // 
             this.moveNodeDownMenuItem.Name = "moveNodeDownMenuItem";
-            this.moveNodeDownMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Down)));
-            this.moveNodeDownMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.moveNodeDownMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.Down)));
+            this.moveNodeDownMenuItem.Size = new System.Drawing.Size(322, 26);
             this.moveNodeDownMenuItem.Text = "Move Node &Down";
             this.moveNodeDownMenuItem.Click += new System.EventHandler(this.moveNodeDownMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(281, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(319, 6);
             // 
             // findMenuItem
             // 
             this.findMenuItem.Name = "findMenuItem";
             this.findMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.findMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.findMenuItem.Size = new System.Drawing.Size(322, 26);
             this.findMenuItem.Text = "&Find";
             this.findMenuItem.Click += new System.EventHandler(this.findMenuItem_Click);
             // 
@@ -344,7 +347,7 @@
             // 
             this.findNextMenuItem.Name = "findNextMenuItem";
             this.findNextMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.findNextMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.findNextMenuItem.Size = new System.Drawing.Size(322, 26);
             this.findNextMenuItem.Text = "Find &Next";
             this.findNextMenuItem.Click += new System.EventHandler(this.findNextMenuItem_Click);
             // 
@@ -352,7 +355,7 @@
             // 
             this.findPrevMenuItem.Name = "findPrevMenuItem";
             this.findPrevMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F3)));
-            this.findPrevMenuItem.Size = new System.Drawing.Size(284, 26);
+            this.findPrevMenuItem.Size = new System.Drawing.Size(322, 26);
             this.findPrevMenuItem.Text = "Find &Prev";
             this.findPrevMenuItem.Click += new System.EventHandler(this.findPrevMenuItem_Click);
             // 

@@ -25,19 +25,24 @@ namespace Vision.BL
         private static void Write(List<Node> nodes, StreamWriter writer, int indent)
         {
             var indentSpaces = new String(' ', indent * 4);
-            var indentSpacesContent = new String(' ', (indent + 1 )* 4);
+            var indentSpacesContent = new String(' ', (indent + 1) * 4);
 
-            foreach (var node in nodes)
+            foreach (var node in nodes.OrderBy(n => n.Index))
             {
                 writer.WriteLine("{0}+ {1}", indentSpaces, node.Title);
 
-                if (!string.IsNullOrEmpty(node.Content))
+                if (node.Content != null)
                 {
                     var plainText = RichTextStripper.StripRichTextFormat(node.Content);
 
-                    foreach (var line in plainText.Split('\n'))
+                    if (!IsEmpty(plainText))
                     {
-                        writer.WriteLine("{0}{1}", indentSpacesContent, line);
+                        plainText = plainText.TrimEnd(WHITESPACE_CHARS);
+
+                        foreach (var line in plainText.Split('\n'))
+                        {
+                            writer.WriteLine("{0}{1}", indentSpacesContent, line);
+                        }
                     }
                 }
 
@@ -46,6 +51,18 @@ namespace Vision.BL
                     Write(node.Nodes, writer, indent + 1);
                 }
             }
+        }
+
+        static readonly char[] WHITESPACE_CHARS = new char[] { ' ', '\n', '\t' };
+
+        private static bool IsEmpty(string content)
+        {
+            if (content == null)
+            {
+                return true;
+            }
+
+            return (content.All(c => WHITESPACE_CHARS.Contains(c)));
         }
     }
 }

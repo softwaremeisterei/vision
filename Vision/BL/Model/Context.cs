@@ -20,7 +20,15 @@ namespace Vision.BL.Model
 
         public Node AddNode(Node parentNode, string title)
         {
-            var index = parentNode != null ? parentNode.Nodes.Count : Nodes.Count;
+            var index = 0;
+
+            var targetList = parentNode != null ? parentNode.Nodes : Nodes;
+
+            if (targetList.Any())
+            {
+                index = targetList.OrderBy(n => n.Index).Last().Index + 1;
+            }
+
             var node = new Node { Title = title, Index = index };
 
             if (parentNode != null)
