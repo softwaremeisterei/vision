@@ -50,16 +50,25 @@ namespace Vision.Forms
         private void InitializeContentControls()
         {
             _contentRichTextBox = new RichTextBoxExtended.RichTextBoxExtended();
-            _contentWebBrowser = new WebBrowser();
-
             _contentRichTextBox.Visible = false;
             _contentRichTextBox.Dock = DockStyle.Fill;
             _contentRichTextBox.RichTextBox.TextChanged += contentRichTextBox_TextChanged;
             splitContainer1.Panel2.Controls.Add(_contentRichTextBox);
 
+            _contentWebBrowser = new WebBrowser();
             _contentWebBrowser.Visible = false;
             _contentWebBrowser.Dock = DockStyle.Fill;
+            _contentWebBrowser.ScriptErrorsSuppressed = true;
+            _contentWebBrowser.ProgressChanged += _contentWebBrowser_ProgressChanged;
             splitContainer1.Panel2.Controls.Add(_contentWebBrowser);
+        }
+
+        private void _contentWebBrowser_ProgressChanged(object sender, WebBrowserProgressChangedEventArgs e)
+        {
+            if (e.CurrentProgress < 0) return;
+
+            toolStripProgressBar1.Value = Convert.ToInt32(e.CurrentProgress);
+            toolStripProgressBar1.Maximum = Convert.ToInt32(e.MaximumProgress);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -156,7 +165,7 @@ namespace Vision.Forms
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            _contentWebBrowser.Url = null;
+            _contentWebBrowser.Navigate(string.Empty);
 
             var node = (Node)treeView1.SelectedNode.Tag;
 
@@ -189,7 +198,7 @@ namespace Vision.Forms
                     break;
                 case DisplayType.Browser:
                     _contentWebBrowser.Visible = true;
-                    _contentWebBrowser.Url = new Uri(node.Url);
+                    _contentWebBrowser.Navigate(node.Url);
                     _contentWebBrowser.DocumentCompleted += _contentWebBrowser_DocumentCompleted;
                     _contentWebBrowser.Tag = node;
                     break;
@@ -259,12 +268,11 @@ namespace Vision.Forms
 
         private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (Regex.IsMatch(e.Node.Text, RegularExpressions.URL))
+            var node = (Node)e.Node.Tag;
+
+            if (node.DisplayType == DisplayType.Browser)
             {
-                var url = e.Node.Text;
-                ((Node)e.Node.Tag).DisplayType = DisplayType.Browser;
-                SetDirty(true);
-                Process.Start(url);
+                Process.Start(node.Url);
             }
         }
 

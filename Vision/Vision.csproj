@@ -51,6 +51,7 @@
     <Compile Include="Export.cs" />
     <Compile Include="ISearchable.cs" />
     <Compile Include="Lib\RegularExpressions.cs" />
+    <Compile Include="Lib\WebBrowserTools.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
