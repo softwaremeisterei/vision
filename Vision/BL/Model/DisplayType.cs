@@ -8,7 +8,7 @@ namespace Vision.BL.Model
 {
     public enum DisplayType
     {
-        RichText,
+        Folder,
         Browser
     }
 }

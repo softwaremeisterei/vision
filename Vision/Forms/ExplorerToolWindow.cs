@@ -1,4 +1,5 @@
-﻿using System;
+using Crom.Controls;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -18,7 +19,12 @@ using Vision.Lib;
 
 namespace Vision.Forms
 {
-    public partial class MainForm : Form, ISearchable
+   /// <summary>
+   /// Dockable tool window implements basic functionalities required to allow tool windows to be docked using
+   /// <see cref="DockContainer">DockContainer</see>
+   /// </summary>
+   /// <remarks>Use this object as base class for your auto-dockable tool windows.</remarks>
+   public class ExplorerToolWindow : DockableToolWindow, ISearchable
     {
         Timer _timer = new Timer();
         Context _context;
@@ -27,52 +33,36 @@ namespace Vision.Forms
         private static bool _modified = false;
         private string _currentProjectFilename;
         FindForm _findForm;
+        private TreeView treeView1;
+        private Button expandButton;
+        private Button collapseButton;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem fileToolStripMenuItem;
+        private ToolStripMenuItem saveToolStripMenuItem;
+        private ToolStripMenuItem openProjectToolStripMenuItem;
+        private ToolStripMenuItem newProjectToolStripMenuItem;
+        private ToolStripMenuItem editToolStripMenuItem;
+        private ToolStripMenuItem exportToolStripMenuItem;
+        private ToolStripMenuItem findToolStripMenuItem;
+        private ToolStripMenuItem findNextToolStripMenuItem;
+        private ToolStripMenuItem findPrevToolStripMenuItem;
+        private ToolStripMenuItem contentToolStripMenuItem;
+        private ToolStripMenuItem addToplevelNodeToolStripMenuItem;
+        private ToolStripMenuItem addChildNodeToolStripMenuItem;
+        private ToolStripMenuItem addSiblingNodeToolStripMenuItem;
         private ContextMenuStrip _docMenu;
-        private bool _ignoreTextChange;
-        private RichTextBoxExtended.RichTextBoxExtended _contentRichTextBox;
-        private WebBrowser _contentWebBrowser;
 
-        public MainForm()
+        public ExplorerToolWindow()
         {
-            InitializeComponent();
-
-            InitializeContentControls();
+            this.InitializeComponent();
 
             _context = new Context();
             _persistor = new Persistor();
             _findForm = new Forms.FindForm(this);
-
             InitContextMenu();
             InitDragDrop();
             LoadLastProject();
-        }
 
-        private void InitializeContentControls()
-        {
-            _contentRichTextBox = new RichTextBoxExtended.RichTextBoxExtended();
-            _contentRichTextBox.Visible = false;
-            _contentRichTextBox.Dock = DockStyle.Fill;
-            _contentRichTextBox.RichTextBox.TextChanged += contentRichTextBox_TextChanged;
-            splitContainer1.Panel2.Controls.Add(_contentRichTextBox);
-
-            _contentWebBrowser = new WebBrowser();
-            _contentWebBrowser.Visible = false;
-            _contentWebBrowser.Dock = DockStyle.Fill;
-            _contentWebBrowser.ScriptErrorsSuppressed = true;
-            _contentWebBrowser.ProgressChanged += _contentWebBrowser_ProgressChanged;
-            splitContainer1.Panel2.Controls.Add(_contentWebBrowser);
-        }
-
-        private void _contentWebBrowser_ProgressChanged(object sender, WebBrowserProgressChangedEventArgs e)
-        {
-            if (e.CurrentProgress < 0) return;
-
-            toolStripProgressBar1.Value = Convert.ToInt32(e.CurrentProgress);
-            toolStripProgressBar1.Maximum = Convert.ToInt32(e.MaximumProgress);
-        }
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
             ActiveControl = treeView1;
             ClearDirtyFlag();
             SetupTimer();
@@ -97,7 +87,7 @@ namespace Vision.Forms
             }
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        private void DockableExplorer_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (_dirty)
             {
@@ -137,6 +127,11 @@ namespace Vision.Forms
             }
         }
 
+        private void exportFileMenuItem_Click(object sender, EventArgs e)
+        {
+            Export();
+        }
+
         private void addToplevelNodeMenuItem_Click(object sender, EventArgs e)
         {
             var treeNode = AddNode();
@@ -163,60 +158,35 @@ namespace Vision.Forms
             }
         }
 
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            _contentWebBrowser.Navigate(string.Empty);
-
-            var node = (Node)treeView1.SelectedNode.Tag;
-
-            try
-            {
-                _ignoreTextChange = true;
-                DisplayContent(node);
-            }
-            finally
-            {
-                _ignoreTextChange = false;
-            }
-
-            _context.Layout.SelectedNode = node.Id;
-            SetDirty(false);
-        }
-
         private void DisplayContent(Node node)
         {
-            foreach (Control control in splitContainer1.Panel2.Controls)
-            {
-                control.Visible = false;
-            }
-
             switch (node.DisplayType)
             {
-                case DisplayType.RichText:
-                    _contentRichTextBox.Visible = true;
-                    _contentRichTextBox.RichTextBox.Rtf = node.Content;
+                case DisplayType.Folder:
                     break;
                 case DisplayType.Browser:
-                    _contentWebBrowser.Visible = true;
-                    _contentWebBrowser.Navigate(node.Url);
-                    _contentWebBrowser.DocumentCompleted += _contentWebBrowser_DocumentCompleted;
-                    _contentWebBrowser.Tag = node;
+                    var browserForm = MainForm.GetInstance().OpenBrowserForm(node.Url);
+                    browserForm.SetTag(node);
+                    browserForm.Navigate(node.Url);
+                    browserForm.SetDocumentCompletedHandler(_contentWebBrowser_DocumentCompleted);
                     break;
             }
         }
 
         private void _contentWebBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
-            if (_contentWebBrowser.Url == null)
+            var webBrowser = (WebBrowser)sender;
+
+            if (webBrowser.Url == null)
             {
                 return;
             }
 
-            var node = (Node)_contentWebBrowser.Tag;
+            var node = (Node)webBrowser.Tag;
 
             if (node.Title == node.Url)
             {
-                node.Title = _contentWebBrowser.DocumentTitle;
+                node.Title = webBrowser.DocumentTitle;
                 var treeNode = FindTreeNodeByNodeId(node.Id);
 
                 if (treeNode != null)
@@ -225,7 +195,10 @@ namespace Vision.Forms
                 }
 
                 SetDirty(false);
+
             }
+
+            treeView1.Focus();
         }
 
         private void treeView1_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
@@ -235,6 +208,7 @@ namespace Vision.Forms
                 var nodeTitle = e.Label;
                 var node = (Node)e.Node.Tag;
                 node.Title = nodeTitle;
+                node.Url = null;
                 SetDefaultDisplayType(node);
                 SetDirty(true);
             }
@@ -259,6 +233,11 @@ namespace Vision.Forms
                     DeleteSelectedNode();
                 }
             }
+            else if (e.KeyCode == Keys.Enter && treeView1.Focused)
+            {
+                ShowContent(treeView1.SelectedNode);
+                e.Handled = true;
+            }
         }
 
         private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -268,12 +247,30 @@ namespace Vision.Forms
 
         private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            var node = (Node)e.Node.Tag;
+            ShowContent(e.Node);
+        }
 
-            if (node.DisplayType == DisplayType.Browser)
+        private void ShowContent(TreeNode treeNode)
+        {
+            var node = (Node)treeNode.Tag;
+
+            if (node == null)
             {
-                Process.Start(node.Url);
+                return;
             }
+
+            if (Control.ModifierKeys == Keys.Shift)
+            {
+                if (node.DisplayType == DisplayType.Browser)
+                {
+                    Process.Start(node.Url);
+                    return;
+                }
+            }
+
+            DisplayContent(node);
+
+            _context.Layout.SelectedNode = node.Id;
         }
 
         private void treeView_ItemDrag(object sender, ItemDragEventArgs e)
@@ -287,17 +284,19 @@ namespace Vision.Forms
 
         private void treeView_DragOver(object sender, DragEventArgs e)
         {
+            UnhighlightTreeNodes();
+
             if ((e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move)
             {
                 e.Effect = DragDropEffects.Move;
                 var point = new Point(e.X, e.Y);
-                SelectNodeAtPoint(point);
+                HighlightNodeAtPoint(point);
             }
             else if ((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
             {
                 e.Effect = DragDropEffects.Copy;
                 var point = new Point(e.X, e.Y);
-                SelectNodeAtPoint(point);
+                HighlightNodeAtPoint(point);
             }
         }
 
@@ -315,6 +314,7 @@ namespace Vision.Forms
                 SetDefaultDisplayType(node);
                 ReloadTree();
                 SelectNodeById(node.Id);
+                SetDirty(false);
             }
             else if (e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false))
             {
@@ -324,6 +324,13 @@ namespace Vision.Forms
                 var pt = treeView1.PointToClient(new Point(e.X, e.Y));
                 var destinationTreeNode = treeView1.GetNodeAt(pt);
                 var destinationNode = (Node)destinationTreeNode?.Tag;
+
+
+                if (node.Id == destinationNode?.Id)
+                {
+                    // Drop on itself
+                    return;
+                }
 
                 if (parentNode != null)
                 {
@@ -348,33 +355,23 @@ namespace Vision.Forms
                 ReloadTree();
 
                 SelectNodeById(node.Id);
+                SetDirty(false);
             }
         }
 
-        private void contentRichTextBox_TextChanged(object sender, EventArgs e)
+        private void treeView1_DragLeave(object sender, EventArgs e)
         {
-            if (_ignoreTextChange) return;
-
-            var selectedTreeNode = treeView1.SelectedNode;
-
-            if (selectedTreeNode != null)
-            {
-                var node = (Node)selectedTreeNode.Tag;
-                node.Content = _contentRichTextBox.RichTextBox.Rtf;
-                SetDirty(true);
-            }
+            UnhighlightTreeNodes();
         }
 
         private void expandButton_Click(object sender, EventArgs e)
         {
             treeView1.ExpandAll();
-            SetDirty(false);
         }
 
         private void collapseButton_Click(object sender, EventArgs e)
         {
             treeView1.CollapseAll();
-            SetDirty(false);
         }
 
         private void findMenuItem_Click(object sender, EventArgs e)
@@ -410,11 +407,6 @@ namespace Vision.Forms
             }
         }
 
-        private void exportMenuItem_Click(object sender, EventArgs e)
-        {
-            Export();
-        }
-
         private void moveNodeDownMenuItem_Click(object sender, EventArgs e)
         {
             var treeNode = treeView1.SelectedNode;
@@ -442,7 +434,6 @@ namespace Vision.Forms
 
             Swap(node1, node2);
         }
-
 
         private void InitContextMenu()
         {
@@ -634,9 +625,9 @@ namespace Vision.Forms
         {
             var node = _context.AddNode(parentNode, "New");
             UpdateLayoutData(treeView1.Nodes);
-            SetDirty(true);
             ReloadTree();
             var treeNode = SelectNodeById(node.Id);
+            SetDirty(true);
             return treeNode;
         }
 
@@ -856,14 +847,51 @@ namespace Vision.Forms
             ReloadTree();
         }
 
+        private HashSet<TreeNode> _highlightedTreeNodes = new HashSet<TreeNode>();
+
+        private void HighlightNodeAtPoint(Point point)
+        {
+            var pt = treeView1.PointToClient(point);
+            var treeNode = treeView1.GetNodeAt(pt);
+
+            if (treeNode != null)
+            {
+                if (_highlightedTreeNodes.Contains(treeNode))
+                {
+                    return;
+                }
+
+                treeNode.ForeColor = Color.Orange;
+
+                lock (_highlightedTreeNodes)
+                {
+                    _highlightedTreeNodes.Add(treeNode);
+                }
+            }
+        }
+
+        private void UnhighlightTreeNodes()
+        {
+            lock (_highlightedTreeNodes)
+            {
+                treeView1.BeginUpdate();
+                foreach (var treeNode in _highlightedTreeNodes)
+                {
+                    treeNode.ForeColor = Color.Black;
+                }
+                treeView1.EndUpdate();
+                _highlightedTreeNodes.Clear();
+            }
+        }
+
         private void SelectNodeAtPoint(Point point)
         {
             var pt = treeView1.PointToClient(point);
-            var destinationTreeNode = treeView1.GetNodeAt(pt);
+            var treeNode = treeView1.GetNodeAt(pt);
 
-            if (destinationTreeNode != null)
+            if (treeNode != null)
             {
-                treeView1.SelectedNode = destinationTreeNode;
+                treeView1.SelectedNode = treeNode;
             }
         }
 
@@ -880,9 +908,196 @@ namespace Vision.Forms
             }
             else
             {
-                node.DisplayType = DisplayType.RichText;
+                node.DisplayType = DisplayType.Folder;
                 node.Url = null;
             }
+        }
+
+        private void InitializeComponent()
+        {
+            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.expandButton = new System.Windows.Forms.Button();
+            this.collapseButton = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findNextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findPrevToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addToplevelNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addChildNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addSiblingNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStrip1.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // treeView1
+            // 
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeView1.Location = new System.Drawing.Point(12, 59);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(616, 402);
+            this.treeView1.TabIndex = 0;
+            this.treeView1.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
+            this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+            this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
+            this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
+            // 
+            // expandButton
+            // 
+            this.expandButton.Location = new System.Drawing.Point(12, 27);
+            this.expandButton.Name = "expandButton";
+            this.expandButton.Size = new System.Drawing.Size(91, 26);
+            this.expandButton.TabIndex = 1;
+            this.expandButton.Text = "Expand All";
+            this.expandButton.UseVisualStyleBackColor = true;
+            this.expandButton.Click += new System.EventHandler(this.expandButton_Click);
+            // 
+            // collapseButton
+            // 
+            this.collapseButton.Location = new System.Drawing.Point(109, 27);
+            this.collapseButton.Name = "collapseButton";
+            this.collapseButton.Size = new System.Drawing.Size(91, 26);
+            this.collapseButton.TabIndex = 1;
+            this.collapseButton.Text = "Collapse All";
+            this.collapseButton.UseVisualStyleBackColor = true;
+            this.collapseButton.Click += new System.EventHandler(this.collapseButton_Click);
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.editToolStripMenuItem,
+            this.contentToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(640, 28);
+            this.menuStrip1.TabIndex = 2;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newProjectToolStripMenuItem,
+            this.saveToolStripMenuItem,
+            this.openProjectToolStripMenuItem,
+            this.exportToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
+            this.fileToolStripMenuItem.Text = "&File";
+            // 
+            // newProjectToolStripMenuItem
+            // 
+            this.newProjectToolStripMenuItem.Name = "newProjectToolStripMenuItem";
+            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(170, 26);
+            this.newProjectToolStripMenuItem.Text = "&New Project";
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(170, 26);
+            this.saveToolStripMenuItem.Text = "&Save Project";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveFileMenuItem_Click);
+            // 
+            // openProjectToolStripMenuItem
+            // 
+            this.openProjectToolStripMenuItem.Name = "openProjectToolStripMenuItem";
+            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(170, 26);
+            this.openProjectToolStripMenuItem.Text = "&Open Project";
+            this.openProjectToolStripMenuItem.Click += new System.EventHandler(this.openFileMenuItem_Click);
+            // 
+            // exportToolStripMenuItem
+            // 
+            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(170, 26);
+            this.exportToolStripMenuItem.Text = "&Export";
+            this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportFileMenuItem_Click);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.findToolStripMenuItem,
+            this.findNextToolStripMenuItem,
+            this.findPrevToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(47, 24);
+            this.editToolStripMenuItem.Text = "&Edit";
+            // 
+            // findToolStripMenuItem
+            // 
+            this.findToolStripMenuItem.Name = "findToolStripMenuItem";
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(147, 26);
+            this.findToolStripMenuItem.Text = "&Find";
+            this.findToolStripMenuItem.Click += new System.EventHandler(this.findMenuItem_Click);
+            // 
+            // findNextToolStripMenuItem
+            // 
+            this.findNextToolStripMenuItem.Name = "findNextToolStripMenuItem";
+            this.findNextToolStripMenuItem.Size = new System.Drawing.Size(147, 26);
+            this.findNextToolStripMenuItem.Text = "Find &Next";
+            this.findNextToolStripMenuItem.Click += new System.EventHandler(this.findNextMenuItem_Click);
+            // 
+            // findPrevToolStripMenuItem
+            // 
+            this.findPrevToolStripMenuItem.Name = "findPrevToolStripMenuItem";
+            this.findPrevToolStripMenuItem.Size = new System.Drawing.Size(147, 26);
+            this.findPrevToolStripMenuItem.Text = "Find &Prev";
+            this.findPrevToolStripMenuItem.Click += new System.EventHandler(this.findPrevMenuItem_Click);
+            // 
+            // contentToolStripMenuItem
+            // 
+            this.contentToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addToplevelNodeToolStripMenuItem,
+            this.addChildNodeToolStripMenuItem,
+            this.addSiblingNodeToolStripMenuItem});
+            this.contentToolStripMenuItem.Name = "contentToolStripMenuItem";
+            this.contentToolStripMenuItem.Size = new System.Drawing.Size(73, 24);
+            this.contentToolStripMenuItem.Text = "&Content";
+            // 
+            // addToplevelNodeToolStripMenuItem
+            // 
+            this.addToplevelNodeToolStripMenuItem.Name = "addToplevelNodeToolStripMenuItem";
+            this.addToplevelNodeToolStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.addToplevelNodeToolStripMenuItem.Text = "Add &Toplevel Node";
+            this.addToplevelNodeToolStripMenuItem.Click += new System.EventHandler(this.addToplevelNodeMenuItem_Click);
+            // 
+            // addChildNodeToolStripMenuItem
+            // 
+            this.addChildNodeToolStripMenuItem.Name = "addChildNodeToolStripMenuItem";
+            this.addChildNodeToolStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.addChildNodeToolStripMenuItem.Text = "Add &Child Node";
+            this.addChildNodeToolStripMenuItem.Click += new System.EventHandler(this.addChildNodeMenuItem_Click);
+            // 
+            // addSiblingNodeToolStripMenuItem
+            // 
+            this.addSiblingNodeToolStripMenuItem.Name = "addSiblingNodeToolStripMenuItem";
+            this.addSiblingNodeToolStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.addSiblingNodeToolStripMenuItem.Text = "Add &Sibling Node";
+            this.addSiblingNodeToolStripMenuItem.Click += new System.EventHandler(this.addSiblingNodeMenuItem_Click);
+            // 
+            // DockableExplorer
+            // 
+            this.ClientSize = new System.Drawing.Size(640, 473);
+            this.Controls.Add(this.collapseButton);
+            this.Controls.Add(this.expandButton);
+            this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
+            this.Name = "DockableExplorer";
+            this.Text = "Explorer";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DockableExplorer_FormClosing);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
     }
 }

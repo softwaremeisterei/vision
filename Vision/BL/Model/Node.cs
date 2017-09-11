@@ -15,7 +15,7 @@ namespace Vision.BL.Model
             Content = string.Empty;
             Nodes = new List<Node>();
             CreatedAt = UpdatedAt = DateTime.Now;
-            DisplayType = DisplayType.RichText;
+            DisplayType = DisplayType.Folder;
         }
 
         public Guid Id { get; set; }
