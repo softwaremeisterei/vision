@@ -2,7 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Crom.Controls
+namespace Docking.Controls
 {
    /// <summary>
    /// Context menu event args
@@ -11,7 +11,7 @@ namespace Crom.Controls
    {
       #region Fields.
 
-      private DockableToolWindow          _selection        = null;
+      private ToolWindow          _selection        = null;
       private Point                       _mouseLocation    = new Point();
       private MouseButtons                _mouseButtons     = MouseButtons.None;
 
@@ -25,7 +25,7 @@ namespace Crom.Controls
       /// <param name="selection">selected tool window</param>
       /// <param name="mouseLocation">mouse location in screen coordinates, when context menu is requested.</param>
       /// <param name="mouseButtons">mouse buttons pressed when context menu is requested.</param>
-      public ContextMenuEventArg (DockableToolWindow selection, Point mouseLocation, MouseButtons mouseButtons)
+      public ContextMenuEventArg (ToolWindow selection, Point mouseLocation, MouseButtons mouseButtons)
       {
          _selection     = selection;
          _mouseLocation = mouseLocation;
@@ -40,7 +40,7 @@ namespace Crom.Controls
       /// Getter for the tool window which was selected when context menu
       /// is requested.
       /// </summary>
-      public DockableToolWindow Selection
+      public ToolWindow Selection
       {
          get { return _selection; }
       }

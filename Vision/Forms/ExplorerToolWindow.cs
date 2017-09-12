@@ -1,4 +1,4 @@
-using Crom.Controls;
+using Docking.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -19,12 +19,12 @@ using Vision.Lib;
 
 namespace Vision.Forms
 {
-   /// <summary>
-   /// Dockable tool window implements basic functionalities required to allow tool windows to be docked using
-   /// <see cref="DockContainer">DockContainer</see>
-   /// </summary>
-   /// <remarks>Use this object as base class for your auto-dockable tool windows.</remarks>
-   public class ExplorerToolWindow : DockableToolWindow, ISearchable
+    /// <summary>
+    /// Dockable tool window implements basic functionalities required to allow tool windows to be docked using
+    /// <see cref="DockContainer">DockContainer</see>
+    /// </summary>
+    /// <remarks>Use this object as base class for your auto-dockable tool windows.</remarks>
+    public class ExplorerToolWindow : ToolWindow, ISearchable
     {
         Timer _timer = new Timer();
         Context _context;
@@ -165,7 +165,7 @@ namespace Vision.Forms
                 case DisplayType.Folder:
                     break;
                 case DisplayType.Browser:
-                    var browserForm = MainForm.GetInstance().OpenBrowserForm(node.Url);
+                    var browserForm = MainForm.GetInstance().OpenBrowserForm(node.Title, node.Url);
                     browserForm.SetTag(node);
                     browserForm.Navigate(node.Url);
                     browserForm.SetDocumentCompletedHandler(_contentWebBrowser_DocumentCompleted);
@@ -607,6 +607,7 @@ namespace Vision.Forms
             Properties.Settings.Default[Config.SETTINGS_LASTPROJECTFILE] = fileName;
             Properties.Settings.Default.Save();
             ReloadTree();
+            Text = Path.GetFileNameWithoutExtension(fileName);
         }
 
         private void AddChildNode()
@@ -915,6 +916,7 @@ namespace Vision.Forms
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExplorerToolWindow));
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.expandButton = new System.Windows.Forms.Button();
             this.collapseButton = new System.Windows.Forms.Button();
@@ -940,6 +942,7 @@ namespace Vision.Forms
             this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeView1.LabelEdit = true;
             this.treeView1.Location = new System.Drawing.Point(12, 59);
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(616, 402);
@@ -1082,15 +1085,16 @@ namespace Vision.Forms
             this.addSiblingNodeToolStripMenuItem.Text = "Add &Sibling Node";
             this.addSiblingNodeToolStripMenuItem.Click += new System.EventHandler(this.addSiblingNodeMenuItem_Click);
             // 
-            // DockableExplorer
+            // ExplorerToolWindow
             // 
             this.ClientSize = new System.Drawing.Size(640, 473);
             this.Controls.Add(this.collapseButton);
             this.Controls.Add(this.expandButton);
             this.Controls.Add(this.treeView1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "DockableExplorer";
+            this.Name = "ExplorerToolWindow";
             this.Text = "Explorer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DockableExplorer_FormClosing);
             this.menuStrip1.ResumeLayout(false);

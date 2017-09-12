@@ -1,6 +1,6 @@
 using System.Windows.Forms;
 
-namespace Crom.Controls
+namespace Docking.Controls
 {
    /// <summary>
    /// Forma suport pentru docare in centru

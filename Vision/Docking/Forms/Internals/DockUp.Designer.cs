@@ -1,6 +1,6 @@
-namespace Crom.Controls
+namespace Docking.Controls
 {
-   partial class CenterButtonsGroup
+   partial class DockButtonUp
    {
       #region Windows Form Designer generated code
 
@@ -10,9 +10,14 @@ namespace Crom.Controls
       /// </summary>
       private void InitializeComponent ()
       {
-         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager (typeof (CenterButtonsGroup));
+         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager (typeof (DockButtonUp));
          this.SuspendLayout ();
+         // 
+         // ButtonToDockUp
+         // 
          this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject ("$this.BackgroundImage")));
+         this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+         this.ClientSize = new System.Drawing.Size (29, 32);
          this.ResumeLayout (false);
       }
 

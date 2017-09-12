@@ -120,4 +120,24 @@
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAEBAAAAAAGABoAwAAFgAAACgAAAAQAAAAIAAAAAEAGAAAAAAAAAMAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkIB1IPzlIPzlIPzlIPzlIPzlIPzlI
+        PzlIPzlIPzlIPzlIPzlIPzlIPzkkIB0AAABIPzn8+/r8+/r8+/r8+/r8+/r8+/r8+/r8+/r8+/r8+/r8
+        +/r8+/r8+/pIPzkAAABIPzn49/b49/b49/b49/b49/b49/b49/b49/b49/b49/b49/b49/b49/ZIPzkA
+        AABIPzn18/L18/L18/L18/L18/L18/L18/L18/L18/L18/L18/L18/L18/JIPzkAAABIPzny7+3y7+3y
+        7+3y7+3y7+3y7+3y7+3y7+3y7+3y7+3y7+3y7+3y7+1IPzkAAABIPznu6+nu6+nu6+nu6+nu6+nu6+nu
+        6+nu6+nu6+nu6+nu6+nu6+nu6+lIPzkAAABIPznr5+Xr5+Xr5+Xr5+Xr5+Xr5+Xr5+Xr5+Xr5+Xr5+Xr
+        5+Xr5+Xr5+VIPzkAAABIPznn4+Dn4+Dn4+Dn4+Dn4+Dn4+Dn4+Dn4+Dn4+Dn4+Dn4+Dn4+Dn4+BIPzkA
+        AABIPzn8+/v8+/v8+/v8+/v8+/v8+/vk39zk39zk39zk39zk39zk39zk39xIPzkAAABIPzlIPzlIPzlI
+        PzlIPzlIPzlIPzn8+/vh29jh29jh29jh29jh29jh29hIPzkAAABIPznh29jh29jh29jh29jh29jh29hI
+        Pzn7+/r7+/r7+/r7+/r7+/r7+/pIPzkAAABIPzny8O/y8O/y8O/y8O/y8O/y8O9IPzlIPzlIPzlIPzlI
+        PzlIPzlIPzkkIB0AAAAkIB1IPzlIPzlIPzlIPzlIPzlIPzkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//wAA//8AAAAB
+        AAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAB/AAD//wAA
+</value>
+  </data>
 </root>

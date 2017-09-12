@@ -47,6 +47,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BL\Model\DisplayType.cs" />
+    <Compile Include="Docking\Forms\Internals\DockButtonFill.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Docking\Forms\Internals\DockButtonFill.designer.cs">
+      <DependentUpon>DockButtonFill.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\BrowserToolWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -69,7 +75,7 @@
     <Compile Include="Docking\Engine\DockPreviewEngine.cs" />
     <Compile Include="Docking\Engine\SideDockPanel.cs" />
     <Compile Include="Docking\Engine\TabButton.cs" />
-    <Compile Include="Docking\Enums\zDockMode.cs" />
+    <Compile Include="Docking\Enums\DockMode.cs" />
     <Compile Include="Docking\EventArgs\AutoHideEventArgs.cs" />
     <Compile Include="Docking\EventArgs\ContextMenuEventArg.cs" />
     <Compile Include="Docking\EventArgs\ToolSelectionChangedEventArgs.cs" />
@@ -80,68 +86,32 @@
     <Compile Include="Controls\ExtWebBrowser.Designer.cs">
       <DependentUpon>ExtWebBrowser.cs</DependentUpon>
     </Compile>
-    <Compile Include="Docking\Forms\DockableToolWindow.cs">
+    <Compile Include="Docking\Forms\ToolWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Docking\Forms\Internals\ButtonToDockBottom.cs">
+    <Compile Include="Docking\Forms\Internals\DockBottom.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Docking\Forms\Internals\ButtonToDockBottom.Designer.cs">
-      <DependentUpon>ButtonToDockBottom.cs</DependentUpon>
+    <Compile Include="Docking\Forms\Internals\DockBottom.Designer.cs">
+      <DependentUpon>DockBottom.cs</DependentUpon>
     </Compile>
-    <Compile Include="Docking\Forms\Internals\ButtonToDockLeft.cs">
+    <Compile Include="Docking\Forms\Internals\DockLeft.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Docking\Forms\Internals\ButtonToDockLeft.Designer.cs">
-      <DependentUpon>ButtonToDockLeft.cs</DependentUpon>
+    <Compile Include="Docking\Forms\Internals\DockLeft.Designer.cs">
+      <DependentUpon>DockLeft.cs</DependentUpon>
     </Compile>
-    <Compile Include="Docking\Forms\Internals\ButtonToDockRight.cs">
+    <Compile Include="Docking\Forms\Internals\DockRightButton.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Docking\Forms\Internals\ButtonToDockRight.Designer.cs">
-      <DependentUpon>ButtonToDockRight.cs</DependentUpon>
+    <Compile Include="Docking\Forms\Internals\DockRightButton.Designer.cs">
+      <DependentUpon>DockRightButton.cs</DependentUpon>
     </Compile>
-    <Compile Include="Docking\Forms\Internals\ButtonToDockUp.cs">
+    <Compile Include="Docking\Forms\Internals\DockUp.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Docking\Forms\Internals\ButtonToDockUp.Designer.cs">
-      <DependentUpon>ButtonToDockUp.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Docking\Forms\Internals\CenterButtonsGroup.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Docking\Forms\Internals\CenterButtonsGroup.Designer.cs">
-      <DependentUpon>CenterButtonsGroup.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Docking\Forms\Internals\CenterButtonToDockBottom.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Docking\Forms\Internals\CenterButtonToDockBottom.Designer.cs">
-      <DependentUpon>CenterButtonToDockBottom.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Docking\Forms\Internals\CenterButtonToDockFill.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Docking\Forms\Internals\CenterButtonToDockFill.Designer.cs">
-      <DependentUpon>CenterButtonToDockFill.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Docking\Forms\Internals\CenterButtonToDockLeft.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Docking\Forms\Internals\CenterButtonToDockLeft.Designer.cs">
-      <DependentUpon>CenterButtonToDockLeft.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Docking\Forms\Internals\CenterButtonToDockRight.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Docking\Forms\Internals\CenterButtonToDockRight.Designer.cs">
-      <DependentUpon>CenterButtonToDockRight.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Docking\Forms\Internals\CenterButtonToDockUp.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Docking\Forms\Internals\CenterButtonToDockUp.Designer.cs">
-      <DependentUpon>CenterButtonToDockUp.cs</DependentUpon>
+    <Compile Include="Docking\Forms\Internals\DockUp.Designer.cs">
+      <DependentUpon>DockUp.cs</DependentUpon>
     </Compile>
     <Compile Include="Docking\Forms\Internals\DockButton.cs">
       <SubType>Form</SubType>
@@ -183,6 +153,9 @@
     <Compile Include="Docking\Utilities\DrawUtility.cs" />
     <Compile Include="Docking\Utilities\EnumUtility.cs" />
     <Compile Include="Docking\Utilities\TextUtility.cs" />
+    <EmbeddedResource Include="Docking\Forms\Internals\DockButtonFill.resx">
+      <DependentUpon>DockButtonFill.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\BrowserToolWindow.resx">
       <DependentUpon>BrowserToolWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -195,38 +168,22 @@
     <EmbeddedResource Include="Forms\ExplorerToolWindow.resx">
       <DependentUpon>ExplorerToolWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Docking\Forms\DockableToolWindow.resx">
-      <DependentUpon>DockableToolWindow.cs</DependentUpon>
+    <EmbeddedResource Include="Docking\Forms\ToolWindow.resx">
+      <DependentUpon>ToolWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Docking\Forms\Internals\ButtonToDockBottom.resx">
-      <DependentUpon>ButtonToDockBottom.cs</DependentUpon>
+    <EmbeddedResource Include="Docking\Forms\Internals\DockBottom.resx">
+      <DependentUpon>DockBottom.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Docking\Forms\Internals\ButtonToDockLeft.resx">
-      <DependentUpon>ButtonToDockLeft.cs</DependentUpon>
+    <EmbeddedResource Include="Docking\Forms\Internals\DockLeft.resx">
+      <DependentUpon>DockLeft.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Docking\Forms\Internals\ButtonToDockRight.resx">
-      <DependentUpon>ButtonToDockRight.cs</DependentUpon>
+    <EmbeddedResource Include="Docking\Forms\Internals\DockRightButton.resx">
+      <DependentUpon>DockRightButton.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Docking\Forms\Internals\ButtonToDockUp.resx">
-      <DependentUpon>ButtonToDockUp.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Docking\Forms\Internals\CenterButtonsGroup.resx">
-      <DependentUpon>CenterButtonsGroup.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Docking\Forms\Internals\CenterButtonToDockBottom.resx">
-      <DependentUpon>CenterButtonToDockBottom.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Docking\Forms\Internals\CenterButtonToDockFill.resx">
-      <DependentUpon>CenterButtonToDockFill.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Docking\Forms\Internals\CenterButtonToDockLeft.resx">
-      <DependentUpon>CenterButtonToDockLeft.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Docking\Forms\Internals\CenterButtonToDockRight.resx">
-      <DependentUpon>CenterButtonToDockRight.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Docking\Forms\Internals\CenterButtonToDockUp.resx">
-      <DependentUpon>CenterButtonToDockUp.cs</DependentUpon>
+    <EmbeddedResource Include="Docking\Forms\Internals\DockUp.resx">
+      <DependentUpon>DockUp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Docking\Forms\Internals\DockPreview.resx">
       <DependentUpon>DockPreview.cs</DependentUpon>
@@ -266,7 +223,12 @@
   <ItemGroup>
     <None Include="Resources\Logo.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\Browser.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Explorer.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) c:\bin\</PostBuildEvent>

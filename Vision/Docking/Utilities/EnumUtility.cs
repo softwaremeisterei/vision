@@ -1,4 +1,4 @@
-namespace Crom.Controls
+namespace Docking.Controls
 {
    /// <summary>
    /// Utility for enums

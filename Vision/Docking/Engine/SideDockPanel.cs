@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Crom.Controls
+namespace Docking.Controls
 {
    /// <summary>
    /// Side dock panel
@@ -31,7 +31,7 @@ namespace Crom.Controls
       /// <param name="dockPanels">dock panels interface</param>
       /// <param name="dockMode">dock mode of this panel</param>
       /// <param name="toolWindowsBorder">border of the tool windows from this panel</param>
-      public SideDockPanel (zDockMode dockMode, FormBorderStyle toolWindowsBorder) : base(dockMode, toolWindowsBorder)
+      public SideDockPanel (DockMode dockMode, FormBorderStyle toolWindowsBorder) : base(dockMode, toolWindowsBorder)
       {
       }
 
@@ -138,7 +138,7 @@ namespace Crom.Controls
       {
          _autoHide = autoHide;
 
-         foreach (DockableToolWindow toolWindow in _toolWindows)
+         foreach (ToolWindow toolWindow in _toolWindows)
          {
             toolWindow.AutoHide = autoHide;
          }

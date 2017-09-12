@@ -1,16 +1,16 @@
-namespace Crom.Controls
+namespace Docking.Controls
 {
    /// <summary>
-   /// Group for center buttons
+   /// Button used to guide docking on right
    /// </summary>
-   internal partial class CenterButtonsGroup : DockButton
+   internal partial class DockButtonRight : DockButton
    {
       #region Instance.
 
       /// <summary>
       /// Default constructor
       /// </summary>
-      public CenterButtonsGroup ()
+      public DockButtonRight ()
       {
          InitializeComponent ();
       }

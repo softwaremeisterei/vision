@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace Crom.Controls
+namespace Docking.Controls
 {
    /// <summary>
    /// Data from tool window title

@@ -1,4 +1,4 @@
-﻿using Crom.Controls;
+﻿using Docking.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,7 +12,7 @@ using Vision.BL.Model;
 
 namespace Vision
 {
-    public partial class BrowserToolWindow : DockableToolWindow
+    public partial class BrowserToolWindow : ToolWindow
     {
         public BrowserToolWindow()
         {

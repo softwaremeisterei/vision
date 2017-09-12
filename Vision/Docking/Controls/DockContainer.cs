@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Crom.Controls
+namespace Docking.Controls
 {
     /// <summary>
     /// Container for auto-dockable tool windows. Place this on your form to allow auto-docking for the tool windows.
@@ -18,9 +18,9 @@ namespace Crom.Controls
         private DockPanelsResizer _panels = null;
         private DockPreviewEngine _dockPreviewEngine = new DockPreviewEngine();
 
-        private List<DockableToolWindow> _undockedToolWindows = new List<DockableToolWindow>();
-        private List<DockableToolWindow> _dockableToolWindows = new List<DockableToolWindow>();
-        private DockableToolWindow _movedToolWindow = null;
+        private List<ToolWindow> _undockedToolWindows = new List<ToolWindow>();
+        private List<ToolWindow> _dockableToolWindows = new List<ToolWindow>();
+        private ToolWindow _movedToolWindow = null;
         private List<TabButton> _tabButtons = new List<TabButton>();
 
         private bool _closeCenterButtonHoover = false;
@@ -352,7 +352,7 @@ namespace Crom.Controls
         /// </summary>
         /// <param name="toolWindow">tool window to be checked</param>
         /// <returns>true if the given tool window is added in this container</returns>
-        public bool IsInContainer(DockableToolWindow toolWindow)
+        public bool IsInContainer(ToolWindow toolWindow)
         {
             return _dockableToolWindows.Contains(toolWindow);
         }
@@ -401,7 +401,7 @@ namespace Crom.Controls
         /// </code>
         /// </example>
         /// <param name="toolWindow">tool window to be added</param>
-        public void AddToolWindow(DockableToolWindow toolWindow)
+        public void AddToolWindow(ToolWindow toolWindow)
         {
             if (IsInContainer(toolWindow))
             {
@@ -439,7 +439,7 @@ namespace Crom.Controls
         /// <br/>
         /// </remarks>
         /// <param name="toolWindow">tool window to be removed</param>
-        public void RemoveToolWindow(DockableToolWindow toolWindow)
+        public void RemoveToolWindow(ToolWindow toolWindow)
         {
             if (toolWindow.Parent == this)
             {
@@ -492,7 +492,7 @@ namespace Crom.Controls
         /// <see cref="AddToolWindow">AddToolWindow</see> method was invoked. </param>
         /// <param name="dockMode">dock mode of the tool window can be Left, Right, Top, Bottom, Fill or None, but not a combination
         /// of these.</param>
-        public void DockToolWindow(DockableToolWindow toolWindow, zDockMode dockMode)
+        public void DockToolWindow(ToolWindow toolWindow, DockMode dockMode)
         {
             if (IsInContainer(toolWindow) == false)
             {
@@ -501,7 +501,7 @@ namespace Crom.Controls
 
             _panels.DockToolWindow(toolWindow, dockMode);
 
-            if (dockMode != zDockMode.None)
+            if (dockMode != DockMode.None)
             {
                 _undockedToolWindows.Remove(toolWindow);
 
@@ -520,7 +520,7 @@ namespace Crom.Controls
         /// <br/>
         /// </remarks>
         /// <param name="toolWindow">tool window to be undocked</param>
-        public void UndockToolWindow(DockableToolWindow toolWindow)
+        public void UndockToolWindow(ToolWindow toolWindow)
         {
             _panels.UndockToolWindow(toolWindow);
 
@@ -545,18 +545,18 @@ namespace Crom.Controls
         /// in that panel. The floating tool windows remain top most.
         /// </remarks>
         /// <param name="toolWindow">tool window to be selected</param>
-        public void SelectToolWindow(DockableToolWindow toolWindow)
+        public void SelectToolWindow(ToolWindow toolWindow)
         {
-            if (toolWindow.DockMode == zDockMode.None)
+            if (toolWindow.DockMode == DockMode.None)
             {
                 MoveInFront(toolWindow);
                 toolWindow.Select();
                 return;
             }
 
-            DockableToolWindow[] panelToolWindows = _panels.GetPanelToolWindows(toolWindow.DockMode);
+            ToolWindow[] panelToolWindows = _panels.GetPanelToolWindows(toolWindow.DockMode);
 
-            foreach (DockableToolWindow panelToolWindow in panelToolWindows)
+            foreach (ToolWindow panelToolWindow in panelToolWindows)
             {
                 panelToolWindow.TabButton.Selected = false;
             }
@@ -581,7 +581,7 @@ namespace Crom.Controls
         /// <param name="dockMode">dock mode can be Left, Rigth, Top, Bottom. 
         /// Other values will be ignored and the method will return false</param>
         /// <returns>true if the dock mode specifies a valid panel and that panel is auto-hidden</returns>
-        public bool IsAutoHidden(zDockMode dockMode)
+        public bool IsAutoHidden(DockMode dockMode)
         {
             SideDockPanel sidePanel = _panels.GetPanel(dockMode) as SideDockPanel;
             if (sidePanel == null)
@@ -598,7 +598,7 @@ namespace Crom.Controls
         /// <param name="dockMode">dock mode can be Left, Rigth, Top, Bottom. 
         /// Other values will be ignored and the method will return false</param>
         /// <returns>true if the dock mode specifies a valid panel and that panel is auto-hide</returns>
-        public bool IsAutoHide(zDockMode dockMode)
+        public bool IsAutoHide(DockMode dockMode)
         {
             SideDockPanel sidePanel = _panels.GetPanel(dockMode) as SideDockPanel;
             if (sidePanel == null)
@@ -616,7 +616,7 @@ namespace Crom.Controls
         /// Other values will be ignored and the method will return false</param>
         /// <param name="autoHideValue">new auto-hide value</param>
         /// <returns>true if the dock mode specifies a valid panel and auto-hide state was changed</returns>
-        public bool SetAutoHide(zDockMode dockMode, bool autoHideValue)
+        public bool SetAutoHide(DockMode dockMode, bool autoHideValue)
         {
             SideDockPanel sidePanel = _panels.GetPanel(dockMode) as SideDockPanel;
             if (sidePanel == null)
@@ -655,7 +655,7 @@ namespace Crom.Controls
         /// <param name="dockMode">dock mode which identifies the panel for which tool windows are requested.
         /// Valid values are Left, Right, Top, Bottom or Fill</param>
         /// <returns>Vector of tool windows from the identified panel.</returns>
-        public DockableToolWindow[] GetDockedWindows(zDockMode dockMode)
+        public ToolWindow[] GetDockedWindows(DockMode dockMode)
         {
             DockPanel panel = _panels.GetPanel(dockMode);
             if (panel == null)
@@ -678,7 +678,7 @@ namespace Crom.Controls
         /// <param name="dockMode">dock mode which identifies the panel for which tool windows are requested.
         /// Valid values are Left, Right, Top, Bottom or Fill</param>
         /// <returns>Vector of tool windows from the identified panel.</returns>
-        public DockableToolWindow[] GetVisibleDockedWindows(zDockMode dockMode)
+        public ToolWindow[] GetVisibleDockedWindows(DockMode dockMode)
         {
             DockPanel panel = _panels.GetPanel(dockMode);
             if (panel == null)
@@ -694,7 +694,7 @@ namespace Crom.Controls
         /// </summary>
         /// <param name="dockMode">dock mode to identify the panel from which the top tool window is requested</param>
         /// <returns>top tool window or null if no visible window is in the panel</returns>
-        public DockableToolWindow GetTopToolWindow(zDockMode dockMode)
+        public ToolWindow GetTopToolWindow(DockMode dockMode)
         {
             return _panels.GetTopMostToolWindow(dockMode);
         }
@@ -776,7 +776,7 @@ namespace Crom.Controls
                 {
                     if (CenterUndockButtonBounds.Contains(e.Location))
                     {
-                        DockableToolWindow topmostToolWindow = _panels.GetTopMostToolWindow(zDockMode.Fill);
+                        ToolWindow topmostToolWindow = _panels.GetTopMostToolWindow(DockMode.Fill);
                         UndockToolWindow(topmostToolWindow);
                     }
                 }
@@ -784,7 +784,7 @@ namespace Crom.Controls
                 {
                     if (CenterCloseButtonBounds.Contains(e.Location))
                     {
-                        DockableToolWindow topmostToolWindow = _panels.GetTopMostToolWindow(zDockMode.Fill);
+                        ToolWindow topmostToolWindow = _panels.GetTopMostToolWindow(DockMode.Fill);
                         if (topmostToolWindow != null)
                         {
                             topmostToolWindow.Close();
@@ -795,7 +795,7 @@ namespace Crom.Controls
                 {
                     if (CenterMenuButtonBounds.Contains(e.Location))
                     {
-                        DockableToolWindow topmostToolWindow = _panels.GetTopMostToolWindow(zDockMode.Fill);
+                        ToolWindow topmostToolWindow = _panels.GetTopMostToolWindow(DockMode.Fill);
                         if (topmostToolWindow != null)
                         {
                             RaiseContextMenuRequest(topmostToolWindow, e.Button);
@@ -850,33 +850,33 @@ namespace Crom.Controls
 
             // Draw splitters
             Rectangle splitterBounds;
-            splitterBounds = _panels.GetPanelSplitterBounds(zDockMode.Left);
+            splitterBounds = _panels.GetPanelSplitterBounds(DockMode.Left);
             g.FillRectangle(SystemBrushes.Control, splitterBounds);
             g.DrawRectangle(SystemPens.ControlLight, splitterBounds);
 
-            splitterBounds = _panels.GetPanelSplitterBounds(zDockMode.Top);
+            splitterBounds = _panels.GetPanelSplitterBounds(DockMode.Top);
             g.FillRectangle(SystemBrushes.Control, splitterBounds);
             g.DrawRectangle(SystemPens.ControlLight, splitterBounds);
 
-            splitterBounds = _panels.GetPanelSplitterBounds(zDockMode.Right);
+            splitterBounds = _panels.GetPanelSplitterBounds(DockMode.Right);
             g.FillRectangle(SystemBrushes.Control, splitterBounds);
             g.DrawRectangle(SystemPens.ControlLight, splitterBounds);
 
-            splitterBounds = _panels.GetPanelSplitterBounds(zDockMode.Bottom);
+            splitterBounds = _panels.GetPanelSplitterBounds(DockMode.Bottom);
             g.FillRectangle(SystemBrushes.Control, splitterBounds);
             g.DrawRectangle(SystemPens.ControlLight, splitterBounds);
 
 
             // Draw tab bouttons
-            DrawHorizontalTabButtons(zDockMode.Left, _panels.GetFixedButtonsBounds(zDockMode.Left), _panels.GetPanelVisibleToolWindows(zDockMode.Left), g);
-            DrawHorizontalTabButtons(zDockMode.Right, _panels.GetFixedButtonsBounds(zDockMode.Right), _panels.GetPanelVisibleToolWindows(zDockMode.Right), g);
+            DrawHorizontalTabButtons(DockMode.Left, _panels.GetFixedButtonsBounds(DockMode.Left), _panels.GetPanelVisibleToolWindows(DockMode.Left), g);
+            DrawHorizontalTabButtons(DockMode.Right, _panels.GetFixedButtonsBounds(DockMode.Right), _panels.GetPanelVisibleToolWindows(DockMode.Right), g);
 
-            DrawVerticalTabButtons(zDockMode.Left, _panels.GetPanelButtonsBounds(zDockMode.Left), _panels.GetPanelVisibleToolWindows(zDockMode.Left), g);
-            DrawVerticalTabButtons(zDockMode.Right, _panels.GetPanelButtonsBounds(zDockMode.Right), _panels.GetPanelVisibleToolWindows(zDockMode.Right), g);
+            DrawVerticalTabButtons(DockMode.Left, _panels.GetPanelButtonsBounds(DockMode.Left), _panels.GetPanelVisibleToolWindows(DockMode.Left), g);
+            DrawVerticalTabButtons(DockMode.Right, _panels.GetPanelButtonsBounds(DockMode.Right), _panels.GetPanelVisibleToolWindows(DockMode.Right), g);
 
-            DrawHorizontalTabButtons(zDockMode.Top, _panels.GetPanelButtonsBounds(zDockMode.Top), _panels.GetPanelVisibleToolWindows(zDockMode.Top), g);
-            DrawHorizontalTabButtons(zDockMode.Bottom, _panels.GetPanelButtonsBounds(zDockMode.Bottom), _panels.GetPanelVisibleToolWindows(zDockMode.Bottom), g);
-            DrawHorizontalTabButtons(zDockMode.Fill, _panels.GetPanelButtonsBounds(zDockMode.Fill), _panels.GetPanelVisibleToolWindows(zDockMode.Fill), g);
+            DrawHorizontalTabButtons(DockMode.Top, _panels.GetPanelButtonsBounds(DockMode.Top), _panels.GetPanelVisibleToolWindows(DockMode.Top), g);
+            DrawHorizontalTabButtons(DockMode.Bottom, _panels.GetPanelButtonsBounds(DockMode.Bottom), _panels.GetPanelVisibleToolWindows(DockMode.Bottom), g);
+            DrawHorizontalTabButtons(DockMode.Fill, _panels.GetPanelButtonsBounds(DockMode.Fill), _panels.GetPanelVisibleToolWindows(DockMode.Fill), g);
         }
 
         /// <summary>
@@ -916,27 +916,27 @@ namespace Crom.Controls
                 return;
             }
 
-            UpdateAutoHiddenState(zDockMode.Left, mousePosition);
-            UpdateAutoHiddenState(zDockMode.Right, mousePosition);
-            UpdateAutoHiddenState(zDockMode.Top, mousePosition);
-            UpdateAutoHiddenState(zDockMode.Bottom, mousePosition);
+            UpdateAutoHiddenState(DockMode.Left, mousePosition);
+            UpdateAutoHiddenState(DockMode.Right, mousePosition);
+            UpdateAutoHiddenState(DockMode.Top, mousePosition);
+            UpdateAutoHiddenState(DockMode.Bottom, mousePosition);
 
-            if (IsAutoHidden(zDockMode.Left) == false && IsAutoHide(zDockMode.Left))
+            if (IsAutoHidden(DockMode.Left) == false && IsAutoHide(DockMode.Left))
             {
                 return;
             }
 
-            if (IsAutoHidden(zDockMode.Right) == false && IsAutoHide(zDockMode.Right))
+            if (IsAutoHidden(DockMode.Right) == false && IsAutoHide(DockMode.Right))
             {
                 return;
             }
 
-            if (IsAutoHidden(zDockMode.Top) == false && IsAutoHide(zDockMode.Top))
+            if (IsAutoHidden(DockMode.Top) == false && IsAutoHide(DockMode.Top))
             {
                 return;
             }
 
-            if (IsAutoHidden(zDockMode.Bottom) == false && IsAutoHide(zDockMode.Bottom))
+            if (IsAutoHidden(DockMode.Bottom) == false && IsAutoHide(DockMode.Bottom))
             {
                 return;
             }
@@ -961,7 +961,7 @@ namespace Crom.Controls
         /// <param name="e">e</param>
         private void OnDisposeToolWindow(object sender, EventArgs e)
         {
-            DockableToolWindow toolWindow = sender as DockableToolWindow;
+            ToolWindow toolWindow = sender as ToolWindow;
             if (toolWindow != null)
             {
                 RemoveToolWindow(toolWindow);
@@ -977,7 +977,7 @@ namespace Crom.Controls
         /// <param name="e">e</param>
         private void OnToolWindowParentChanged(object sender, EventArgs e)
         {
-            DockableToolWindow toolWindow = sender as DockableToolWindow;
+            ToolWindow toolWindow = sender as ToolWindow;
             if (toolWindow != null)
             {
                 if (toolWindow.Parent == this)
@@ -1006,7 +1006,7 @@ namespace Crom.Controls
                 return;
             }
 
-            _movedToolWindow = sender as DockableToolWindow;
+            _movedToolWindow = sender as ToolWindow;
             if (_movedToolWindow == null)
             {
                 return;
@@ -1064,7 +1064,7 @@ namespace Crom.Controls
         /// <param name="e">e</param>
         private void OnToolWindowClose(object sender, FormClosedEventArgs e)
         {
-            DockableToolWindow toolWindow = sender as DockableToolWindow;
+            ToolWindow toolWindow = sender as ToolWindow;
             if (toolWindow != null)
             {
                 RemoveToolWindow(toolWindow);
@@ -1080,7 +1080,7 @@ namespace Crom.Controls
         /// <param name="e">e</param>
         private void OnToolWindowDockChanged(object sender, EventArgs e)
         {
-            DockableToolWindow toolWindow = sender as DockableToolWindow;
+            ToolWindow toolWindow = sender as ToolWindow;
             if (toolWindow != null)
             {
                 if (toolWindow.Dock != DockStyle.None)
@@ -1099,7 +1099,7 @@ namespace Crom.Controls
         {
             IncreaseStateCheckFrequency();
 
-            DockableToolWindow window = sender as DockableToolWindow;
+            ToolWindow window = sender as ToolWindow;
             if (AutoHidePanelToggled != null && window != null)
             {
                 AutoHideEventArgs args = new AutoHideEventArgs(window.DockMode);
@@ -1114,7 +1114,7 @@ namespace Crom.Controls
         /// <param name="e">e</param>
         private void OnToolWindowContextMenuRequest(object sender, EventArgs e)
         {
-            DockableToolWindow window = sender as DockableToolWindow;
+            ToolWindow window = sender as ToolWindow;
             if (window != null && ContextMenuRequest != null)
             {
                 ContextMenuEventArg args = new ContextMenuEventArg(window, MousePosition, MouseButtons);
@@ -1144,7 +1144,7 @@ namespace Crom.Controls
         /// </summary>
         /// <param name="selection">selection</param>
         /// <param name="buttons">mouse buttons</param>
-        private void RaiseContextMenuRequest(DockableToolWindow selection, MouseButtons buttons)
+        private void RaiseContextMenuRequest(ToolWindow selection, MouseButtons buttons)
         {
             EventHandler<ContextMenuEventArg> handler = ContextMenuRequest;
             if (handler != null)
@@ -1161,7 +1161,7 @@ namespace Crom.Controls
         /// <param name="bounds">bounds of the area in which buttons can be drawn</param>
         /// <param name="toolWindows">collection of the tool windows in the panel</param>
         /// <param name="graphics">graphics context</param>
-        private void DrawHorizontalTabButtons(zDockMode dockMode, Rectangle bounds, DockableToolWindow[] toolWindows, Graphics graphics)
+        private void DrawHorizontalTabButtons(DockMode dockMode, Rectangle bounds, ToolWindow[] toolWindows, Graphics graphics)
         {
             graphics.FillRectangle(SystemBrushes.Control, bounds);
 
@@ -1171,7 +1171,7 @@ namespace Crom.Controls
                 return;
             }
 
-            if (dockMode == zDockMode.Left || dockMode == zDockMode.Right)
+            if (dockMode == DockMode.Left || dockMode == DockMode.Right)
             {
                 if (_panels.IsAutoHide(dockMode))
                 {
@@ -1182,7 +1182,7 @@ namespace Crom.Controls
             RectangleF clip = graphics.ClipBounds;
 
             int width = bounds.Width;
-            if (dockMode == zDockMode.Fill)
+            if (dockMode == DockMode.Fill)
             {
                 width -= 70;  // give space for buttons: close, autohide and context menu
             }
@@ -1198,7 +1198,7 @@ namespace Crom.Controls
 
             graphics.SetClip(clip);
 
-            if (dockMode == zDockMode.Fill)
+            if (dockMode == DockMode.Fill)
             {
                 DrawUtility.DrawUndockButton(CenterUndockButtonBounds, _undockCenterButtonHoover, graphics);
                 DrawUtility.DrawContextMenuButton(CenterMenuButtonBounds, _menuCenterButtonHoover, graphics);
@@ -1213,7 +1213,7 @@ namespace Crom.Controls
         /// <param name="bounds">bounds of the area in which buttons can be drawn</param>
         /// <param name="toolWindows">collection of the tool windows in the panel</param>
         /// <param name="graphics">graphics context</param>
-        private void DrawVerticalTabButtons(zDockMode dockMode, Rectangle bounds, DockableToolWindow[] toolWindows, Graphics graphics)
+        private void DrawVerticalTabButtons(DockMode dockMode, Rectangle bounds, ToolWindow[] toolWindows, Graphics graphics)
         {
             graphics.FillRectangle(SystemBrushes.Control, bounds);
 
@@ -1223,7 +1223,7 @@ namespace Crom.Controls
                 return;
             }
 
-            if (dockMode == zDockMode.Left || dockMode == zDockMode.Right)
+            if (dockMode == DockMode.Left || dockMode == DockMode.Right)
             {
                 if (_panels.IsAutoHide(dockMode) == false)
                 {
@@ -1251,7 +1251,7 @@ namespace Crom.Controls
         /// </summary>
         /// <param name="dockMode">dock mode used to identify the panel</param>
         /// <param name="mousePosition">mouse position in screen coordinates</param>
-        private void UpdateAutoHiddenState(zDockMode dockMode, Point mousePosition)
+        private void UpdateAutoHiddenState(DockMode dockMode, Point mousePosition)
         {
             if (_panels.IsAutoHide(dockMode) == false)
             {
@@ -1281,7 +1281,7 @@ namespace Crom.Controls
         /// Move the given tool window in the front of the view
         /// </summary>
         /// <param name="toolWindow">tool window to be moved in front of the view</param>
-        private void MoveInFront(DockableToolWindow toolWindow)
+        private void MoveInFront(ToolWindow toolWindow)
         {
             Controls.SetChildIndex(toolWindow, 0);
 
@@ -1297,9 +1297,9 @@ namespace Crom.Controls
         /// The last tool window from the collection will became the top most window
         /// </summary>
         /// <param name="toolWindows">tool windows collection to be moved in front of the view</param>
-        private void MoveInFront(List<DockableToolWindow> toolWindows)
+        private void MoveInFront(List<ToolWindow> toolWindows)
         {
-            foreach (DockableToolWindow toolWindow in toolWindows)
+            foreach (ToolWindow toolWindow in toolWindows)
             {
                 MoveInFront(toolWindow);
             }
@@ -1315,7 +1315,7 @@ namespace Crom.Controls
             {
                 if (button.Bounds.Contains(location))
                 {
-                    SelectToolWindow((DockableToolWindow)button.TitleData);
+                    SelectToolWindow((ToolWindow)button.TitleData);
                     IncreaseStateCheckFrequency();
                     return;
                 }
@@ -1326,7 +1326,7 @@ namespace Crom.Controls
         /// Create a tab button associated with the given tool window
         /// </summary>
         /// <param name="toolWindow">tool window for which the tab button will be created</param>
-        private void CreateTabButton(DockableToolWindow toolWindow)
+        private void CreateTabButton(ToolWindow toolWindow)
         {
             TabButton button = new TabButton(this, toolWindow);
             toolWindow.TabButton = button;
@@ -1345,7 +1345,7 @@ namespace Crom.Controls
         /// Remove the tab button associated with the given tool window
         /// </summary>
         /// <param name="toolWindow">tool window for which the tab button must be removed</param>
-        private void RemoveTabButton(DockableToolWindow toolWindow)
+        private void RemoveTabButton(ToolWindow toolWindow)
         {
             _tabButtons.Remove((TabButton)toolWindow.TabButton);
 
@@ -1401,11 +1401,11 @@ namespace Crom.Controls
                 return;
             }
 
-            _dockPreviewEngine.LeftPreviewBounds = _panels.GetPanelNonHiddenBounds(zDockMode.Left);
-            _dockPreviewEngine.RightPreviewBounds = _panels.GetPanelNonHiddenBounds(zDockMode.Right);
-            _dockPreviewEngine.TopPreviewBounds = _panels.GetPanelNonHiddenBounds(zDockMode.Top);
-            _dockPreviewEngine.BottomPreviewBounds = _panels.GetPanelNonHiddenBounds(zDockMode.Bottom);
-            _dockPreviewEngine.FillPreviewBounds = _panels.GetPanelNonHiddenBounds(zDockMode.Fill);
+            _dockPreviewEngine.LeftPreviewBounds = _panels.GetPanelNonHiddenBounds(DockMode.Left);
+            _dockPreviewEngine.RightPreviewBounds = _panels.GetPanelNonHiddenBounds(DockMode.Right);
+            _dockPreviewEngine.TopPreviewBounds = _panels.GetPanelNonHiddenBounds(DockMode.Top);
+            _dockPreviewEngine.BottomPreviewBounds = _panels.GetPanelNonHiddenBounds(DockMode.Bottom);
+            _dockPreviewEngine.FillPreviewBounds = _panels.GetPanelNonHiddenBounds(DockMode.Fill);
 
             _dockPreviewEngine.UpdateDockPreviewOnMouseMove(mousePosition);
         }
@@ -1417,7 +1417,7 @@ namespace Crom.Controls
         {
             get
             {
-                Rectangle bounds = _panels.GetPanelButtonsBounds(zDockMode.Fill);
+                Rectangle bounds = _panels.GetPanelButtonsBounds(DockMode.Fill);
                 return new Rectangle(bounds.Right - 18, bounds.Y + (bounds.Height - 12) / 2, 12, 12);
             }
         }
@@ -1429,7 +1429,7 @@ namespace Crom.Controls
         {
             get
             {
-                Rectangle bounds = _panels.GetPanelButtonsBounds(zDockMode.Fill);
+                Rectangle bounds = _panels.GetPanelButtonsBounds(DockMode.Fill);
                 return new Rectangle(bounds.Right - 38, bounds.Y + (bounds.Height - 12) / 2, 12, 12);
             }
         }
@@ -1438,7 +1438,7 @@ namespace Crom.Controls
         {
             get
             {
-                Rectangle bounds = _panels.GetPanelButtonsBounds(zDockMode.Fill);
+                Rectangle bounds = _panels.GetPanelButtonsBounds(DockMode.Fill);
                 return new Rectangle(bounds.Right - 58, bounds.Y + (bounds.Height - 12) / 2, 12, 12);
             }
         }

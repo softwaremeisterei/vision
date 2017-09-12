@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 
-namespace Crom.Controls
+namespace Docking.Controls
 {
    /// <summary>
    /// Auto-hide event args
@@ -10,7 +10,7 @@ namespace Crom.Controls
    {
       #region Fields.
 
-      private zDockMode _selection = zDockMode.None;
+      private DockMode _selection = DockMode.None;
 
       #endregion Fields.
 
@@ -20,7 +20,7 @@ namespace Crom.Controls
       /// Create a new instance of <see cref="ContextMenuEventArg"/>
       /// </summary>
       /// <param name="selection">dock mode of the selected panel</param>
-      public AutoHideEventArgs (zDockMode selection)
+      public AutoHideEventArgs (DockMode selection)
       {
          _selection = selection;
       }
@@ -32,7 +32,7 @@ namespace Crom.Controls
       /// <summary>
       /// Getter for the dock mode of the panel for which the auto-hide state was toggled.
       /// </summary>
-      public zDockMode Selection
+      public DockMode Selection
       {
          get { return _selection; }
       }

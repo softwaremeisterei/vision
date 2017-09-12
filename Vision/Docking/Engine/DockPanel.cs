@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Crom.Controls
+namespace Docking.Controls
 {
    /// <summary>
    /// Dock panel
@@ -12,11 +12,11 @@ namespace Crom.Controls
    {
       #region Fields.
 
-      protected zDockMode                 _dockMode                  = zDockMode.None;
+      protected DockMode                 _dockMode                  = DockMode.None;
       protected FormBorderStyle           _toolWindowsBorderStyle    = FormBorderStyle.None;
 
-      protected List<DockableToolWindow>  _toolWindows               = new List<DockableToolWindow>();
-      protected List<DockableToolWindow>  _visibleToolWindows        = new List<DockableToolWindow> ();
+      protected List<ToolWindow>  _toolWindows               = new List<ToolWindow>();
+      protected List<ToolWindow>  _visibleToolWindows        = new List<ToolWindow> ();
       protected Rectangle                 _contentBounds             = new Rectangle ();
       protected Rectangle                 _buttonsBounds             = new Rectangle ();
       protected Rectangle                 _previewBounds             = new Rectangle ();
@@ -30,7 +30,7 @@ namespace Crom.Controls
       /// </summary>
       /// <param name="dockMode">dock mode of this panel</param>
       /// <param name="toolWindowsBorder">border of the tool windows from this panel</param>
-      public DockPanel (zDockMode dockMode, FormBorderStyle toolWindowsBorder)
+      public DockPanel (DockMode dockMode, FormBorderStyle toolWindowsBorder)
       {
          _dockMode               = dockMode;
          _toolWindowsBorderStyle = toolWindowsBorder;
@@ -81,7 +81,7 @@ namespace Crom.Controls
       /// <summary>
       /// Tool windows
       /// </summary>
-      public DockableToolWindow[] ToolWindows
+      public ToolWindow[] ToolWindows
       {
          get { return _toolWindows.ToArray (); }
       }
@@ -89,7 +89,7 @@ namespace Crom.Controls
       /// <summary>
       /// Visible tool windows
       /// </summary>
-      public DockableToolWindow[] VisibleToolWindows
+      public ToolWindow[] VisibleToolWindows
       {
          get { return _visibleToolWindows.ToArray (); }
       }
@@ -99,7 +99,7 @@ namespace Crom.Controls
       /// </summary>
       /// <param name="toolWindow">tool window to be checked</param>
       /// <returns>true if the tool window is contained in the panel</returns>
-      public bool Contains (DockableToolWindow toolWindow)
+      public bool Contains (ToolWindow toolWindow)
       {
          return _toolWindows.Contains (toolWindow);
       }
@@ -108,7 +108,7 @@ namespace Crom.Controls
       /// Dock the given tool window
       /// </summary>
       /// <param name="toolWindow">tool window to be docked</param>
-      public void DockToolWindow (DockableToolWindow toolWindow)
+      public void DockToolWindow (ToolWindow toolWindow)
       {
          if (toolWindow.IsDocked)
          {
@@ -135,7 +135,7 @@ namespace Crom.Controls
       /// </summary>
       /// <param name="toolWindow">tool window</param>
       /// <returns>true is the tool-window was in the tool windows collection</returns>
-      public void UndockToolWindow (DockableToolWindow toolWindow)
+      public void UndockToolWindow (ToolWindow toolWindow)
       {
          int index = _toolWindows.IndexOf (toolWindow);
          if (index < 0)
@@ -211,7 +211,7 @@ namespace Crom.Controls
       /// <param name="e">e</param>
       private void OnToolWindowAutoHideChanged (object sender, EventArgs e)
       {
-         DockableToolWindow toolWindow = sender as DockableToolWindow;
+         ToolWindow toolWindow = sender as ToolWindow;
          if (toolWindow == null)
          {
             return;
@@ -242,7 +242,7 @@ namespace Crom.Controls
       /// <param name="e">e</param>
       private void OnToolWindowVisibleChanged (object sender, EventArgs e)
       {
-         DockableToolWindow toolWindow = sender as DockableToolWindow;
+         ToolWindow toolWindow = sender as ToolWindow;
          if (toolWindow != null)
          {
             SyncVisibleForms (toolWindow);
@@ -257,7 +257,7 @@ namespace Crom.Controls
       /// Connect the tool window events.
       /// </summary>
       /// <param name="toolWindow">tool window</param>
-      private void ConnectToolWindow (DockableToolWindow toolWindow)
+      private void ConnectToolWindow (ToolWindow toolWindow)
       {
          toolWindow.AutoHideButtonClick        += OnToolWindowAutoHideChanged;
          toolWindow.ContextMenuForToolWindow   += OnToolWindowContextMenu;
@@ -268,7 +268,7 @@ namespace Crom.Controls
       /// Disconnect tool window events
       /// </summary>
       /// <param name="toolWindow">tool window</param>
-      private void DisconnectToolWindow (DockableToolWindow toolWindow)
+      private void DisconnectToolWindow (ToolWindow toolWindow)
       {
          toolWindow.AutoHideButtonClick        -= OnToolWindowAutoHideChanged;
          toolWindow.ContextMenuForToolWindow   -= OnToolWindowContextMenu;
@@ -279,7 +279,7 @@ namespace Crom.Controls
       /// Sync visible forms
       /// </summary>
       /// <param name="toolWindow">tool window</param>
-      private void SyncVisibleForms (DockableToolWindow toolWindow)
+      private void SyncVisibleForms (ToolWindow toolWindow)
       {
          if (_toolWindows.Contains (toolWindow))
          {
@@ -302,8 +302,8 @@ namespace Crom.Controls
       /// </summary>
       private void UpdateToolWindowsBounds ()
       {
-         DockableToolWindow[] toolWindows = _toolWindows.ToArray();
-         foreach (DockableToolWindow toolWindow in toolWindows)
+         ToolWindow[] toolWindows = _toolWindows.ToArray();
+         foreach (ToolWindow toolWindow in toolWindows)
          {
             toolWindow.LockFormSizeAndDock (_contentBounds, _toolWindowsBorderStyle, _dockMode);
          }

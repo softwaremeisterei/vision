@@ -1,16 +1,16 @@
-namespace Crom.Controls
+namespace Docking.Controls
 {
    /// <summary>
    /// Button used to guide docking on bottom
    /// </summary>
-   internal partial class ButtonToDockBottom : DockButton
+   internal partial class DockButtonBottom : DockButton
    {
       #region Instance.
 
       /// <summary>
       /// Default constructor
       /// </summary>
-      public ButtonToDockBottom ()
+      public DockButtonBottom ()
       {
          InitializeComponent ();
       }

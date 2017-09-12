@@ -30,15 +30,16 @@ namespace Vision.Forms
             IsMdiContainer = true;
 
             var dockableExplorer = new ExplorerToolWindow();
-            dockContainer1.DockToolWindow(dockableExplorer, Crom.Controls.zDockMode.Left);
+            dockContainer1.DockToolWindow(dockableExplorer, global::Docking.Controls.DockMode.Left);
             dockableExplorer.Show();
             dockContainer1.LeftPanelWidth = 500;
         }
 
-        public BrowserToolWindow OpenBrowserForm(string url)
+        public BrowserToolWindow OpenBrowserForm(string title, string url)
         {
             var browserForm = new BrowserToolWindow();
-            dockContainer1.DockToolWindow(browserForm, Crom.Controls.zDockMode.Fill);
+            browserForm.Text = title;
+            dockContainer1.DockToolWindow(browserForm, global::Docking.Controls.DockMode.Fill);
             browserForm.Show();
             return browserForm;
         }

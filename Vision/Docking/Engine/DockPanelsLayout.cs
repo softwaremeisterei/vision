@@ -2,7 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Crom.Controls
+namespace Docking.Controls
 {
    /// <summary>
    /// Component for computing the layout of the dock panels
@@ -48,11 +48,11 @@ namespace Crom.Controls
       /// </summary>
       public DockPanelsLayout ()
       {
-         _leftPanel   = new SideDockPanel (zDockMode.Left,   FormBorderStyle.FixedToolWindow);
-         _rightPanel  = new SideDockPanel (zDockMode.Right,  FormBorderStyle.FixedToolWindow);
-         _topPanel    = new SideDockPanel (zDockMode.Top,    FormBorderStyle.FixedToolWindow);
-         _bottomPanel = new SideDockPanel (zDockMode.Bottom, FormBorderStyle.FixedToolWindow);
-         _centerPanel = new DockPanel     (zDockMode.Fill,   FormBorderStyle.None);
+         _leftPanel   = new SideDockPanel (DockMode.Left,   FormBorderStyle.FixedToolWindow);
+         _rightPanel  = new SideDockPanel (DockMode.Right,  FormBorderStyle.FixedToolWindow);
+         _topPanel    = new SideDockPanel (DockMode.Top,    FormBorderStyle.FixedToolWindow);
+         _bottomPanel = new SideDockPanel (DockMode.Bottom, FormBorderStyle.FixedToolWindow);
+         _centerPanel = new DockPanel     (DockMode.Fill,   FormBorderStyle.None);
 
          _leftPanel.UpdateLayoutRequested    += OnUpdateLayoutRequested;
          _rightPanel.UpdateLayoutRequested   += OnUpdateLayoutRequested;

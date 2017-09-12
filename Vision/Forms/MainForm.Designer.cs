@@ -28,7 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dockContainer1 = new Crom.Controls.DockContainer();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            this.dockContainer1 = new Docking.Controls.DockContainer();
             this.SuspendLayout();
             // 
             // dockContainer1
@@ -58,8 +59,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1320, 784);
             this.Controls.Add(this.dockContainer1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
-            this.Text = "MainForm";
+            this.Text = "Visi<o>n";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
 
@@ -67,6 +69,6 @@
 
         #endregion
 
-        private Crom.Controls.DockContainer dockContainer1;
+        private global::Docking.Controls.DockContainer dockContainer1;
     }
 }

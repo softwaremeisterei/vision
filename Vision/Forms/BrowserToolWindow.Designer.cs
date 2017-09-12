@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BrowserToolWindow));
             this.extWebBrowser1 = new Vision.ExtWebBrowser();
             this.SuspendLayout();
             // 
@@ -39,13 +40,14 @@
             this.extWebBrowser1.Size = new System.Drawing.Size(443, 385);
             this.extWebBrowser1.TabIndex = 0;
             // 
-            // BrowserForm
+            // BrowserToolWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(443, 385);
             this.Controls.Add(this.extWebBrowser1);
-            this.Name = "BrowserForm";
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "BrowserToolWindow";
             this.Text = "Browser";
             this.ResumeLayout(false);
 

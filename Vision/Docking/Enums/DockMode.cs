@@ -1,9 +1,9 @@
-namespace Crom.Controls
+namespace Docking.Controls
 {
    /// <summary>
    /// Enumerates how can be docked a control inside <see cref="DockContainer">DockContainer</see>
    /// </summary>
-   public enum zDockMode
+   public enum DockMode
    {
       /// <summary>
       /// The control can't be docked.

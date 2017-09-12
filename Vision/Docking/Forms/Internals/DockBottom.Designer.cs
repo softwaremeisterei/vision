@@ -1,6 +1,6 @@
-namespace Crom.Controls
+namespace Docking.Controls
 {
-   partial class ButtonToDockLeft
+   partial class DockButtonBottom
    {
       #region Windows Form Designer generated code
 
@@ -10,14 +10,13 @@ namespace Crom.Controls
       /// </summary>
       private void InitializeComponent ()
       {
-         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager (typeof (ButtonToDockLeft));
+         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager (typeof (DockButtonBottom));
          this.SuspendLayout ();
          // 
-         // ButtonToDockLeft
+         // ButtonToDockBottom
          // 
          this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject ("$this.BackgroundImage")));
-         this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-         this.ClientSize = new System.Drawing.Size (32, 29);
+         this.ClientSize = new System.Drawing.Size (29, 32);
          this.ResumeLayout (false);
       }
 

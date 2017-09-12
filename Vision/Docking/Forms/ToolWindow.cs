@@ -5,14 +5,14 @@ using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace Crom.Controls
+namespace Docking.Controls
 {
     /// <summary>
     /// Dockable tool window implements basic functionalities required to allow tool windows to be docked using
     /// <see cref="DockContainer">DockContainer</see>
     /// </summary>
     /// <remarks>Use this object as base class for your auto-dockable tool windows.</remarks>
-    public class DockableToolWindow : Form, ITitleData
+    public class ToolWindow : Form, ITitleData
     {
         #region Fields.
 
@@ -43,7 +43,7 @@ namespace Crom.Controls
         private Point _lastPosOnNcMouseDown = new Point();
 
         private bool _resizeIsLocked = false;
-        private zDockMode _dockMode = zDockMode.None;
+        private DockMode _dockMode = DockMode.None;
         private bool _autoHide = false;
         private Timer _timer = new Timer();
 
@@ -69,9 +69,9 @@ namespace Crom.Controls
         #region Instance.
 
         /// <summary>
-        /// Default constructor which creates a new instance of <see cref="DockableToolWindow"/>
+        /// Default constructor which creates a new instance of <see cref="ToolWindow"/>
         /// </summary>
-        public DockableToolWindow()
+        public ToolWindow()
         {
             FormBorderStyle = FormBorderStyle.Sizable;
             ShowInTaskbar = false;
@@ -96,13 +96,13 @@ namespace Crom.Controls
         /// Returns the allowed dock values for the tool window which specialize this class
         /// </summary>
         /// <remarks>Override this method to return the allowed dock for the current tool window</remarks>
-        public virtual zDockMode AllowedDock
+        public virtual DockMode AllowedDock
         {
             get
             {
                 CheckNotDisposed();
 
-                return zDockMode.All;
+                return DockMode.All;
             }
         }
 
@@ -122,7 +122,7 @@ namespace Crom.Controls
         /// <summary>
         /// Current dock mode of the tool window
         /// </summary>
-        public zDockMode DockMode
+        public DockMode DockMode
         {
             get { return _dockMode; }
         }
@@ -165,7 +165,7 @@ namespace Crom.Controls
         /// </summary>
         internal bool IsDocked
         {
-            get { return _dockMode != zDockMode.None; }
+            get { return _dockMode != DockMode.None; }
         }
 
         /// <summary>
@@ -199,12 +199,12 @@ namespace Crom.Controls
         /// <returns>restore size</returns>
         internal Size GetRestoreSize(Point mousePosition)
         {
-            if (DockMode == zDockMode.Left || DockMode == zDockMode.Right)
+            if (DockMode == DockMode.Left || DockMode == DockMode.Right)
             {
                 return new Size(Width, BoundsBeforeLock.Height);
             }
 
-            if (DockMode == zDockMode.Top || DockMode == zDockMode.Bottom)
+            if (DockMode == DockMode.Top || DockMode == DockMode.Bottom)
             {
                 int preferredWidth = mousePosition.X - PointToScreen(Location).X + 50;
                 return new Size(Math.Max(BoundsBeforeLock.Width, preferredWidth), Height);
@@ -219,9 +219,9 @@ namespace Crom.Controls
         /// <param name="lockedBounds">locked bounds</param>
         /// <param name="lockedBorder">locked border</param>
         /// <param name="dockMode">dock mode of the tool window</param>
-        internal void LockFormSizeAndDock(Rectangle lockedBounds, FormBorderStyle lockedBorder, zDockMode dockMode)
+        internal void LockFormSizeAndDock(Rectangle lockedBounds, FormBorderStyle lockedBorder, DockMode dockMode)
         {
-            if (_dockMode == zDockMode.None)
+            if (_dockMode == DockMode.None)
             {
                 _dockMode = dockMode;
                 _boundsBeforeLock = Bounds;
@@ -244,7 +244,7 @@ namespace Crom.Controls
             _lockedBounds.Size = lockedSize;
             FormBorderStyle = _borderBeforeLock;
             Size = lockedSize;
-            _dockMode = zDockMode.None;
+            _dockMode = DockMode.None;
             _resizeIsLocked = false;
 
             Application.DoEvents();
@@ -634,7 +634,7 @@ namespace Crom.Controls
         /// <param name="m">m</param>
         private void DrawExtraButtons(IntPtr hWnd)
         {
-            if (_dockMode == zDockMode.None || FormBorderStyle == FormBorderStyle.None || Visible == false)
+            if (_dockMode == DockMode.None || FormBorderStyle == FormBorderStyle.None || Visible == false)
             {
                 return;
             }
