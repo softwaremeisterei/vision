@@ -30,6 +30,9 @@ namespace Vision.Forms
             {
                 searchTextComboBox.Text = searchTextHistory.First();
             }
+
+            searchTextComboBox.Focus();
+            searchTextComboBox.SelectAll();
         }
 
         private void findPrevButton_Click(object sender, EventArgs e)
@@ -38,6 +41,9 @@ namespace Vision.Forms
             {
                 _client.FindPrev(searchTextComboBox.Text);
             }
+
+            searchTextComboBox.Focus();
+            searchTextComboBox.SelectAll();
         }
 
         private void findNextButton_Click(object sender, EventArgs e)
@@ -46,6 +52,9 @@ namespace Vision.Forms
             {
                 _client.FindNext(searchTextComboBox.Text);
             }
+
+            searchTextComboBox.Focus();
+            searchTextComboBox.SelectAll();
         }
 
         private void bookmarkAllButton_Click(object sender, EventArgs e)

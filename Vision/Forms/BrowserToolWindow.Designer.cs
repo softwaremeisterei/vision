@@ -34,6 +34,7 @@
             // 
             // extWebBrowser1
             // 
+            this.extWebBrowser1.AllowDrop = true;
             this.extWebBrowser1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.extWebBrowser1.Location = new System.Drawing.Point(0, 0);
             this.extWebBrowser1.Name = "extWebBrowser1";

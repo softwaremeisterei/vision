@@ -50,6 +50,8 @@ namespace Vision.Forms
         private ToolStripMenuItem addToplevelNodeToolStripMenuItem;
         private ToolStripMenuItem addChildNodeToolStripMenuItem;
         private ToolStripMenuItem addSiblingNodeToolStripMenuItem;
+        private ToolStripMenuItem moveNodeDownToolStripMenuItem;
+        private ToolStripMenuItem modeNodeUpToolStripMenuItem;
         private ContextMenuStrip _docMenu;
 
         public ExplorerToolWindow()
@@ -60,7 +62,6 @@ namespace Vision.Forms
             _persistor = new Persistor();
             _findForm = new Forms.FindForm(this);
             InitContextMenu();
-            InitDragDrop();
             LoadLastProject();
 
             ActiveControl = treeView1;
@@ -135,7 +136,11 @@ namespace Vision.Forms
         private void addToplevelNodeMenuItem_Click(object sender, EventArgs e)
         {
             var treeNode = AddNode();
-            treeNode.BeginEdit();
+
+            if (treeNode != null)
+            {
+                treeNode.BeginEdit();
+            }
         }
 
         private void addChildNodeMenuItem_Click(object sender, EventArgs e)
@@ -148,13 +153,21 @@ namespace Vision.Forms
             if (treeView1.Nodes.Count == 0)
             {
                 var treeNode = AddNode();
-                treeNode.BeginEdit();
+
+                if (treeNode != null)
+                {
+                    treeNode.BeginEdit();
+                }
             }
             else if (treeView1.SelectedNode != null)
             {
                 var parentNode = (Node)treeView1.SelectedNode.Parent?.Tag;
                 var treeNode = AddNode(parentNode);
-                treeNode.BeginEdit();
+
+                if (treeNode != null)
+                {
+                    treeNode.BeginEdit();
+                }
             }
         }
 
@@ -216,13 +229,32 @@ namespace Vision.Forms
 
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Right && e.Control)
+            if (e.KeyCode == Keys.F && e.Control)
+            {
+                ShowFindDialog();
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.F3 && e.Shift)
+            {
+                var history = GetSearchHistory();
+                FindPrev(history.FirstOrDefault());
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.F3)
+            {
+                var history = GetSearchHistory();
+                FindNext(history.FirstOrDefault());
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.Right && e.Control)
             {
                 AddChildNode();
+                e.Handled = true;
             }
             else if (e.KeyCode == Keys.F2)
             {
                 RenameSelectedNode();
+                e.Handled = true;
             }
             else if (e.KeyCode == Keys.Delete)
             {
@@ -232,11 +264,20 @@ namespace Vision.Forms
                 {
                     DeleteSelectedNode();
                 }
+                e.Handled = true;
             }
             else if (e.KeyCode == Keys.Enter && treeView1.Focused)
             {
                 ShowContent(treeView1.SelectedNode);
                 e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.Up && e.Control)
+            {
+                MoveNodeUp();
+            }
+            else if (e.KeyCode == Keys.Down && e.Control)
+            {
+                MoveNodeDown();
             }
         }
 
@@ -269,8 +310,6 @@ namespace Vision.Forms
             }
 
             DisplayContent(node);
-
-            _context.Layout.SelectedNode = node.Id;
         }
 
         private void treeView_ItemDrag(object sender, ItemDragEventArgs e)
@@ -308,13 +347,17 @@ namespace Vision.Forms
                 var destinationTreeNode = treeView1.GetNodeAt(pt);
 
                 var treeNode = AddNode((Node)destinationTreeNode?.Tag);
-                var node = (Node)treeNode.Tag;
-                string nodeTitle = e.Data.GetData(DataFormats.Text).ToString();
-                node.Title = nodeTitle;
-                SetDefaultDisplayType(node);
-                ReloadTree();
-                SelectNodeById(node.Id);
-                SetDirty(false);
+
+                if (treeNode != null)
+                {
+                    var node = (Node)treeNode.Tag;
+                    string nodeTitle = e.Data.GetData(DataFormats.Text).ToString();
+                    node.Title = nodeTitle;
+                    SetDefaultDisplayType(node);
+                    ReloadTree();
+                    SelectNodeById(node.Id);
+                    SetDirty(false);
+                }
             }
             else if (e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false))
             {
@@ -403,11 +446,21 @@ namespace Vision.Forms
             }
             else
             {
-                FindPrev(history.First());
+                FindPrev(history.FirstOrDefault());
             }
         }
 
+        private void moveNodeUpMenuItem_Click(object sender, EventArgs e)
+        {
+            MoveNodeUp();
+        }
+
         private void moveNodeDownMenuItem_Click(object sender, EventArgs e)
+        {
+            MoveNodeDown();
+        }
+
+        private void MoveNodeDown()
         {
             var treeNode = treeView1.SelectedNode;
             if (treeNode == null) return;
@@ -421,7 +474,7 @@ namespace Vision.Forms
             Swap(node1, node2);
         }
 
-        private void moveNodeUpMenuItem_Click(object sender, EventArgs e)
+        private void MoveNodeUp()
         {
             var treeNode = treeView1.SelectedNode;
             if (treeNode == null) return;
@@ -438,12 +491,15 @@ namespace Vision.Forms
         private void InitContextMenu()
         {
             _docMenu = new ContextMenuStrip();
+
             var addNodeMenuItem = new ToolStripMenuItem();
             addNodeMenuItem.Text = "Add Node";
             addNodeMenuItem.Click += delegate { AddChildNode(); };
+
             var deleteNodeMenuItem = new ToolStripMenuItem();
             deleteNodeMenuItem.Text = "Delete";
             deleteNodeMenuItem.Click += delegate { DeleteSelectedNode(); };
+
             var renameNodeMenuItem = new ToolStripMenuItem();
             renameNodeMenuItem.Text = "Rename";
             renameNodeMenuItem.Click += delegate { RenameSelectedNode(); };
@@ -451,16 +507,13 @@ namespace Vision.Forms
             _docMenu.Items.AddRange(new ToolStripMenuItem[] { addNodeMenuItem, deleteNodeMenuItem, renameNodeMenuItem });
         }
 
-        private void InitDragDrop()
-        {
-            this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(treeView_ItemDrag);
-            this.treeView1.DragEnter += new System.Windows.Forms.DragEventHandler(treeView_DragEnter);
-            this.treeView1.DragOver += new System.Windows.Forms.DragEventHandler(treeView_DragOver);
-            this.treeView1.DragDrop += new System.Windows.Forms.DragEventHandler(treeView_DragDrop);
-        }
-
         private TreeNode SelectNodeById(Guid id)
         {
+            if (id == Guid.Empty)
+            {
+                return null;
+            }
+
             var treeNode = FindTreeNodeByNodeId(id);
 
             if (treeNode != null)
@@ -483,9 +536,17 @@ namespace Vision.Forms
 
         private void ReloadTree()
         {
+            var nodeId = ((Node)treeView1.SelectedNode?.Tag)?.Id;
+
             treeView1.SuspendLayout();
             treeView1.Nodes.Clear();
             ReloadNodes(null, _context.Nodes);
+
+            if (nodeId.HasValue)
+            {
+                SelectNodeById(nodeId.Value);
+            }
+
             treeView1.ResumeLayout();
         }
 
@@ -500,11 +561,6 @@ namespace Vision.Forms
                     parentNode.Nodes.Add(treeNode);
                 else
                     treeView1.Nodes.Add(treeNode);
-
-                if (node.Id == _context.Layout.SelectedNode)
-                {
-                    treeView1.SelectedNode = treeNode;
-                }
 
                 if (node.Nodes.Any())
                 {
@@ -618,7 +674,10 @@ namespace Vision.Forms
             {
                 var parentNode = (Node)parentTreeNode.Tag;
                 var treeNode = AddNode(parentNode);
-                treeNode.BeginEdit();
+                if (treeNode != null)
+                {
+                    treeNode.BeginEdit();
+                }
             }
         }
 
@@ -694,6 +753,11 @@ namespace Vision.Forms
 
         public void FindPrev(string searchText)
         {
+            if (string.IsNullOrEmpty(searchText))
+            {
+                return;
+            }
+
             AddToSearchHistory(searchText);
             var matches = FindMatchingNodes(searchText);
 
@@ -787,8 +851,11 @@ namespace Vision.Forms
             {
                 var node = (Node)treeNode.Tag;
 
-                if (node.Title.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0
-                    || node.Content.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                var isMatch = node.Title?.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0;
+                isMatch = isMatch || node.Url?.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0;
+                isMatch = isMatch || node.Content?.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0;
+
+                if (isMatch)
                 {
                     result.Add(node.Id);
                 }
@@ -914,6 +981,7 @@ namespace Vision.Forms
             }
         }
 
+        #region InitializeComponent
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExplorerToolWindow));
@@ -934,22 +1002,30 @@ namespace Vision.Forms
             this.addToplevelNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addChildNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addSiblingNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moveNodeDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modeNodeUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeView1
             // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.treeView1.AllowDrop = true;
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeView1.HideSelection = false;
             this.treeView1.LabelEdit = true;
             this.treeView1.Location = new System.Drawing.Point(12, 59);
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(616, 402);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
+            this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView_ItemDrag);
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
             this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
+            this.treeView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeView_DragDrop);
+            this.treeView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView_DragEnter);
+            this.treeView1.DragOver += new System.Windows.Forms.DragEventHandler(this.treeView_DragOver);
             this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
             // 
             // expandButton
@@ -1036,21 +1112,24 @@ namespace Vision.Forms
             // findToolStripMenuItem
             // 
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
-            this.findToolStripMenuItem.Size = new System.Drawing.Size(147, 26);
+            this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(208, 26);
             this.findToolStripMenuItem.Text = "&Find";
             this.findToolStripMenuItem.Click += new System.EventHandler(this.findMenuItem_Click);
             // 
             // findNextToolStripMenuItem
             // 
             this.findNextToolStripMenuItem.Name = "findNextToolStripMenuItem";
-            this.findNextToolStripMenuItem.Size = new System.Drawing.Size(147, 26);
+            this.findNextToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
+            this.findNextToolStripMenuItem.Size = new System.Drawing.Size(208, 26);
             this.findNextToolStripMenuItem.Text = "Find &Next";
             this.findNextToolStripMenuItem.Click += new System.EventHandler(this.findNextMenuItem_Click);
             // 
             // findPrevToolStripMenuItem
             // 
             this.findPrevToolStripMenuItem.Name = "findPrevToolStripMenuItem";
-            this.findPrevToolStripMenuItem.Size = new System.Drawing.Size(147, 26);
+            this.findPrevToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F3)));
+            this.findPrevToolStripMenuItem.Size = new System.Drawing.Size(208, 26);
             this.findPrevToolStripMenuItem.Text = "Find &Prev";
             this.findPrevToolStripMenuItem.Click += new System.EventHandler(this.findPrevMenuItem_Click);
             // 
@@ -1059,7 +1138,9 @@ namespace Vision.Forms
             this.contentToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addToplevelNodeToolStripMenuItem,
             this.addChildNodeToolStripMenuItem,
-            this.addSiblingNodeToolStripMenuItem});
+            this.addSiblingNodeToolStripMenuItem,
+            this.modeNodeUpToolStripMenuItem,
+            this.moveNodeDownToolStripMenuItem});
             this.contentToolStripMenuItem.Name = "contentToolStripMenuItem";
             this.contentToolStripMenuItem.Size = new System.Drawing.Size(73, 24);
             this.contentToolStripMenuItem.Text = "&Content";
@@ -1067,23 +1148,39 @@ namespace Vision.Forms
             // addToplevelNodeToolStripMenuItem
             // 
             this.addToplevelNodeToolStripMenuItem.Name = "addToplevelNodeToolStripMenuItem";
-            this.addToplevelNodeToolStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.addToplevelNodeToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
             this.addToplevelNodeToolStripMenuItem.Text = "Add &Toplevel Node";
             this.addToplevelNodeToolStripMenuItem.Click += new System.EventHandler(this.addToplevelNodeMenuItem_Click);
             // 
             // addChildNodeToolStripMenuItem
             // 
             this.addChildNodeToolStripMenuItem.Name = "addChildNodeToolStripMenuItem";
-            this.addChildNodeToolStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.addChildNodeToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
             this.addChildNodeToolStripMenuItem.Text = "Add &Child Node";
             this.addChildNodeToolStripMenuItem.Click += new System.EventHandler(this.addChildNodeMenuItem_Click);
             // 
             // addSiblingNodeToolStripMenuItem
             // 
             this.addSiblingNodeToolStripMenuItem.Name = "addSiblingNodeToolStripMenuItem";
-            this.addSiblingNodeToolStripMenuItem.Size = new System.Drawing.Size(213, 26);
+            this.addSiblingNodeToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
             this.addSiblingNodeToolStripMenuItem.Text = "Add &Sibling Node";
             this.addSiblingNodeToolStripMenuItem.Click += new System.EventHandler(this.addSiblingNodeMenuItem_Click);
+            // 
+            // moveNodeDownToolStripMenuItem
+            // 
+            this.moveNodeDownToolStripMenuItem.Name = "moveNodeDownToolStripMenuItem";
+            this.moveNodeDownToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
+            this.moveNodeDownToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
+            this.moveNodeDownToolStripMenuItem.Text = "Move Node &Down";
+            this.moveNodeDownToolStripMenuItem.Click += new System.EventHandler(this.moveNodeDownMenuItem_Click);
+            // 
+            // modeNodeUpToolStripMenuItem
+            // 
+            this.modeNodeUpToolStripMenuItem.Name = "modeNodeUpToolStripMenuItem";
+            this.modeNodeUpToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
+            this.modeNodeUpToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
+            this.modeNodeUpToolStripMenuItem.Text = "Mode Node &Up";
+            this.modeNodeUpToolStripMenuItem.Click += new System.EventHandler(this.moveNodeUpMenuItem_Click);
             // 
             // ExplorerToolWindow
             // 
@@ -1101,7 +1198,7 @@ namespace Vision.Forms
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
+        #endregion // InitializeComponent
     }
 }
