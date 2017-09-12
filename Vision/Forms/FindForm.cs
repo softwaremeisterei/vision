@@ -93,5 +93,13 @@ namespace Vision.Forms
             bookmarkAllButton.Enabled = searchTextAvailable;
             findAllButton.Enabled = searchTextAvailable;
         }
+
+        private void searchTextComboBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                Hide();
+            }
+        }
     }
 }

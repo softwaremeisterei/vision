@@ -66,7 +66,7 @@
     <Compile Include="Docking\Controls\DockContainer.designer.cs">
       <DependentUpon>DockContainer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ExplorerToolWindow.cs">
+    <Compile Include="Forms\ProjectExplorerToolWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Docking\Engine\DockPanel.cs" />
@@ -165,8 +165,8 @@
     <EmbeddedResource Include="Controls\ExtWebBrowser.resx">
       <DependentUpon>ExtWebBrowser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ExplorerToolWindow.resx">
-      <DependentUpon>ExplorerToolWindow.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\ProjectExplorerToolWindow.resx">
+      <DependentUpon>ProjectExplorerToolWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Docking\Forms\ToolWindow.resx">
       <DependentUpon>ToolWindow.cs</DependentUpon>

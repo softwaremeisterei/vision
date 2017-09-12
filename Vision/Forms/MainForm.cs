@@ -29,16 +29,48 @@ namespace Vision.Forms
         {
             IsMdiContainer = true;
 
-            var dockableExplorer = new ExplorerToolWindow();
-            dockContainer1.DockToolWindow(dockableExplorer, global::Docking.Controls.DockMode.Left);
-            dockableExplorer.Show();
             dockContainer1.LeftPanelWidth = 500;
+
+            OpenExplorer();
         }
 
-        public BrowserToolWindow OpenBrowserForm(string title, string url)
+        private void fileOpenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog();
+
+            openFileDialog.Filter = "Vision projects (*.visionproj)|*.visionproj";
+            openFileDialog.RestoreDirectory = true;
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string fileName = openFileDialog.FileName;
+
+                var explorer = OpenExplorer();
+                explorer.OpenProject(fileName);
+            }
+        }
+
+        private void fileNewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenExplorer();
+        }
+
+        private void viewBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenBrowser();
+        }
+
+        private ProjectExplorerToolWindow OpenExplorer()
+        {
+            var explorer = new ProjectExplorerToolWindow();
+            dockContainer1.DockToolWindow(explorer, global::Docking.Controls.DockMode.Left);
+            explorer.Show();
+            return explorer;
+        }
+
+        public BrowserToolWindow OpenBrowser()
         {
             var browserForm = new BrowserToolWindow();
-            browserForm.Text = title;
             dockContainer1.DockToolWindow(browserForm, global::Docking.Controls.DockMode.Fill);
             browserForm.Show();
             return browserForm;

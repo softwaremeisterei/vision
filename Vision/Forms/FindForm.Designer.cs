@@ -46,6 +46,7 @@
             this.searchTextComboBox.Size = new System.Drawing.Size(336, 24);
             this.searchTextComboBox.TabIndex = 1;
             this.searchTextComboBox.TextUpdate += new System.EventHandler(this.searchTextComboBox_TextUpdate);
+            this.searchTextComboBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.searchTextComboBox_KeyDown);
             // 
             // label1
             // 

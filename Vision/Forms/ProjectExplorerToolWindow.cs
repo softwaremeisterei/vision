@@ -24,7 +24,7 @@ namespace Vision.Forms
     /// <see cref="DockContainer">DockContainer</see>
     /// </summary>
     /// <remarks>Use this object as base class for your auto-dockable tool windows.</remarks>
-    public class ExplorerToolWindow : ToolWindow, ISearchable
+    public class ProjectExplorerToolWindow : ToolWindow, ISearchable
     {
         Timer _timer = new Timer();
         Context _context;
@@ -38,9 +38,6 @@ namespace Vision.Forms
         private Button collapseButton;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem fileToolStripMenuItem;
-        private ToolStripMenuItem saveToolStripMenuItem;
-        private ToolStripMenuItem openProjectToolStripMenuItem;
-        private ToolStripMenuItem newProjectToolStripMenuItem;
         private ToolStripMenuItem editToolStripMenuItem;
         private ToolStripMenuItem exportToolStripMenuItem;
         private ToolStripMenuItem findToolStripMenuItem;
@@ -52,9 +49,10 @@ namespace Vision.Forms
         private ToolStripMenuItem addSiblingNodeToolStripMenuItem;
         private ToolStripMenuItem moveNodeDownToolStripMenuItem;
         private ToolStripMenuItem modeNodeUpToolStripMenuItem;
+        private ToolStripMenuItem saveToolStripMenuItem;
         private ContextMenuStrip _docMenu;
 
-        public ExplorerToolWindow()
+        public ProjectExplorerToolWindow()
         {
             this.InitializeComponent();
 
@@ -62,7 +60,7 @@ namespace Vision.Forms
             _persistor = new Persistor();
             _findForm = new Forms.FindForm(this);
             InitContextMenu();
-            LoadLastProject();
+            OpenLastProject();
 
             ActiveControl = treeView1;
             ClearDirtyFlag();
@@ -124,7 +122,7 @@ namespace Vision.Forms
             {
                 string fileName = openFileDialog.FileName;
 
-                LoadProject(fileName);
+                OpenProject(fileName);
             }
         }
 
@@ -178,7 +176,8 @@ namespace Vision.Forms
                 case DisplayType.Folder:
                     break;
                 case DisplayType.Browser:
-                    var browserForm = MainForm.GetInstance().OpenBrowserForm(node.Title, node.Url);
+                    var browserForm = MainForm.GetInstance().OpenBrowser();
+                    browserForm.Text = node.Title;
                     browserForm.SetTag(node);
                     browserForm.Navigate(node.Url);
                     browserForm.SetDocumentCompletedHandler(_contentWebBrowser_DocumentCompleted);
@@ -274,10 +273,17 @@ namespace Vision.Forms
             else if (e.KeyCode == Keys.Up && e.Control)
             {
                 MoveNodeUp();
+                e.Handled = true;
             }
             else if (e.KeyCode == Keys.Down && e.Control)
             {
                 MoveNodeDown();
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.S)
+            {
+                SaveProject();
+                e.Handled = true;
             }
         }
 
@@ -586,7 +592,7 @@ namespace Vision.Forms
             }
         }
 
-        private bool SaveProject()
+        public bool SaveProject()
         {
             UpdateLayoutData(treeView1.Nodes);
 
@@ -646,17 +652,17 @@ namespace Vision.Forms
             }
         }
 
-        private void LoadLastProject()
+        private void OpenLastProject()
         {
             var lastProjectFile = Properties.Settings.Default[Config.SETTINGS_LASTPROJECTFILE] as String;
 
             if (!string.IsNullOrWhiteSpace(lastProjectFile))
             {
-                LoadProject(lastProjectFile);
+                OpenProject(lastProjectFile);
             }
         }
 
-        private void LoadProject(string fileName)
+        public void OpenProject(string fileName)
         {
             _context = _persistor.Load(fileName);
             _currentProjectFilename = fileName;
@@ -984,15 +990,13 @@ namespace Vision.Forms
         #region InitializeComponent
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExplorerToolWindow));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProjectExplorerToolWindow));
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.expandButton = new System.Windows.Forms.Button();
             this.collapseButton = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1002,16 +1006,16 @@ namespace Vision.Forms
             this.addToplevelNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addChildNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addSiblingNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.moveNodeDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modeNodeUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moveNodeDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeView1
             // 
             this.treeView1.AllowDrop = true;
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView1.HideSelection = false;
             this.treeView1.LabelEdit = true;
@@ -1064,38 +1068,24 @@ namespace Vision.Forms
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newProjectToolStripMenuItem,
             this.saveToolStripMenuItem,
-            this.openProjectToolStripMenuItem,
             this.exportToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
             this.fileToolStripMenuItem.Text = "&File";
             // 
-            // newProjectToolStripMenuItem
-            // 
-            this.newProjectToolStripMenuItem.Name = "newProjectToolStripMenuItem";
-            this.newProjectToolStripMenuItem.Size = new System.Drawing.Size(170, 26);
-            this.newProjectToolStripMenuItem.Text = "&New Project";
-            // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(170, 26);
-            this.saveToolStripMenuItem.Text = "&Save Project";
+            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
+            this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveFileMenuItem_Click);
-            // 
-            // openProjectToolStripMenuItem
-            // 
-            this.openProjectToolStripMenuItem.Name = "openProjectToolStripMenuItem";
-            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(170, 26);
-            this.openProjectToolStripMenuItem.Text = "&Open Project";
-            this.openProjectToolStripMenuItem.Click += new System.EventHandler(this.openFileMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(170, 26);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
             this.exportToolStripMenuItem.Text = "&Export";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportFileMenuItem_Click);
             // 
@@ -1166,14 +1156,6 @@ namespace Vision.Forms
             this.addSiblingNodeToolStripMenuItem.Text = "Add &Sibling Node";
             this.addSiblingNodeToolStripMenuItem.Click += new System.EventHandler(this.addSiblingNodeMenuItem_Click);
             // 
-            // moveNodeDownToolStripMenuItem
-            // 
-            this.moveNodeDownToolStripMenuItem.Name = "moveNodeDownToolStripMenuItem";
-            this.moveNodeDownToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
-            this.moveNodeDownToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
-            this.moveNodeDownToolStripMenuItem.Text = "Move Node &Down";
-            this.moveNodeDownToolStripMenuItem.Click += new System.EventHandler(this.moveNodeDownMenuItem_Click);
-            // 
             // modeNodeUpToolStripMenuItem
             // 
             this.modeNodeUpToolStripMenuItem.Name = "modeNodeUpToolStripMenuItem";
@@ -1182,7 +1164,15 @@ namespace Vision.Forms
             this.modeNodeUpToolStripMenuItem.Text = "Mode Node &Up";
             this.modeNodeUpToolStripMenuItem.Click += new System.EventHandler(this.moveNodeUpMenuItem_Click);
             // 
-            // ExplorerToolWindow
+            // moveNodeDownToolStripMenuItem
+            // 
+            this.moveNodeDownToolStripMenuItem.Name = "moveNodeDownToolStripMenuItem";
+            this.moveNodeDownToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
+            this.moveNodeDownToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
+            this.moveNodeDownToolStripMenuItem.Text = "Move Node &Down";
+            this.moveNodeDownToolStripMenuItem.Click += new System.EventHandler(this.moveNodeDownMenuItem_Click);
+            // 
+            // ProjectExplorerToolWindow
             // 
             this.ClientSize = new System.Drawing.Size(640, 473);
             this.Controls.Add(this.collapseButton);
@@ -1191,13 +1181,14 @@ namespace Vision.Forms
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "ExplorerToolWindow";
-            this.Text = "Explorer";
+            this.Name = "ProjectExplorerToolWindow";
+            this.Text = "Project Explorer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DockableExplorer_FormClosing);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
         #endregion // InitializeComponent
     }

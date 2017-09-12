@@ -40,21 +40,21 @@
             // 
             // forwardButton
             // 
-            this.forwardButton.Location = new System.Drawing.Point(25, 3);
+            this.forwardButton.Location = new System.Drawing.Point(25, 2);
             this.forwardButton.Name = "forwardButton";
-            this.forwardButton.Size = new System.Drawing.Size(23, 25);
+            this.forwardButton.Size = new System.Drawing.Size(23, 27);
             this.forwardButton.TabIndex = 1;
-            this.forwardButton.Text = "▶";
+            this.forwardButton.Text = "⮚";
             this.forwardButton.UseVisualStyleBackColor = true;
             this.forwardButton.Click += new System.EventHandler(this.forwardButton_Click);
             // 
             // backButton
             // 
-            this.backButton.Location = new System.Drawing.Point(3, 3);
+            this.backButton.Location = new System.Drawing.Point(3, 2);
             this.backButton.Name = "backButton";
-            this.backButton.Size = new System.Drawing.Size(23, 25);
+            this.backButton.Size = new System.Drawing.Size(23, 27);
             this.backButton.TabIndex = 0;
-            this.backButton.Text = "◀";
+            this.backButton.Text = "⮘";
             this.backButton.UseVisualStyleBackColor = true;
             this.backButton.Click += new System.EventHandler(this.backButton_Click);
             // 
@@ -63,7 +63,7 @@
             this.goButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.goButton.Location = new System.Drawing.Point(504, 3);
             this.goButton.Name = "goButton";
-            this.goButton.Size = new System.Drawing.Size(42, 25);
+            this.goButton.Size = new System.Drawing.Size(42, 24);
             this.goButton.TabIndex = 4;
             this.goButton.Text = "Go!";
             this.goButton.UseVisualStyleBackColor = true;
@@ -94,9 +94,9 @@
             // clearUrlButton
             // 
             this.clearUrlButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.clearUrlButton.Location = new System.Drawing.Point(477, 3);
+            this.clearUrlButton.Location = new System.Drawing.Point(478, 3);
             this.clearUrlButton.Name = "clearUrlButton";
-            this.clearUrlButton.Size = new System.Drawing.Size(24, 25);
+            this.clearUrlButton.Size = new System.Drawing.Size(24, 24);
             this.clearUrlButton.TabIndex = 3;
             this.clearUrlButton.Text = "✕";
             this.clearUrlButton.UseVisualStyleBackColor = true;
