@@ -1,23 +1,7 @@
-/***************************************************************************
- *   CopyRight (C) 2008 by SC Crom-Osec SRL                                *
- *   Contact:  contact@osec.ro                                             *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the Crom Free License as published by           *
- *   the SC Crom-Osec SRL; version 1 of the License                        *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   Crom Free License for more details.                                   *
- *                                                                         *
- *   You should have received a copy of the Crom Free License along with   *
- *   this program; if not, write to the contact@osec.ro                    *
- ***************************************************************************/
-
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Windows.Forms;
 
 namespace Crom.Controls
@@ -171,16 +155,17 @@ namespace Crom.Controls
         /// Draw the tab button
         /// </summary>
         /// <param name="bounds">bounds of the tab button</param>
-        /// <param name="scris">font for drawing the button text</param>
+        /// <param name="font">font for drawing the button text</param>
         /// <param name="vertical">true if the buttone is vertical</param>
-        /// <param name="g">g</param>
+        /// <param name="g">graphics</param>
         public void Draw(Rectangle bounds, Font font, bool vertical, Graphics g)
         {
-            Color drawColor = NotSelectedColor;
-            Font drawFont = font;
+            var drawColor = NotSelectedColor;
+            var drawFont = font;
+
             if (Selected)
             {
-                drawFont = new Font(font, FontStyle.Regular);
+                drawFont = new Font(font, FontStyle.Bold);
                 drawColor = SelectedColor;
             }
             else
@@ -193,17 +178,17 @@ namespace Crom.Controls
                 _bounds.Location = bounds.Location;
                 _bounds.Size = bounds.Size;
 
-                string text = _titleData.Title();
-                Icon icon = _titleData.Icon;
+                var icon = _titleData.Icon;
+                var text = _titleData.Title();
 
-                Rectangle imageBounds = new Rectangle(0, 0, ImageDimension, ImageDimension);
-                SizeF textSize = g.MeasureString(text, drawFont);
-                SizeF averageTextSize = g.MeasureString("x", drawFont);
+                var imageBounds = new Rectangle(0, 0, ImageDimension, ImageDimension);
+                var textSize = g.MeasureString(text, drawFont);
+                var averageTextSize = g.MeasureString("x", drawFont);
                 textSize.Width += averageTextSize.Width;
 
-                int textPosition = ImageDimension + 2 * SpaceImageText;
-                int textHeight = (int)textSize.Height;
-                int textWidth = 0;
+                var textPosition = ImageDimension + 2 * SpaceImageText;
+                var textHeight = (int)textSize.Height;
+                var textWidth = 0;
 
                 if (vertical)
                 {
@@ -220,12 +205,12 @@ namespace Crom.Controls
 
                 if (Selected && ShowSelection)
                 {
-                    using (Brush backBrush = new LinearGradientBrush(_bounds, SelectedBackColor1, SelectedBackColor2, LinearGradientMode.Vertical))
+                    using (var backBrush = new LinearGradientBrush(_bounds, SelectedBackColor1, SelectedBackColor2, LinearGradientMode.Vertical))
                     {
                         g.FillRectangle(backBrush, _bounds);
                     }
 
-                    using (Pen borderPen = new Pen(SelectedBorderColor))
+                    using (var borderPen = new Pen(SelectedBorderColor))
                     {
                         g.DrawRectangle(borderPen, _bounds.Left, _bounds.Top, _bounds.Width - 1, _bounds.Height - 1);
                     }
@@ -235,19 +220,19 @@ namespace Crom.Controls
                 {
                     if (Hoover)
                     {
-                        using (Brush brush = new SolidBrush(Color.FromArgb(255, 233, 186)))
+                        using (var brush = new SolidBrush(Color.FromArgb(255, 233, 186)))
                         {
                             g.FillRectangle(brush, _bounds);
                         }
                     }
 
-                    using (Pen pen = new Pen(Color.FromArgb(75, 75, 111)))
+                    using (var pen = new Pen(Color.FromArgb(75, 75, 111)))
                     {
                         g.DrawRectangle(pen, _bounds.Left, _bounds.Top, _bounds.Width - 1, _bounds.Height - 1);
                     }
                 }
 
-                using (Bitmap bmp = icon.ToBitmap())
+                using (var bmp = icon.ToBitmap())
                 {
                     if (vertical)
                     {
@@ -262,10 +247,11 @@ namespace Crom.Controls
                     g.DrawImage(bmp, imageBounds);
                 }
 
-                Rectangle textBounds = new Rectangle(0, 0, textWidth, textHeight);
+                var textBounds = new Rectangle(0, 0, textWidth, textHeight);
 
-                int textX = bounds.X + 2 * SpaceImageText + ImageDimension;
-                int textY = bounds.Y + Math.Max(0, (bounds.Height - textHeight) / 2 - 0);
+                var textX = bounds.X + 2 * SpaceImageText + ImageDimension;
+                var textY = bounds.Y + Math.Max(0, (bounds.Height - textHeight) / 2 - 0);
+
                 if (vertical)
                 {
                     textX = bounds.X + Math.Max(0, (bounds.Width - textHeight) / 2 - 0);
@@ -274,10 +260,12 @@ namespace Crom.Controls
 
                 if (textBounds.Width > 0 && textBounds.Height > 0)
                 {
-                    using (Bitmap textImg = new Bitmap(textBounds.Width, textBounds.Height))
+                    using (var textImg = new Bitmap(textBounds.Width, textBounds.Height))
                     {
-                        using (Graphics gt = Graphics.FromImage(textImg))
+                        using (var gt = Graphics.FromImage(textImg))
                         {
+                            gt.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+
                             TextRenderer.DrawText(gt, text, drawFont, textBounds, drawColor,
                                TextFormatFlags.ModifyString | TextFormatFlags.EndEllipsis | TextFormatFlags.SingleLine |
                                TextFormatFlags.VerticalCenter | TextFormatFlags.WordEllipsis);
