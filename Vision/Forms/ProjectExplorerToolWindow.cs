@@ -176,7 +176,7 @@ namespace Vision.Forms
                 case DisplayType.Folder:
                     break;
                 case DisplayType.Browser:
-                    var browserForm = MainForm.GetInstance().OpenBrowser();
+                    var browserForm = MainForm.GetInstance().OpenWebBrowser();
                     browserForm.Text = node.Title;
                     browserForm.SetTag(node);
                     browserForm.Navigate(node.Url);
@@ -257,7 +257,7 @@ namespace Vision.Forms
             }
             else if (e.KeyCode == Keys.Delete)
             {
-                var dialogResult = MessageBox.Show("Sure to this node?", "Warning", MessageBoxButtons.YesNoCancel);
+                var dialogResult = MessageBox.Show("Sure to remove this node?", "Warning", MessageBoxButtons.YesNoCancel);
 
                 if (dialogResult == DialogResult.Yes)
                 {
@@ -329,8 +329,6 @@ namespace Vision.Forms
 
         private void treeView_DragOver(object sender, DragEventArgs e)
         {
-            UnhighlightTreeNodes();
-
             if ((e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move)
             {
                 e.Effect = DragDropEffects.Move;
@@ -410,7 +408,6 @@ namespace Vision.Forms
 
         private void treeView1_DragLeave(object sender, EventArgs e)
         {
-            UnhighlightTreeNodes();
         }
 
         private void expandButton_Click(object sender, EventArgs e)
@@ -921,8 +918,6 @@ namespace Vision.Forms
             ReloadTree();
         }
 
-        private HashSet<TreeNode> _highlightedTreeNodes = new HashSet<TreeNode>();
-
         private void HighlightNodeAtPoint(Point point)
         {
             var pt = treeView1.PointToClient(point);
@@ -930,31 +925,7 @@ namespace Vision.Forms
 
             if (treeNode != null)
             {
-                if (_highlightedTreeNodes.Contains(treeNode))
-                {
-                    return;
-                }
-
-                treeNode.ForeColor = Color.Orange;
-
-                lock (_highlightedTreeNodes)
-                {
-                    _highlightedTreeNodes.Add(treeNode);
-                }
-            }
-        }
-
-        private void UnhighlightTreeNodes()
-        {
-            lock (_highlightedTreeNodes)
-            {
-                treeView1.BeginUpdate();
-                foreach (var treeNode in _highlightedTreeNodes)
-                {
-                    treeNode.ForeColor = Color.Black;
-                }
-                treeView1.EndUpdate();
-                _highlightedTreeNodes.Clear();
+                treeView1.SelectedNode = treeNode;
             }
         }
 
@@ -1078,14 +1049,14 @@ namespace Vision.Forms
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(181, 26);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveFileMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(181, 26);
             this.exportToolStripMenuItem.Text = "&Export";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportFileMenuItem_Click);
             // 
@@ -1161,7 +1132,7 @@ namespace Vision.Forms
             this.modeNodeUpToolStripMenuItem.Name = "modeNodeUpToolStripMenuItem";
             this.modeNodeUpToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
             this.modeNodeUpToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
-            this.modeNodeUpToolStripMenuItem.Text = "Mode Node &Up";
+            this.modeNodeUpToolStripMenuItem.Text = "Move Node &Up";
             this.modeNodeUpToolStripMenuItem.Click += new System.EventHandler(this.moveNodeUpMenuItem_Click);
             // 
             // moveNodeDownToolStripMenuItem

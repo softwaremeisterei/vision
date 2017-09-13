@@ -41,6 +41,7 @@
             // 
             // dockContainer1
             // 
+            this.dockContainer1.AllowDrop = true;
             this.dockContainer1.BackColor = System.Drawing.SystemColors.Window;
             this.dockContainer1.BottomPanelHeight = 150;
             this.dockContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -59,6 +60,8 @@
             this.dockContainer1.TabButtonShowSelection = false;
             this.dockContainer1.TabIndex = 0;
             this.dockContainer1.TopPanelHeight = 150;
+            this.dockContainer1.DragDrop += new System.Windows.Forms.DragEventHandler(this.dockContainer1_DragDrop);
+            this.dockContainer1.DragOver += new System.Windows.Forms.DragEventHandler(this.dockContainer1_DragOver);
             // 
             // menuStrip1
             // 

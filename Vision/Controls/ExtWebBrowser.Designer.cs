@@ -31,10 +31,10 @@
             this.forwardButton = new System.Windows.Forms.Button();
             this.backButton = new System.Windows.Forms.Button();
             this.goButton = new System.Windows.Forms.Button();
-            this.urlTextBox = new System.Windows.Forms.TextBox();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.clearUrlButton = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.urlTextBox = new Vision.Controls.DragTextBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -61,22 +61,13 @@
             // goButton
             // 
             this.goButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.goButton.Location = new System.Drawing.Point(504, 3);
+            this.goButton.Location = new System.Drawing.Point(504, 2);
             this.goButton.Name = "goButton";
-            this.goButton.Size = new System.Drawing.Size(42, 24);
+            this.goButton.Size = new System.Drawing.Size(42, 27);
             this.goButton.TabIndex = 4;
             this.goButton.Text = "Go!";
             this.goButton.UseVisualStyleBackColor = true;
-            // 
-            // urlTextBox
-            // 
-            this.urlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.urlTextBox.Location = new System.Drawing.Point(53, 4);
-            this.urlTextBox.Name = "urlTextBox";
-            this.urlTextBox.Size = new System.Drawing.Size(423, 22);
-            this.urlTextBox.TabIndex = 2;
-            this.urlTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.urlTextBox_KeyDown);
+            this.goButton.Click += new System.EventHandler(this.goButton_Click);
             // 
             // webBrowser1
             // 
@@ -90,13 +81,14 @@
             this.webBrowser1.ScriptErrorsSuppressed = true;
             this.webBrowser1.Size = new System.Drawing.Size(543, 524);
             this.webBrowser1.TabIndex = 5;
+            this.webBrowser1.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webBrowser1_DocumentCompleted);
             // 
             // clearUrlButton
             // 
             this.clearUrlButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.clearUrlButton.Location = new System.Drawing.Point(478, 3);
+            this.clearUrlButton.Location = new System.Drawing.Point(478, 2);
             this.clearUrlButton.Name = "clearUrlButton";
-            this.clearUrlButton.Size = new System.Drawing.Size(24, 24);
+            this.clearUrlButton.Size = new System.Drawing.Size(24, 27);
             this.clearUrlButton.TabIndex = 3;
             this.clearUrlButton.Text = "✕";
             this.clearUrlButton.UseVisualStyleBackColor = true;
@@ -104,17 +96,29 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.urlTextBox);
             this.panel1.Controls.Add(this.backButton);
             this.panel1.Controls.Add(this.webBrowser1);
             this.panel1.Controls.Add(this.clearUrlButton);
             this.panel1.Controls.Add(this.goButton);
             this.panel1.Controls.Add(this.forwardButton);
-            this.panel1.Controls.Add(this.urlTextBox);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(549, 560);
             this.panel1.TabIndex = 10;
+            // 
+            // urlTextBox
+            // 
+            this.urlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.urlTextBox.Location = new System.Drawing.Point(55, 4);
+            this.urlTextBox.Name = "urlTextBox";
+            this.urlTextBox.Size = new System.Drawing.Size(417, 22);
+            this.urlTextBox.TabIndex = 2;
+            this.urlTextBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.urlTextBox_DragDrop);
+            this.urlTextBox.DragOver += new System.Windows.Forms.DragEventHandler(this.urlTextBox_DragOver);
+            this.urlTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.urlTextBox_KeyDown);
             // 
             // ExtWebBrowser
             // 
@@ -135,9 +139,9 @@
         private System.Windows.Forms.Button forwardButton;
         private System.Windows.Forms.Button backButton;
         private System.Windows.Forms.Button goButton;
-        private System.Windows.Forms.TextBox urlTextBox;
         private System.Windows.Forms.WebBrowser webBrowser1;
         private System.Windows.Forms.Button clearUrlButton;
         private System.Windows.Forms.Panel panel1;
+        private Controls.DragTextBox urlTextBox;
     }
 }

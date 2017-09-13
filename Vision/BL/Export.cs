@@ -46,6 +46,11 @@ namespace Vision.BL
                     }
                 }
 
+                if (!string.IsNullOrWhiteSpace(node.Url))
+                {
+                    writer.WriteLine("{0}{1}", indentSpacesContent, node.Url);
+                }
+
                 if (node.Nodes.Any())
                 {
                     Write(node.Nodes, writer, indent + 1);

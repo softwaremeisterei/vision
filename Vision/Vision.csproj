@@ -47,17 +47,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BL\Model\DisplayType.cs" />
+    <Compile Include="Controls\DragTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\DragTextBox.Designer.cs">
+      <DependentUpon>DragTextBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Docking\Forms\Internals\DockButtonFill.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Docking\Forms\Internals\DockButtonFill.designer.cs">
       <DependentUpon>DockButtonFill.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\BrowserToolWindow.cs">
+    <Compile Include="Forms\WebBrowserToolWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\BrowserToolWindow.Designer.cs">
-      <DependentUpon>BrowserToolWindow.cs</DependentUpon>
+    <Compile Include="Forms\WebBrowserToolWindow.Designer.cs">
+      <DependentUpon>WebBrowserToolWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Config.cs" />
     <Compile Include="Docking\Controls\DockContainer.cs">
@@ -131,6 +137,7 @@
     <Compile Include="Docking\Interfaces\ITitleData.cs" />
     <Compile Include="Interfaces\ISearchable.cs" />
     <Compile Include="Lib\RegularExpressions.cs" />
+    <Compile Include="Lib\WaitCursor.cs" />
     <Compile Include="Lib\WebBrowserTools.cs" />
     <Compile Include="BL\Model\Context.cs" />
     <Compile Include="BL\Model\Layout.cs" />
@@ -153,11 +160,14 @@
     <Compile Include="Docking\Utilities\DrawUtility.cs" />
     <Compile Include="Docking\Utilities\EnumUtility.cs" />
     <Compile Include="Docking\Utilities\TextUtility.cs" />
+    <EmbeddedResource Include="Controls\DragTextBox.resx">
+      <DependentUpon>DragTextBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Docking\Forms\Internals\DockButtonFill.resx">
       <DependentUpon>DockButtonFill.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\BrowserToolWindow.resx">
-      <DependentUpon>BrowserToolWindow.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\WebBrowserToolWindow.resx">
+      <DependentUpon>WebBrowserToolWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Docking\Controls\DockContainer.resx">
       <DependentUpon>DockContainer.cs</DependentUpon>

@@ -1,6 +1,6 @@
 ﻿namespace Vision
 {
-    partial class BrowserToolWindow
+    partial class WebBrowserToolWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BrowserToolWindow));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WebBrowserToolWindow));
             this.extWebBrowser1 = new Vision.ExtWebBrowser();
             this.SuspendLayout();
             // 
@@ -40,15 +40,18 @@
             this.extWebBrowser1.Name = "extWebBrowser1";
             this.extWebBrowser1.Size = new System.Drawing.Size(443, 385);
             this.extWebBrowser1.TabIndex = 0;
+            this.extWebBrowser1.DragDrop += new System.Windows.Forms.DragEventHandler(this.extWebBrowser1_DragDrop);
+            this.extWebBrowser1.DragOver += new System.Windows.Forms.DragEventHandler(this.extWebBrowser1_DragOver);
             // 
-            // BrowserToolWindow
+            // WebBrowserToolWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(443, 385);
             this.Controls.Add(this.extWebBrowser1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "BrowserToolWindow";
+            this.MaximizeBox = true;
+            this.Name = "WebBrowserToolWindow";
             this.Text = "Browser";
             this.ResumeLayout(false);
 
