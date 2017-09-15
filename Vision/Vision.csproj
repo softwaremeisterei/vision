@@ -137,6 +137,7 @@
     <Compile Include="Docking\Interfaces\ITitleData.cs" />
     <Compile Include="Interfaces\ISearchable.cs" />
     <Compile Include="Lib\RegularExpressions.cs" />
+    <Compile Include="Lib\Serialization.cs" />
     <Compile Include="Lib\WaitCursor.cs" />
     <Compile Include="Lib\WebBrowserTools.cs" />
     <Compile Include="BL\Model\Context.cs" />

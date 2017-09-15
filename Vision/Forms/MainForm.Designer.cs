@@ -51,7 +51,7 @@
             this.dockContainer1.Name = "dockContainer1";
             this.dockContainer1.RightPanelWidth = 150;
             this.dockContainer1.SelectToolWindowsOnHoover = false;
-            this.dockContainer1.Size = new System.Drawing.Size(1320, 756);
+            this.dockContainer1.Size = new System.Drawing.Size(782, 528);
             this.dockContainer1.TabButtonNotSelectedColor = System.Drawing.Color.DarkGray;
             this.dockContainer1.TabButtonSelectedBackColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(242)))), ((int)(((byte)(200)))));
             this.dockContainer1.TabButtonSelectedBackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(215)))), ((int)(((byte)(157)))));
@@ -61,6 +61,7 @@
             this.dockContainer1.TabIndex = 0;
             this.dockContainer1.TopPanelHeight = 150;
             this.dockContainer1.DragDrop += new System.Windows.Forms.DragEventHandler(this.dockContainer1_DragDrop);
+            this.dockContainer1.DragEnter += new System.Windows.Forms.DragEventHandler(this.dockContainer1_DragEnter);
             this.dockContainer1.DragOver += new System.Windows.Forms.DragEventHandler(this.dockContainer1_DragOver);
             // 
             // menuStrip1
@@ -71,7 +72,7 @@
             this.viewToolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1320, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(782, 28);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -120,14 +121,17 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1320, 784);
+            this.ClientSize = new System.Drawing.Size(782, 553);
             this.Controls.Add(this.dockContainer1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.Text = "Visi<o>n";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.ResizeEnd += new System.EventHandler(this.MainForm_ResizeEnd);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
