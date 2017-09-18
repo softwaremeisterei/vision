@@ -71,6 +71,11 @@ namespace Docking.Controls
 
         #region Public section.
 
+        public List<ToolWindow> GetToolWindows()
+        {
+            return _dockableToolWindows;
+        }
+
         #region Tab buttons properties.
 
         /// <summary>

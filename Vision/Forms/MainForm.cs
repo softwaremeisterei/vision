@@ -166,6 +166,15 @@ namespace Vision.Forms
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            foreach(var child in dockContainer1.GetToolWindows())
+            {
+                if (!child.TryClose())
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+
             Properties.Settings.Default.LeftPanelWidth = dockContainer1.LeftPanelWidth;
             Properties.Settings.Default.Save();
         }

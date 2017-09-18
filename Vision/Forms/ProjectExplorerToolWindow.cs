@@ -88,22 +88,6 @@ namespace Vision.Forms
 
         private void DockableExplorer_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (_dirty)
-            {
-                var dialogResult = MessageBox.Show("You have unsaved changes.\nDo you want to save before closing?", "Warning", MessageBoxButtons.YesNoCancel);
-                switch (dialogResult)
-                {
-                    case DialogResult.Yes:
-                        if (!SaveProject())
-                        {
-                            e.Cancel = true;
-                        };
-                        break;
-                    case DialogResult.Cancel:
-                        e.Cancel = true;
-                        break;
-                }
-            }
         }
 
         private void saveFileMenuItem_Click(object sender, EventArgs e)
@@ -958,7 +942,6 @@ namespace Vision.Forms
             }
         }
 
-        #region InitializeComponent
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProjectExplorerToolWindow));
@@ -985,8 +968,8 @@ namespace Vision.Forms
             // treeView1
             // 
             this.treeView1.AllowDrop = true;
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView1.HideSelection = false;
             this.treeView1.LabelEdit = true;
@@ -1161,6 +1144,27 @@ namespace Vision.Forms
             this.PerformLayout();
 
         }
-        #endregion // InitializeComponent
+
+        public override bool TryClose()
+        {
+            if (_dirty)
+            {
+                var dialogResult = MessageBox.Show("You have unsaved changes.\nDo you want to save before closing?", "Warning", MessageBoxButtons.YesNoCancel);
+                switch (dialogResult)
+                {
+                    case DialogResult.Yes:
+                        if (!SaveProject())
+                        {
+                            return false;
+                        };
+                        break;
+                    case DialogResult.Cancel:
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
     }
 }

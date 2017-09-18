@@ -14,8 +14,6 @@ namespace Docking.Controls
     /// <remarks>Use this object as base class for your auto-dockable tool windows.</remarks>
     public class ToolWindow : Form, ITitleData
     {
-        #region Fields.
-
         private const int NCPAINT = 133;
         private const int NCACTIVATE = 134;
         private const int PAINT = 15;
@@ -64,10 +62,6 @@ namespace Docking.Controls
         /// </summary>
         private List<char> _title = new List<char>();
 
-        #endregion Fields.
-
-        #region Instance.
-
         /// <summary>
         /// Default constructor which creates a new instance of <see cref="ToolWindow"/>
         /// </summary>
@@ -87,10 +81,6 @@ namespace Docking.Controls
             SizeChanged += OnSizeChanged;
             FormClosing += OnFormClosing;
         }
-
-        #endregion Instance.
-
-        #region Public section.
 
         /// <summary>
         /// Returns the allowed dock values for the tool window which specialize this class
@@ -126,10 +116,6 @@ namespace Docking.Controls
         {
             get { return _dockMode; }
         }
-
-        #endregion Public section.
-
-        #region Protected section.
 
         /// <summary>
         /// Event raised when <see cref="ContextMenuStrip">ContextMenuStrip</see> for tool window will be shown.
@@ -456,7 +442,7 @@ namespace Docking.Controls
 
                 case EXITSIZEMOVE:
                     InvalidateForm();
-                    break;  
+                    break;
 
                 case NCLBUTTONUP:
                     _captureSuspended = false;
@@ -471,10 +457,6 @@ namespace Docking.Controls
                     break;
             }
         }
-
-        #endregion Protected section.
-
-        #region Private section.
 
         /// <summary>
         /// InitializeComponent
@@ -781,7 +763,7 @@ namespace Docking.Controls
         [DllImport("User32.dll")]
         private static extern IntPtr GetCapture();
 
+        public virtual bool TryClose() { return true; }
 
-        #endregion Private section.
     }
 }
