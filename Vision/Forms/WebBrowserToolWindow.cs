@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Vision.BL.Model;
 
-namespace Vision
+namespace Vision.Forms
 {
     public partial class WebBrowserToolWindow : ToolWindow
     {

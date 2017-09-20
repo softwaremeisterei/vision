@@ -1,4 +1,4 @@
-﻿namespace Vision
+﻿namespace Vision.Forms
 {
     partial class WebBrowserToolWindow
     {
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WebBrowserToolWindow));
-            this.extWebBrowser1 = new Vision.ExtWebBrowser();
+            this.extWebBrowser1 = new Controls.ExtWebBrowser();
             this.SuspendLayout();
             // 
             // extWebBrowser1
@@ -59,6 +59,6 @@
 
         #endregion
 
-        private ExtWebBrowser extWebBrowser1;
+        private Controls.ExtWebBrowser extWebBrowser1;
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Vision
+﻿namespace Vision.Controls
 {
     partial class ExtWebBrowser
     {

@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Vision.Lib
 {
-    class WebBrowserTools
+    public class WebBrowserTools
     {
         public static Bitmap GenerateScreenshot(WebBrowser wb, int width = -1, int height = -1)
         {

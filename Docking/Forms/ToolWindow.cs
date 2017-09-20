@@ -300,7 +300,7 @@ namespace Docking.Controls
         /// <summary>
         /// Title bar bounds in screen coordinates
         /// </summary>
-        internal Rectangle TitleBarScreenBounds
+        public Rectangle TitleBarScreenBounds
         {
             get
             {

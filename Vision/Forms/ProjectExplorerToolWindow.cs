@@ -58,7 +58,7 @@ namespace Vision.Forms
 
             _context = new Context();
             _persistor = new Persistor();
-            _findForm = new Forms.FindForm(this);
+            _findForm = new FindForm(this);
             InitContextMenu();
             OpenLastProject();
 
@@ -1142,7 +1142,6 @@ namespace Vision.Forms
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         public override bool TryClose()
@@ -1150,14 +1149,16 @@ namespace Vision.Forms
             if (_dirty)
             {
                 var dialogResult = MessageBox.Show("You have unsaved changes.\nDo you want to save before closing?", "Warning", MessageBoxButtons.YesNoCancel);
+
                 switch (dialogResult)
                 {
                     case DialogResult.Yes:
                         if (!SaveProject())
                         {
                             return false;
-                        };
+                        }
                         break;
+
                     case DialogResult.Cancel:
                         return false;
                 }

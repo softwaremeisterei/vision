@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using Vision.Lib;
 using Vision.BL.Model;
 
-namespace Vision
+namespace Vision.Controls
 {
     public partial class ExtWebBrowser : UserControl
     {

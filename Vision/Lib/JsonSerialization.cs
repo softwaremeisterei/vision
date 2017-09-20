@@ -6,9 +6,9 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lib.Serialization
+namespace Vision.Lib
 {
-    class Serialization
+    class JsonSerialization
     {
         public static string ToJson(Object obj)
         {
