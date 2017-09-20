@@ -14,12 +14,16 @@ namespace Vision.Forms
 {
     public partial class MainForm : Form
     {
-        private static MainForm _instance;
+        private static readonly MainForm _instance;
         private bool _isLoaded;
 
-        public MainForm()
+        static MainForm()
         {
-            _instance = this;
+            _instance = new MainForm();
+        }
+
+        private MainForm()
+        {
             InitializeComponent();
         }
 
@@ -166,7 +170,7 @@ namespace Vision.Forms
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            foreach(var child in dockContainer1.GetToolWindows())
+            foreach (var child in dockContainer1.GetToolWindows())
             {
                 if (!child.TryClose())
                 {

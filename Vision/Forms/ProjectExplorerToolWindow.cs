@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Vision.BL;
 using Vision.BL.Model;
+using Vision.Interfaces;
 using Vision.Lib;
 
 namespace Vision.Forms
@@ -30,7 +31,7 @@ namespace Vision.Forms
         Context _context;
         Persistor _persistor;
         private bool _dirty = false;
-        private static bool _modified = false;
+        private bool _modified = false;
         private string _currentProjectFilename;
         FindForm _findForm;
         private TreeView treeView1;

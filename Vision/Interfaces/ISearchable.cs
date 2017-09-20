@@ -1,4 +1,4 @@
-﻿namespace Vision
+﻿namespace Vision.Interfaces
 {
     public interface ISearchable
     {

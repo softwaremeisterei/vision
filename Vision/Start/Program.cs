@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Vision
+namespace Vision.Start
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace Vision
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Forms.MainForm());
+            Application.Run(Forms.MainForm.GetInstance());
         }
     }
 }

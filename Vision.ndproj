@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <NDepend AppName="Vision" Platform="DotNet" FileWrittenByProductVersion="2017.2.2.8962">
   <OutputDir KeepXmlFiles="False">E:\Dev\Vision.Forms\NDependOut</OutputDir>
   <Assemblies>
@@ -11,16 +11,17 @@
     <Name>System.Drawing</Name>
     <Name>System.Runtime.Serialization</Name>
     <Name>System.Core</Name>
+    <Name>Docking</Name>
   </FrameworkAssemblies>
   <Dirs>
-    <Dir>E:\Dev\Vision.Forms\Vision\bin\Debug</Dir>
     <Dir>C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319</Dir>
     <Dir>C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\WPF</Dir>
+    <Dir>E:\Dev\Vision.Forms\Vision\bin\Debug</Dir>
   </Dirs>
   <MergeCodeGeneratedByCompiler>True</MergeCodeGeneratedByCompiler>
   <Report Kind="0" SectionsEnabled="110591" XslPath="" Flags="261120" />
   <BuildComparisonSetting ProjectMode="CurrentProject" BuildMode="NDaysAgoAnalysisResult" ProjectFileToCompareWith="" BuildFileToCompareWith="" NDaysAgo="30" />
-  <BaselineInUISetting ProjectMode="CurrentProject" BuildMode="NDaysAgoAnalysisResult" ProjectFileToCompareWith="" BuildFileToCompareWith="" NDaysAgo="30" />
+  <BaselineInUISetting ProjectMode="CurrentProject" BuildMode="NDaysAgoAnalysisResult" ProjectFileToCompareWith="E:\Dev\Vision.Forms\Vision.ndproj" BuildFileToCompareWith="E:\Dev\Vision.Forms\NDependOut\NDependAnalysisResult_Vision_2017Sep20_06h40.ndar" NDaysAgo="30" />
   <CoverageFiles CoverageDir="" UncoverableAttribute="" />
   <TrendMetrics UseCustomLog="False" LogRecurrence="3" LogLabel="2" UseCustomDir="False" CustomDir="">
     <Chart Name="Size" ShowInReport="True">
@@ -81,8 +82,7 @@
       <High2Critical_SeverityThreshold>72000000000</High2Critical_SeverityThreshold>
       <Critical2Blocker_SeverityThreshold>360000000000</Critical2Blocker_SeverityThreshold>
     </DebtSettings>
-  </ProjectDebtSettings>
-  <Queries>
+  </ProjectDebtSettings><Queries>
     <Group Name="Quality Gates" Active="True" ShownInReport="True">
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Quality Gates Evolution</Name>
 from qg in QualityGates
@@ -10940,6 +10940,4 @@ select new {
 //</HowToFix>]]></Query>
       </Group>
     </Group>
-  </Queries>
-  <WarnFilter />
-</NDepend>
+  </Queries></NDepend>
