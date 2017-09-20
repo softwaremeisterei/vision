@@ -112,5 +112,19 @@ namespace Vision.Controls
                 Navigate(url);
             }
         }
+
+        private void webBrowser1_NewWindow(object sender, CancelEventArgs e)
+        {
+            e.Cancel = true;
+            Forms.MainForm.GetInstance().OpenWebBrowser(Docking.Controls.DockMode.Fill, webBrowser1.StatusText);
+        }
+
+        private void webBrowser1_Navigating(object sender, WebBrowserNavigatingEventArgs e)
+        {
+            if (e.TargetFrameName != string.Empty)
+            {
+                e.Cancel = true;
+            }
+        }
     }
 }

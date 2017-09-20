@@ -8,6 +8,5 @@ namespace Vision
 {
     class Config
     {
-        public const string SETTINGS_LASTPROJECTFILE = "LastProjectFile";
     }
 }

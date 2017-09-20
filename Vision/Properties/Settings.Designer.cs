@@ -25,13 +25,12 @@ namespace Vision.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LastProjectFile {
+        public global::System.Collections.Specialized.StringCollection OpenProjectFiles {
             get {
-                return ((string)(this["LastProjectFile"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["OpenProjectFiles"]));
             }
             set {
-                this["LastProjectFile"] = value;
+                this["OpenProjectFiles"] = value;
             }
         }
         

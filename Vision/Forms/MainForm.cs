@@ -35,7 +35,36 @@ namespace Vision.Forms
         private void MainForm_Load(object sender, EventArgs e)
         {
             IsMdiContainer = true;
+            RestoreLastWindowLayout();
 
+            OpenLastProjects();
+
+            _isLoaded = true;
+        }
+
+        private void OpenLastProjects()
+        {
+            if (Properties.Settings.Default.OpenProjectFiles == null)
+            {
+                return;
+            }
+
+            foreach (var projectFile in Properties.Settings.Default.OpenProjectFiles)
+            {
+                var explorer = OpenExplorer();
+                explorer.FormClosing += Explorer_FormClosing;
+                explorer.OpenProject(projectFile);
+            }
+        }
+
+        private void Explorer_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            var explorer = (ProjectExplorerToolWindow)sender;
+            Properties.Settings.Default.OpenProjectFiles.Remove(explorer.ProjectFile);
+        }
+
+        private void RestoreLastWindowLayout()
+        {
             if (Properties.Settings.Default.WindowSize.Height > 0)
             {
                 Size = Properties.Settings.Default.WindowSize;
@@ -50,10 +79,6 @@ namespace Vision.Forms
             {
                 dockContainer1.LeftPanelWidth = Properties.Settings.Default.LeftPanelWidth;
             }
-
-            OpenExplorer();
-
-            _isLoaded = true;
         }
 
         private void fileOpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -69,12 +94,36 @@ namespace Vision.Forms
 
                 var explorer = OpenExplorer();
                 explorer.OpenProject(fileName);
+
+                Properties.Settings.Default.OpenProjectFiles.Add(fileName);
+                Properties.Settings.Default.Save();
             }
         }
 
         private void fileNewToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenExplorer();
+            var saveFileDialog = new SaveFileDialog();
+
+            saveFileDialog.Filter = "Vision projects (*.visionproj)|*.visionproj";
+            saveFileDialog.FilterIndex = 2;
+            saveFileDialog.RestoreDirectory = true;
+
+            var dialogResult = saveFileDialog.ShowDialog();
+
+            if (dialogResult == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            if (dialogResult == DialogResult.OK)
+            {
+                var explorer = OpenExplorer();
+                explorer.ProjectFile = saveFileDialog.FileName;
+                explorer.SaveProject();
+
+                Properties.Settings.Default.OpenProjectFiles.Add(explorer.ProjectFile);
+                Properties.Settings.Default.Save();
+            }
         }
 
         private void viewBrowserToolStripMenuItem_Click(object sender, EventArgs e)

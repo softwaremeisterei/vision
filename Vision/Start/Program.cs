@@ -14,6 +14,11 @@ namespace Vision.Start
         [STAThread]
         static void Main()
         {
+            if (Properties.Settings.Default.OpenProjectFiles == null)
+            {
+                Properties.Settings.Default.OpenProjectFiles = new System.Collections.Specialized.StringCollection();
+            }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(Forms.MainForm.GetInstance());

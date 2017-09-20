@@ -32,7 +32,6 @@ namespace Vision.Forms
         Persistor _persistor;
         private bool _dirty = false;
         private bool _modified = false;
-        private string _currentProjectFilename;
         FindForm _findForm;
         private TreeView treeView1;
         private Button expandButton;
@@ -53,6 +52,8 @@ namespace Vision.Forms
         private ToolStripMenuItem saveToolStripMenuItem;
         private ContextMenuStrip _docMenu;
 
+        public string ProjectFile { get; internal set; }
+
         public ProjectExplorerToolWindow()
         {
             this.InitializeComponent();
@@ -61,7 +62,6 @@ namespace Vision.Forms
             _persistor = new Persistor();
             _findForm = new FindForm(this);
             InitContextMenu();
-            OpenLastProject();
 
             ActiveControl = treeView1;
             ClearDirtyFlag();
@@ -183,16 +183,18 @@ namespace Vision.Forms
 
             if (node.Title == node.Url)
             {
-                node.Title = webBrowser.DocumentTitle;
-                var treeNode = FindTreeNodeByNodeId(node.Id);
-
-                if (treeNode != null)
+                if (!string.IsNullOrWhiteSpace(webBrowser.DocumentTitle))
                 {
-                    treeNode.Text = node.Title;
+                    node.Title = webBrowser.DocumentTitle;
+                    var treeNode = FindTreeNodeByNodeId(node.Id);
+
+                    if (treeNode != null)
+                    {
+                        treeNode.Text = node.Title;
+                    }
+
+                    SetDirty(false);
                 }
-
-                SetDirty(false);
-
             }
 
             treeView1.Focus();
@@ -578,35 +580,13 @@ namespace Vision.Forms
         {
             UpdateLayoutData(treeView1.Nodes);
 
-            if (_currentProjectFilename == null)
-            {
-                var saveFileDialog = new SaveFileDialog();
-
-                saveFileDialog.Filter = "Vision projects (*.visionproj)|*.visionproj";
-                saveFileDialog.FilterIndex = 2;
-                saveFileDialog.RestoreDirectory = true;
-
-                var dialogResult = saveFileDialog.ShowDialog();
-
-                if (dialogResult == DialogResult.Cancel)
-                {
-                    return false;
-                }
-
-                if (dialogResult == DialogResult.OK)
-                {
-                    _currentProjectFilename = saveFileDialog.FileName;
-                }
-            }
-
             try
             {
-                _persistor.Save(_context, _currentProjectFilename);
+                _persistor.Save(_context, ProjectFile);
                 ClearDirtyFlag();
             }
             catch
             {
-                _currentProjectFilename = null;
             }
 
             return true;
@@ -634,22 +614,10 @@ namespace Vision.Forms
             }
         }
 
-        private void OpenLastProject()
-        {
-            var lastProjectFile = Properties.Settings.Default[Config.SETTINGS_LASTPROJECTFILE] as String;
-
-            if (!string.IsNullOrWhiteSpace(lastProjectFile))
-            {
-                OpenProject(lastProjectFile);
-            }
-        }
-
         public void OpenProject(string fileName)
         {
             _context = _persistor.Load(fileName);
-            _currentProjectFilename = fileName;
-            Properties.Settings.Default[Config.SETTINGS_LASTPROJECTFILE] = fileName;
-            Properties.Settings.Default.Save();
+            ProjectFile = fileName;
             ReloadTree();
             Text = Path.GetFileNameWithoutExtension(fileName);
         }
