@@ -50,6 +50,7 @@ namespace Vision.Forms
         private ToolStripMenuItem moveNodeDownToolStripMenuItem;
         private ToolStripMenuItem modeNodeUpToolStripMenuItem;
         private ToolStripMenuItem saveToolStripMenuItem;
+        private CheckBox autoSaveCheckBox;
         private ContextMenuStrip _docMenu;
 
         public string ProjectFile { get; internal set; }
@@ -61,7 +62,10 @@ namespace Vision.Forms
             _context = new Context();
             _persistor = new Persistor();
             _findForm = new FindForm(this);
+
             InitContextMenu();
+
+            autoSaveCheckBox.Checked = Properties.Settings.Default.AutoSave;
 
             ActiveControl = treeView1;
             ClearDirtyFlag();
@@ -193,7 +197,7 @@ namespace Vision.Forms
                         treeNode.Text = node.Title;
                     }
 
-                    SetDirty(false);
+                    SetDirty(true);
                 }
             }
 
@@ -307,7 +311,16 @@ namespace Vision.Forms
 
         private void treeView_ItemDrag(object sender, ItemDragEventArgs e)
         {
-            DoDragDrop(e.Item, DragDropEffects.Copy | DragDropEffects.Move);
+            if (Control.ModifierKeys == Keys.Shift)
+            {
+                DoDragDrop(e.Item, DragDropEffects.Copy | DragDropEffects.Move);
+            }
+            else
+            {
+                var node = (Node)((TreeNode)e.Item).Tag;
+                var data = node.Url ?? node.Title;
+                DoDragDrop(data, DragDropEffects.Copy | DragDropEffects.Move);
+            }
         }
 
         private void treeView_DragEnter(object sender, DragEventArgs e)
@@ -347,7 +360,7 @@ namespace Vision.Forms
                     SetDefaultDisplayType(node);
                     ReloadTree();
                     SelectNodeById(node.Id);
-                    SetDirty(false);
+                    SetDirty(true);
                 }
             }
             else if (e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false))
@@ -358,7 +371,6 @@ namespace Vision.Forms
                 var pt = treeView1.PointToClient(new Point(e.X, e.Y));
                 var destinationTreeNode = treeView1.GetNodeAt(pt);
                 var destinationNode = (Node)destinationTreeNode?.Tag;
-
 
                 if (node.Id == destinationNode?.Id)
                 {
@@ -389,7 +401,7 @@ namespace Vision.Forms
                 ReloadTree();
 
                 SelectNodeById(node.Id);
-                SetDirty(false);
+                SetDirty(true);
             }
         }
 
@@ -685,6 +697,11 @@ namespace Vision.Forms
             if (contentChanged)
             {
                 _modified = true;
+
+                if (Properties.Settings.Default.AutoSave)
+                {
+                    SaveProject();
+                }
             }
         }
 
@@ -931,20 +948,21 @@ namespace Vision.Forms
             this.addSiblingNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modeNodeUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moveNodeDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.autoSaveCheckBox = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeView1
             // 
             this.treeView1.AllowDrop = true;
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView1.HideSelection = false;
             this.treeView1.LabelEdit = true;
-            this.treeView1.Location = new System.Drawing.Point(12, 59);
+            this.treeView1.Location = new System.Drawing.Point(12, 31);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(616, 402);
+            this.treeView1.Size = new System.Drawing.Size(616, 406);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
             this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView_ItemDrag);
@@ -957,7 +975,8 @@ namespace Vision.Forms
             // 
             // expandButton
             // 
-            this.expandButton.Location = new System.Drawing.Point(12, 27);
+            this.expandButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.expandButton.Location = new System.Drawing.Point(12, 443);
             this.expandButton.Name = "expandButton";
             this.expandButton.Size = new System.Drawing.Size(91, 26);
             this.expandButton.TabIndex = 1;
@@ -967,7 +986,8 @@ namespace Vision.Forms
             // 
             // collapseButton
             // 
-            this.collapseButton.Location = new System.Drawing.Point(109, 27);
+            this.collapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.collapseButton.Location = new System.Drawing.Point(109, 443);
             this.collapseButton.Name = "collapseButton";
             this.collapseButton.Size = new System.Drawing.Size(91, 26);
             this.collapseButton.TabIndex = 1;
@@ -1001,14 +1021,14 @@ namespace Vision.Forms
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(181, 26);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveFileMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(181, 26);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
             this.exportToolStripMenuItem.Text = "&Export";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportFileMenuItem_Click);
             // 
@@ -1095,9 +1115,22 @@ namespace Vision.Forms
             this.moveNodeDownToolStripMenuItem.Text = "Move Node &Down";
             this.moveNodeDownToolStripMenuItem.Click += new System.EventHandler(this.moveNodeDownMenuItem_Click);
             // 
+            // autoSaveCheckBox
+            // 
+            this.autoSaveCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.autoSaveCheckBox.AutoSize = true;
+            this.autoSaveCheckBox.Location = new System.Drawing.Point(226, 446);
+            this.autoSaveCheckBox.Name = "autoSaveCheckBox";
+            this.autoSaveCheckBox.Size = new System.Drawing.Size(95, 21);
+            this.autoSaveCheckBox.TabIndex = 3;
+            this.autoSaveCheckBox.Text = "Auto Save";
+            this.autoSaveCheckBox.UseVisualStyleBackColor = true;
+            this.autoSaveCheckBox.CheckedChanged += new System.EventHandler(this.autoSaveCheckBox_CheckedChanged);
+            // 
             // ProjectExplorerToolWindow
             // 
             this.ClientSize = new System.Drawing.Size(640, 473);
+            this.Controls.Add(this.autoSaveCheckBox);
             this.Controls.Add(this.collapseButton);
             this.Controls.Add(this.expandButton);
             this.Controls.Add(this.treeView1);
@@ -1111,6 +1144,7 @@ namespace Vision.Forms
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         public override bool TryClose()
@@ -1136,5 +1170,15 @@ namespace Vision.Forms
             return true;
         }
 
+        private void autoSaveCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.AutoSave = autoSaveCheckBox.Checked;
+            Properties.Settings.Default.Save();
+
+            if (Properties.Settings.Default.AutoSave && _dirty)
+            {
+                SaveProject();
+            }
+        }
     }
 }

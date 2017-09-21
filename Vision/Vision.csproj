@@ -80,6 +80,68 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\ISearchable.cs" />
+    <Compile Include="Lib\Docking\Controls\DockContainer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Lib\Docking\Controls\DockContainer.designer.cs">
+      <DependentUpon>DockContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Lib\Docking\Engine\DockPanel.cs" />
+    <Compile Include="Lib\Docking\Engine\DockPanelsLayout.cs" />
+    <Compile Include="Lib\Docking\Engine\DockPanelsResizer.cs" />
+    <Compile Include="Lib\Docking\Engine\DockPreviewEngine.cs" />
+    <Compile Include="Lib\Docking\Engine\SideDockPanel.cs" />
+    <Compile Include="Lib\Docking\Engine\TabButton.cs" />
+    <Compile Include="Lib\Docking\Enums\DockMode.cs" />
+    <Compile Include="Lib\Docking\EventArgs\AutoHideEventArgs.cs" />
+    <Compile Include="Lib\Docking\EventArgs\ContextMenuEventArg.cs" />
+    <Compile Include="Lib\Docking\EventArgs\ToolSelectionChangedEventArgs.cs" />
+    <Compile Include="Lib\Docking\Forms\Internals\DockBottom.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Lib\Docking\Forms\Internals\DockBottom.Designer.cs">
+      <DependentUpon>DockBottom.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Lib\Docking\Forms\Internals\DockButton.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Lib\Docking\Forms\Internals\DockButtonFill.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Lib\Docking\Forms\Internals\DockButtonFill.designer.cs">
+      <DependentUpon>DockButtonFill.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Lib\Docking\Forms\Internals\DockLeft.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Lib\Docking\Forms\Internals\DockLeft.Designer.cs">
+      <DependentUpon>DockLeft.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Lib\Docking\Forms\Internals\DockPreview.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Lib\Docking\Forms\Internals\DockPreview.Designer.cs">
+      <DependentUpon>DockPreview.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Lib\Docking\Forms\Internals\DockRightButton.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Lib\Docking\Forms\Internals\DockRightButton.Designer.cs">
+      <DependentUpon>DockRightButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Lib\Docking\Forms\Internals\DockUp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Lib\Docking\Forms\Internals\DockUp.Designer.cs">
+      <DependentUpon>DockUp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Lib\Docking\Forms\ToolWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Lib\Docking\Interfaces\ITitleData.cs" />
+    <Compile Include="Lib\Docking\Utilities\DrawUtility.cs" />
+    <Compile Include="Lib\Docking\Utilities\EnumUtility.cs" />
+    <Compile Include="Lib\Docking\Utilities\TextUtility.cs" />
     <Compile Include="Lib\RegularExpressions.cs" />
     <Compile Include="Lib\JsonSerialization.cs" />
     <Compile Include="Lib\WaitCursor.cs" />
@@ -115,6 +177,32 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Lib\Docking\Controls\DockContainer.resx">
+      <DependentUpon>DockContainer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Lib\Docking\Forms\Internals\DockBottom.resx">
+      <DependentUpon>DockBottom.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Lib\Docking\Forms\Internals\DockButtonFill.resx">
+      <DependentUpon>DockButtonFill.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Lib\Docking\Forms\Internals\DockLeft.resx">
+      <DependentUpon>DockLeft.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Lib\Docking\Forms\Internals\DockPreview.resx">
+      <DependentUpon>DockPreview.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Lib\Docking\Forms\Internals\DockRightButton.resx">
+      <DependentUpon>DockRightButton.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Lib\Docking\Forms\Internals\DockUp.resx">
+      <DependentUpon>DockUp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Lib\Docking\Forms\ToolWindow.resx">
+      <DependentUpon>ToolWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -156,12 +244,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Logo.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Docking\Docking.csproj">
-      <Project>{16383f29-8d09-455c-9e3f-67f46fec22b0}</Project>
-      <Name>Docking</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

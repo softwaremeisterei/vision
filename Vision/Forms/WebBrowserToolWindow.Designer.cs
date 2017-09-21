@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WebBrowserToolWindow));
-            this.extWebBrowser1 = new Controls.ExtWebBrowser();
+            this.extWebBrowser1 = new Vision.Controls.ExtWebBrowser();
             this.SuspendLayout();
             // 
             // extWebBrowser1
@@ -45,6 +45,7 @@
             // 
             // WebBrowserToolWindow
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(443, 385);
