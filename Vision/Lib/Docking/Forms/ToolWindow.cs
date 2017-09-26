@@ -62,6 +62,8 @@ namespace Docking.Controls
         /// </summary>
         private List<char> _title = new List<char>();
 
+        public bool Dead { get; set; }
+
         /// <summary>
         /// Default constructor which creates a new instance of <see cref="ToolWindow"/>
         /// </summary>

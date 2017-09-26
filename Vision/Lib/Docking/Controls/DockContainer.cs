@@ -435,6 +435,8 @@ namespace Docking.Controls
         /// <param name="toolWindow">tool window to be removed</param>
         public void RemoveToolWindow(ToolWindow toolWindow)
         {
+            toolWindow.Dead = true;
+
             if (toolWindow.Parent == this)
             {
                 toolWindow.Parent = null;

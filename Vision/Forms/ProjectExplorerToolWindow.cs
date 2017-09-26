@@ -30,9 +30,9 @@ namespace Vision.Forms
         Timer _timer = new Timer();
         Context _context;
         Persistor _persistor;
+        private bool _loaded = true;
         private bool _dirty = false;
         private bool _modified = false;
-        private bool _preventExpandAndCollaps = false;
         FindForm _findForm;
         private TreeView treeView1;
         private Button expandButton;
@@ -52,7 +52,7 @@ namespace Vision.Forms
         private ToolStripMenuItem modeNodeUpToolStripMenuItem;
         private ToolStripMenuItem saveToolStripMenuItem;
         private CheckBox autoSaveCheckBox;
-        private ContextMenuStrip _docMenu;
+        private ContextMenuStrip _contextMenu;
 
         public string ProjectFile { get; internal set; }
 
@@ -112,7 +112,9 @@ namespace Vision.Forms
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
             this.treeView1.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeCollapse);
+            this.treeView1.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCollapse);
             this.treeView1.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeExpand);
+            this.treeView1.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterExpand);
             this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView_ItemDrag);
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
             this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
@@ -120,6 +122,7 @@ namespace Vision.Forms
             this.treeView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView_DragEnter);
             this.treeView1.DragOver += new System.Windows.Forms.DragEventHandler(this.treeView_DragOver);
             this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
+            this.treeView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.treeView1_MouseClick);
             // 
             // expandButton
             // 
@@ -503,13 +506,15 @@ namespace Vision.Forms
 
         private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            _preventExpandAndCollaps = IsUrlNode(e.Node);
-
-            treeView1.SelectedNode = e.Node;
         }
 
         private bool IsUrlNode(TreeNode treeNode)
         {
+            if (treeNode == null)
+            {
+                return false;
+            }
+
             var node = GetNode(treeNode);
             return (!string.IsNullOrWhiteSpace(node.Url)) || Regex.IsMatch(node.Title, RegularExpressions.URL);
         }
@@ -521,20 +526,20 @@ namespace Vision.Forms
 
         private void treeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
-            if (_preventExpandAndCollaps)
-            {
-                e.Cancel = true;
-                _preventExpandAndCollaps = false;
-            }
         }
 
         private void treeView1_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
         {
-            if (_preventExpandAndCollaps)
-            {
-                e.Cancel = true;
-                _preventExpandAndCollaps = false;
-            }
+        }
+
+        private void treeView1_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            SetDirty(false);
+        }
+
+        private void treeView1_AfterCollapse(object sender, TreeViewEventArgs e)
+        {
+            SetDirty(false);
         }
 
         private void ShowContent(TreeNode treeNode)
@@ -774,7 +779,7 @@ namespace Vision.Forms
 
         private void InitContextMenu()
         {
-            _docMenu = new ContextMenuStrip();
+            _contextMenu = new ContextMenuStrip();
 
             var addNodeMenuItem = new ToolStripMenuItem();
             addNodeMenuItem.Text = "Add Node";
@@ -788,7 +793,7 @@ namespace Vision.Forms
             renameNodeMenuItem.Text = "Rename";
             renameNodeMenuItem.Click += delegate { RenameSelectedNode(); };
 
-            _docMenu.Items.AddRange(new ToolStripMenuItem[] { addNodeMenuItem, deleteNodeMenuItem, renameNodeMenuItem });
+            _contextMenu.Items.AddRange(new ToolStripMenuItem[] { addNodeMenuItem, deleteNodeMenuItem, renameNodeMenuItem });
         }
 
         private TreeNode SelectNodeById(Guid id)
@@ -822,16 +827,21 @@ namespace Vision.Forms
         {
             var nodeId = GetNode(treeView1.SelectedNode)?.Id;
 
-            treeView1.SuspendLayout();
-            treeView1.Nodes.Clear();
-            ReloadNodes(null, _context.Nodes);
-
-            if (nodeId.HasValue)
+            try
             {
-                SelectNodeById(nodeId.Value);
-            }
+                treeView1.BeginUpdate();
+                treeView1.Nodes.Clear();
+                ReloadNodes(null, _context.Nodes);
 
-            treeView1.ResumeLayout();
+                if (nodeId.HasValue)
+                {
+                    SelectNodeById(nodeId.Value);
+                }
+            }
+            finally
+            {
+                treeView1.EndUpdate();
+            }
         }
 
         private void ReloadNodes(TreeNode parentNode, List<Node> nodes)
@@ -839,7 +849,7 @@ namespace Vision.Forms
             foreach (var node in nodes.OrderBy(n => n.Index))
             {
                 var treeNode = new TreeNode { Text = node.Title, Tag = node };
-                treeNode.ContextMenuStrip = _docMenu;
+                treeNode.ContextMenuStrip = _contextMenu;
 
                 if (parentNode != null)
                     parentNode.Nodes.Add(treeNode);
@@ -910,10 +920,19 @@ namespace Vision.Forms
 
         public void OpenProject(string fileName)
         {
-            _context = _persistor.Load(fileName);
-            ProjectFile = fileName;
-            ReloadTree();
-            Text = Path.GetFileNameWithoutExtension(fileName);
+            try
+            {
+                _loaded = false;
+
+                _context = _persistor.Load(fileName);
+                ProjectFile = fileName;
+                ReloadTree();
+                Text = Path.GetFileNameWithoutExtension(fileName);
+            }
+            finally
+            {
+                _loaded = true;
+            }
         }
 
         private void AddChildNode()
@@ -924,6 +943,7 @@ namespace Vision.Forms
             {
                 var parentNode = GetNode(parentTreeNode);
                 var treeNode = AddNode(parentNode);
+
                 if (treeNode != null)
                 {
                     treeNode.BeginEdit();
@@ -974,11 +994,19 @@ namespace Vision.Forms
 
         private void SetDirty(bool contentChanged)
         {
-            _dirty = true;
-
-            if (contentChanged)
+            if (Dead)
             {
-                _modified = true;
+                return;
+            }
+
+            if (_loaded)
+            {
+                _dirty = true;
+
+                if (contentChanged)
+                {
+                    _modified = true;
+                }
 
                 if (Properties.Settings.Default.AutoSave)
                 {
@@ -1243,6 +1271,10 @@ namespace Vision.Forms
             }
 
             return true;
+        }
+
+        private void treeView1_MouseClick(object sender, MouseEventArgs e)
+        {
         }
     }
 }
