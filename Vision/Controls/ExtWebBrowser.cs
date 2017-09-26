@@ -35,6 +35,11 @@ namespace Vision.Controls
             }
         }
 
+        internal string GetUrl()
+        {
+            return webBrowser1.Url.ToString();
+        }
+
         private void backButton_Click(object sender, EventArgs e)
         {
             webBrowser1.GoBack();

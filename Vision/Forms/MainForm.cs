@@ -236,5 +236,19 @@ namespace Vision.Forms
         {
             dockContainer1.RedrawDrawTabButtons();
         }
+
+        internal bool FindWebBrowserAndShow(string url)
+        {
+            foreach (var webBrowserToolwindow in dockContainer1.GetToolWindows().OfType<WebBrowserToolWindow>())
+            {
+                if (webBrowserToolwindow.GetUrl().Equals(url, StringComparison.OrdinalIgnoreCase))
+                {
+                    dockContainer1.SelectToolWindow(webBrowserToolwindow);
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

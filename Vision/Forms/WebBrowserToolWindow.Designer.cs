@@ -20,6 +20,11 @@
             base.Dispose(disposing);
         }
 
+        public string GetUrl()
+        {
+            return extWebBrowser1.GetUrl();
+        }
+
         #region Windows Form Designer generated code
 
         /// <summary>

@@ -370,11 +370,14 @@ namespace Vision.Forms
                 case DisplayType.Folder:
                     break;
                 case DisplayType.Browser:
-                    var browserForm = MainForm.GetInstance().OpenWebBrowser();
-                    browserForm.Text = node.Title;
-                    browserForm.SetTag(node);
-                    browserForm.Navigate(node.Url);
-                    browserForm.SetDocumentCompletedHandler(_contentWebBrowser_DocumentCompleted);
+                    if (!MainForm.GetInstance().FindWebBrowserAndShow(node.Url))
+                    {
+                        var browserForm = MainForm.GetInstance().OpenWebBrowser();
+                        browserForm.Text = node.Title;
+                        browserForm.SetTag(node);
+                        browserForm.Navigate(node.Url);
+                        browserForm.SetDocumentCompletedHandler(_contentWebBrowser_DocumentCompleted);
+                    }
                     break;
             }
         }
