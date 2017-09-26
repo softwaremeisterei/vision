@@ -70,27 +70,231 @@ namespace Vision.Forms
 
             ActiveControl = treeView1;
             ClearDirtyFlag();
-            SetupTimer();
+            SetupBackupTimer();
         }
 
-        private void SetupTimer()
+        #region InitializeComponent
+        private void InitializeComponent()
         {
-            _timer.Tick += new EventHandler(TimerEventProcessor);
-            _timer.Interval = 2000;
-            _timer.Start();
-        }
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProjectExplorerToolWindow));
+            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.expandButton = new System.Windows.Forms.Button();
+            this.collapseButton = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findNextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findPrevToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addToplevelNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addChildNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addSiblingNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modeNodeUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moveNodeDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.autoSaveCheckBox = new System.Windows.Forms.CheckBox();
+            this.menuStrip1.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // treeView1
+            // 
+            this.treeView1.AllowDrop = true;
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeView1.HideSelection = false;
+            this.treeView1.LabelEdit = true;
+            this.treeView1.Location = new System.Drawing.Point(12, 31);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(616, 406);
+            this.treeView1.TabIndex = 0;
+            this.treeView1.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
+            this.treeView1.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeCollapse);
+            this.treeView1.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeExpand);
+            this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView_ItemDrag);
+            this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+            this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
+            this.treeView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeView_DragDrop);
+            this.treeView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView_DragEnter);
+            this.treeView1.DragOver += new System.Windows.Forms.DragEventHandler(this.treeView_DragOver);
+            this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
+            // 
+            // expandButton
+            // 
+            this.expandButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.expandButton.Location = new System.Drawing.Point(12, 443);
+            this.expandButton.Name = "expandButton";
+            this.expandButton.Size = new System.Drawing.Size(91, 26);
+            this.expandButton.TabIndex = 1;
+            this.expandButton.Text = "Expand All";
+            this.expandButton.UseVisualStyleBackColor = true;
+            this.expandButton.Click += new System.EventHandler(this.expandButton_Click);
+            // 
+            // collapseButton
+            // 
+            this.collapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.collapseButton.Location = new System.Drawing.Point(109, 443);
+            this.collapseButton.Name = "collapseButton";
+            this.collapseButton.Size = new System.Drawing.Size(91, 26);
+            this.collapseButton.TabIndex = 1;
+            this.collapseButton.Text = "Collapse All";
+            this.collapseButton.UseVisualStyleBackColor = true;
+            this.collapseButton.Click += new System.EventHandler(this.collapseButton_Click);
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.editToolStripMenuItem,
+            this.contentToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(640, 28);
+            this.menuStrip1.TabIndex = 2;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveToolStripMenuItem,
+            this.exportToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
+            this.fileToolStripMenuItem.Text = "&File";
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
+            this.saveToolStripMenuItem.Text = "&Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveFileMenuItem_Click);
+            // 
+            // exportToolStripMenuItem
+            // 
+            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
+            this.exportToolStripMenuItem.Text = "&Export";
+            this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportFileMenuItem_Click);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.findToolStripMenuItem,
+            this.findNextToolStripMenuItem,
+            this.findPrevToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(47, 24);
+            this.editToolStripMenuItem.Text = "&Edit";
+            // 
+            // findToolStripMenuItem
+            // 
+            this.findToolStripMenuItem.Name = "findToolStripMenuItem";
+            this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(208, 26);
+            this.findToolStripMenuItem.Text = "&Find";
+            this.findToolStripMenuItem.Click += new System.EventHandler(this.findMenuItem_Click);
+            // 
+            // findNextToolStripMenuItem
+            // 
+            this.findNextToolStripMenuItem.Name = "findNextToolStripMenuItem";
+            this.findNextToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
+            this.findNextToolStripMenuItem.Size = new System.Drawing.Size(208, 26);
+            this.findNextToolStripMenuItem.Text = "Find &Next";
+            this.findNextToolStripMenuItem.Click += new System.EventHandler(this.findNextMenuItem_Click);
+            // 
+            // findPrevToolStripMenuItem
+            // 
+            this.findPrevToolStripMenuItem.Name = "findPrevToolStripMenuItem";
+            this.findPrevToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F3)));
+            this.findPrevToolStripMenuItem.Size = new System.Drawing.Size(208, 26);
+            this.findPrevToolStripMenuItem.Text = "Find &Prev";
+            this.findPrevToolStripMenuItem.Click += new System.EventHandler(this.findPrevMenuItem_Click);
+            // 
+            // contentToolStripMenuItem
+            // 
+            this.contentToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addToplevelNodeToolStripMenuItem,
+            this.addChildNodeToolStripMenuItem,
+            this.addSiblingNodeToolStripMenuItem,
+            this.modeNodeUpToolStripMenuItem,
+            this.moveNodeDownToolStripMenuItem});
+            this.contentToolStripMenuItem.Name = "contentToolStripMenuItem";
+            this.contentToolStripMenuItem.Size = new System.Drawing.Size(73, 24);
+            this.contentToolStripMenuItem.Text = "&Content";
+            // 
+            // addToplevelNodeToolStripMenuItem
+            // 
+            this.addToplevelNodeToolStripMenuItem.Name = "addToplevelNodeToolStripMenuItem";
+            this.addToplevelNodeToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
+            this.addToplevelNodeToolStripMenuItem.Text = "Add &Toplevel Node";
+            this.addToplevelNodeToolStripMenuItem.Click += new System.EventHandler(this.addToplevelNodeMenuItem_Click);
+            // 
+            // addChildNodeToolStripMenuItem
+            // 
+            this.addChildNodeToolStripMenuItem.Name = "addChildNodeToolStripMenuItem";
+            this.addChildNodeToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
+            this.addChildNodeToolStripMenuItem.Text = "Add &Child Node";
+            this.addChildNodeToolStripMenuItem.Click += new System.EventHandler(this.addChildNodeMenuItem_Click);
+            // 
+            // addSiblingNodeToolStripMenuItem
+            // 
+            this.addSiblingNodeToolStripMenuItem.Name = "addSiblingNodeToolStripMenuItem";
+            this.addSiblingNodeToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
+            this.addSiblingNodeToolStripMenuItem.Text = "Add &Sibling Node";
+            this.addSiblingNodeToolStripMenuItem.Click += new System.EventHandler(this.addSiblingNodeMenuItem_Click);
+            // 
+            // modeNodeUpToolStripMenuItem
+            // 
+            this.modeNodeUpToolStripMenuItem.Name = "modeNodeUpToolStripMenuItem";
+            this.modeNodeUpToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
+            this.modeNodeUpToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
+            this.modeNodeUpToolStripMenuItem.Text = "Move Node &Up";
+            this.modeNodeUpToolStripMenuItem.Click += new System.EventHandler(this.moveNodeUpMenuItem_Click);
+            // 
+            // moveNodeDownToolStripMenuItem
+            // 
+            this.moveNodeDownToolStripMenuItem.Name = "moveNodeDownToolStripMenuItem";
+            this.moveNodeDownToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
+            this.moveNodeDownToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
+            this.moveNodeDownToolStripMenuItem.Text = "Move Node &Down";
+            this.moveNodeDownToolStripMenuItem.Click += new System.EventHandler(this.moveNodeDownMenuItem_Click);
+            // 
+            // autoSaveCheckBox
+            // 
+            this.autoSaveCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.autoSaveCheckBox.AutoSize = true;
+            this.autoSaveCheckBox.Location = new System.Drawing.Point(226, 446);
+            this.autoSaveCheckBox.Name = "autoSaveCheckBox";
+            this.autoSaveCheckBox.Size = new System.Drawing.Size(95, 21);
+            this.autoSaveCheckBox.TabIndex = 3;
+            this.autoSaveCheckBox.Text = "Auto Save";
+            this.autoSaveCheckBox.UseVisualStyleBackColor = true;
+            this.autoSaveCheckBox.CheckedChanged += new System.EventHandler(this.autoSaveCheckBox_CheckedChanged);
+            // 
+            // ProjectExplorerToolWindow
+            // 
+            this.ClientSize = new System.Drawing.Size(640, 473);
+            this.Controls.Add(this.autoSaveCheckBox);
+            this.Controls.Add(this.collapseButton);
+            this.Controls.Add(this.expandButton);
+            this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.menuStrip1;
+            this.Name = "ProjectExplorerToolWindow";
+            this.Text = "Project Explorer";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DockableExplorer_FormClosing);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
 
-        private void TimerEventProcessor(Object myObject,
-                                            EventArgs myEventArgs)
-        {
-            if (_modified)
-            {
-                string rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var backupFilepath = Path.Combine(rootPath, "Vision.backup.txt");
-                Export(backupFilepath);
-                _modified = false;
-            }
         }
+        #endregion 
 
         private void DockableExplorer_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -311,6 +515,15 @@ namespace Vision.Forms
             }
         }
 
+        private void treeView1_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
+        {
+            if (_preventExpandAndCollaps)
+            {
+                e.Cancel = true;
+                _preventExpandAndCollaps = false;
+            }
+        }
+
         private void ShowContent(TreeNode treeNode)
         {
             var node = GetNode(treeNode);
@@ -495,6 +708,26 @@ namespace Vision.Forms
         private void moveNodeDownMenuItem_Click(object sender, EventArgs e)
         {
             MoveNodeDown();
+        }
+
+
+
+        private void SetupBackupTimer()
+        {
+            _timer.Tick += new EventHandler(BackupTimerEventHandler);
+            _timer.Interval = 2000;
+            _timer.Start();
+        }
+
+        private void BackupTimerEventHandler(Object myObject, EventArgs myEventArgs)
+        {
+            if (_modified)
+            {
+                string rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var backupFilepath = Path.Combine(rootPath, "Vision.backup.txt");
+                Export(backupFilepath);
+                _modified = false;
+            }
         }
 
 
@@ -976,227 +1209,6 @@ namespace Vision.Forms
             return (Node)treeNode.Tag;
         }
 
-        private void InitializeComponent()
-        {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProjectExplorerToolWindow));
-            this.treeView1 = new System.Windows.Forms.TreeView();
-            this.expandButton = new System.Windows.Forms.Button();
-            this.collapseButton = new System.Windows.Forms.Button();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.findNextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.findPrevToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.contentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addToplevelNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addChildNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addSiblingNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.modeNodeUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.moveNodeDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.autoSaveCheckBox = new System.Windows.Forms.CheckBox();
-            this.menuStrip1.SuspendLayout();
-            this.SuspendLayout();
-            // 
-            // treeView1
-            // 
-            this.treeView1.AllowDrop = true;
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.treeView1.HideSelection = false;
-            this.treeView1.LabelEdit = true;
-            this.treeView1.Location = new System.Drawing.Point(12, 31);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(616, 406);
-            this.treeView1.TabIndex = 0;
-            this.treeView1.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
-            this.treeView1.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeCollapse);
-            this.treeView1.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeExpand);
-            this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView_ItemDrag);
-            this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
-            this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
-            this.treeView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeView_DragDrop);
-            this.treeView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView_DragEnter);
-            this.treeView1.DragOver += new System.Windows.Forms.DragEventHandler(this.treeView_DragOver);
-            this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
-            // 
-            // expandButton
-            // 
-            this.expandButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.expandButton.Location = new System.Drawing.Point(12, 443);
-            this.expandButton.Name = "expandButton";
-            this.expandButton.Size = new System.Drawing.Size(91, 26);
-            this.expandButton.TabIndex = 1;
-            this.expandButton.Text = "Expand All";
-            this.expandButton.UseVisualStyleBackColor = true;
-            this.expandButton.Click += new System.EventHandler(this.expandButton_Click);
-            // 
-            // collapseButton
-            // 
-            this.collapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.collapseButton.Location = new System.Drawing.Point(109, 443);
-            this.collapseButton.Name = "collapseButton";
-            this.collapseButton.Size = new System.Drawing.Size(91, 26);
-            this.collapseButton.TabIndex = 1;
-            this.collapseButton.Text = "Collapse All";
-            this.collapseButton.UseVisualStyleBackColor = true;
-            this.collapseButton.Click += new System.EventHandler(this.collapseButton_Click);
-            // 
-            // menuStrip1
-            // 
-            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.editToolStripMenuItem,
-            this.contentToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(640, 28);
-            this.menuStrip1.TabIndex = 2;
-            this.menuStrip1.Text = "menuStrip1";
-            // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToolStripMenuItem,
-            this.exportToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
-            this.fileToolStripMenuItem.Text = "&File";
-            // 
-            // saveToolStripMenuItem
-            // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
-            this.saveToolStripMenuItem.Text = "&Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveFileMenuItem_Click);
-            // 
-            // exportToolStripMenuItem
-            // 
-            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(165, 26);
-            this.exportToolStripMenuItem.Text = "&Export";
-            this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportFileMenuItem_Click);
-            // 
-            // editToolStripMenuItem
-            // 
-            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.findToolStripMenuItem,
-            this.findNextToolStripMenuItem,
-            this.findPrevToolStripMenuItem});
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(47, 24);
-            this.editToolStripMenuItem.Text = "&Edit";
-            // 
-            // findToolStripMenuItem
-            // 
-            this.findToolStripMenuItem.Name = "findToolStripMenuItem";
-            this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.findToolStripMenuItem.Size = new System.Drawing.Size(208, 26);
-            this.findToolStripMenuItem.Text = "&Find";
-            this.findToolStripMenuItem.Click += new System.EventHandler(this.findMenuItem_Click);
-            // 
-            // findNextToolStripMenuItem
-            // 
-            this.findNextToolStripMenuItem.Name = "findNextToolStripMenuItem";
-            this.findNextToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.findNextToolStripMenuItem.Size = new System.Drawing.Size(208, 26);
-            this.findNextToolStripMenuItem.Text = "Find &Next";
-            this.findNextToolStripMenuItem.Click += new System.EventHandler(this.findNextMenuItem_Click);
-            // 
-            // findPrevToolStripMenuItem
-            // 
-            this.findPrevToolStripMenuItem.Name = "findPrevToolStripMenuItem";
-            this.findPrevToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F3)));
-            this.findPrevToolStripMenuItem.Size = new System.Drawing.Size(208, 26);
-            this.findPrevToolStripMenuItem.Text = "Find &Prev";
-            this.findPrevToolStripMenuItem.Click += new System.EventHandler(this.findPrevMenuItem_Click);
-            // 
-            // contentToolStripMenuItem
-            // 
-            this.contentToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addToplevelNodeToolStripMenuItem,
-            this.addChildNodeToolStripMenuItem,
-            this.addSiblingNodeToolStripMenuItem,
-            this.modeNodeUpToolStripMenuItem,
-            this.moveNodeDownToolStripMenuItem});
-            this.contentToolStripMenuItem.Name = "contentToolStripMenuItem";
-            this.contentToolStripMenuItem.Size = new System.Drawing.Size(73, 24);
-            this.contentToolStripMenuItem.Text = "&Content";
-            // 
-            // addToplevelNodeToolStripMenuItem
-            // 
-            this.addToplevelNodeToolStripMenuItem.Name = "addToplevelNodeToolStripMenuItem";
-            this.addToplevelNodeToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
-            this.addToplevelNodeToolStripMenuItem.Text = "Add &Toplevel Node";
-            this.addToplevelNodeToolStripMenuItem.Click += new System.EventHandler(this.addToplevelNodeMenuItem_Click);
-            // 
-            // addChildNodeToolStripMenuItem
-            // 
-            this.addChildNodeToolStripMenuItem.Name = "addChildNodeToolStripMenuItem";
-            this.addChildNodeToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
-            this.addChildNodeToolStripMenuItem.Text = "Add &Child Node";
-            this.addChildNodeToolStripMenuItem.Click += new System.EventHandler(this.addChildNodeMenuItem_Click);
-            // 
-            // addSiblingNodeToolStripMenuItem
-            // 
-            this.addSiblingNodeToolStripMenuItem.Name = "addSiblingNodeToolStripMenuItem";
-            this.addSiblingNodeToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
-            this.addSiblingNodeToolStripMenuItem.Text = "Add &Sibling Node";
-            this.addSiblingNodeToolStripMenuItem.Click += new System.EventHandler(this.addSiblingNodeMenuItem_Click);
-            // 
-            // modeNodeUpToolStripMenuItem
-            // 
-            this.modeNodeUpToolStripMenuItem.Name = "modeNodeUpToolStripMenuItem";
-            this.modeNodeUpToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
-            this.modeNodeUpToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
-            this.modeNodeUpToolStripMenuItem.Text = "Move Node &Up";
-            this.modeNodeUpToolStripMenuItem.Click += new System.EventHandler(this.moveNodeUpMenuItem_Click);
-            // 
-            // moveNodeDownToolStripMenuItem
-            // 
-            this.moveNodeDownToolStripMenuItem.Name = "moveNodeDownToolStripMenuItem";
-            this.moveNodeDownToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
-            this.moveNodeDownToolStripMenuItem.Size = new System.Drawing.Size(286, 26);
-            this.moveNodeDownToolStripMenuItem.Text = "Move Node &Down";
-            this.moveNodeDownToolStripMenuItem.Click += new System.EventHandler(this.moveNodeDownMenuItem_Click);
-            // 
-            // autoSaveCheckBox
-            // 
-            this.autoSaveCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.autoSaveCheckBox.AutoSize = true;
-            this.autoSaveCheckBox.Location = new System.Drawing.Point(226, 446);
-            this.autoSaveCheckBox.Name = "autoSaveCheckBox";
-            this.autoSaveCheckBox.Size = new System.Drawing.Size(95, 21);
-            this.autoSaveCheckBox.TabIndex = 3;
-            this.autoSaveCheckBox.Text = "Auto Save";
-            this.autoSaveCheckBox.UseVisualStyleBackColor = true;
-            this.autoSaveCheckBox.CheckedChanged += new System.EventHandler(this.autoSaveCheckBox_CheckedChanged);
-            // 
-            // ProjectExplorerToolWindow
-            // 
-            this.ClientSize = new System.Drawing.Size(640, 473);
-            this.Controls.Add(this.autoSaveCheckBox);
-            this.Controls.Add(this.collapseButton);
-            this.Controls.Add(this.expandButton);
-            this.Controls.Add(this.treeView1);
-            this.Controls.Add(this.menuStrip1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MainMenuStrip = this.menuStrip1;
-            this.Name = "ProjectExplorerToolWindow";
-            this.Text = "Project Explorer";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DockableExplorer_FormClosing);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
-        }
-
         public override bool TryClose()
         {
             if (_dirty)
@@ -1218,15 +1230,6 @@ namespace Vision.Forms
             }
 
             return true;
-        }
-
-        private void treeView1_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
-        {
-            if (_preventExpandAndCollaps)
-            {
-                e.Cancel = true;
-                _preventExpandAndCollaps = false;
-            }
         }
     }
 }
