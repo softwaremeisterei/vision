@@ -101,8 +101,8 @@ namespace Vision.Forms
             // treeView1
             // 
             this.treeView1.AllowDrop = true;
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView1.HideSelection = false;
             this.treeView1.LabelEdit = true;
@@ -406,7 +406,17 @@ namespace Vision.Forms
                 }
             }
 
+            UpdateTabTitle(webBrowser, node);
+
             treeView1.Focus();
+        }
+
+        private static void UpdateTabTitle(WebBrowser webBrowser, Node node)
+        {
+            var toolWindow = ((WebBrowserToolWindow)webBrowser.Parent.Parent.Parent);
+            toolWindow.Text = node.Title;
+            toolWindow.RefreshTabTitle();
+            MainForm.GetInstance().RedrawDockContainerTabButtons();
         }
 
         private void treeView1_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)

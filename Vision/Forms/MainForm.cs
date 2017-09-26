@@ -231,5 +231,10 @@ namespace Vision.Forms
             Properties.Settings.Default.LeftPanelWidth = dockContainer1.LeftPanelWidth;
             Properties.Settings.Default.Save();
         }
+
+        internal void RedrawDockContainerTabButtons()
+        {
+            dockContainer1.RedrawDrawTabButtons();
+        }
     }
 }

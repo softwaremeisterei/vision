@@ -142,6 +142,7 @@ namespace Docking.Controls
         public void DockToolWindow(ToolWindow toolWindow, DockMode dockMode)
         {
             DockPanel panel = GetPanel(dockMode);
+
             if (panel != null)
             {
                 panel.DockToolWindow(toolWindow);

@@ -11,8 +11,6 @@ namespace Docking.Controls
     /// </summary>
     public partial class DockContainer : UserControl
     {
-        #region Fields.
-
         private const int HooverMouseDelta = 10;
 
         private DockPanelsResizer _panels = null;
@@ -36,10 +34,6 @@ namespace Docking.Controls
 
         private Point _lastMouseLocation = new Point();
         private bool _selectToolWindowsOnHoover = false;
-
-        #endregion Fields.
-
-        #region Instance.
 
         /// <summary>
         /// Default constructor which creates a new instance of <see cref="DockContainer"/>
@@ -67,16 +61,12 @@ namespace Docking.Controls
             _panels.MinimumSizeChanged += OnMinimumSizeChanged;
         }
 
-        #endregion Instance.
-
-        #region Public section.
 
         public List<ToolWindow> GetToolWindows()
         {
             return _dockableToolWindows;
         }
 
-        #region Tab buttons properties.
 
         /// <summary>
         /// Color of the tab button text when the button is not selected.
@@ -186,7 +176,6 @@ namespace Docking.Controls
             }
         }
 
-        #endregion Tab buttons properties.
 
         /// <summary>
         /// This event occurs when the minimum allowed size for the container was changed.
@@ -704,9 +693,7 @@ namespace Docking.Controls
             return _panels.GetTopMostToolWindow(dockMode);
         }
 
-        #endregion Public section.
 
-        #region Protected section.
 
         /// <summary> 
         /// Clean up any resources being used.
@@ -752,10 +739,7 @@ namespace Docking.Controls
             base.Dispose(disposing);
         }
 
-        #endregion Protected section.
 
-        #region Private section.
-        #region Received events.
 
         /// <summary>
         /// Handler for the mouse down event
@@ -882,6 +866,18 @@ namespace Docking.Controls
             DrawHorizontalTabButtons(DockMode.Top, _panels.GetPanelButtonsBounds(DockMode.Top), _panels.GetPanelVisibleToolWindows(DockMode.Top), g);
             DrawHorizontalTabButtons(DockMode.Bottom, _panels.GetPanelButtonsBounds(DockMode.Bottom), _panels.GetPanelVisibleToolWindows(DockMode.Bottom), g);
             DrawHorizontalTabButtons(DockMode.Fill, _panels.GetPanelButtonsBounds(DockMode.Fill), _panels.GetPanelVisibleToolWindows(DockMode.Fill), g);
+        }
+
+        public void RedrawDrawTabButtons()
+        {
+            Invalidate(_panels.GetFixedButtonsBounds(DockMode.Left));
+            Invalidate(_panels.GetFixedButtonsBounds(DockMode.Left));
+            Invalidate(_panels.GetFixedButtonsBounds(DockMode.Right));
+            Invalidate(_panels.GetPanelButtonsBounds(DockMode.Left));
+            Invalidate(_panels.GetPanelButtonsBounds(DockMode.Right));
+            Invalidate(_panels.GetPanelButtonsBounds(DockMode.Top));
+            Invalidate(_panels.GetPanelButtonsBounds(DockMode.Bottom));
+            Invalidate(_panels.GetPanelButtonsBounds(DockMode.Fill));
         }
 
         /// <summary>
@@ -1142,7 +1138,6 @@ namespace Docking.Controls
             IncreaseStateCheckFrequency();
         }
 
-        #endregion Received events.
 
         /// <summary>
         /// Raise context menu request
@@ -1479,6 +1474,5 @@ namespace Docking.Controls
             return Cursor == Cursors.HSplit || Cursor == Cursors.VSplit;
         }
 
-        #endregion Private section.
     }
 }

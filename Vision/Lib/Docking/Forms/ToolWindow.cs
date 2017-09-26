@@ -494,6 +494,11 @@ namespace Docking.Controls
                 _boundsBeforeLock = Bounds;
             }
 
+            RefreshTabTitle();
+        }
+
+        public void RefreshTabTitle()
+        {
             if (InternalTitle() == null)
             {
                 SaveTitleText(Text);
