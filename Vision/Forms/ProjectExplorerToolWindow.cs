@@ -27,12 +27,15 @@ namespace Vision.Forms
     /// <remarks>Use this object as base class for your auto-dockable tool windows.</remarks>
     public class ProjectExplorerToolWindow : ToolWindow, ISearchable
     {
+        private const int STATEIMAGE_FAVORITE = 0;
+
         Timer _timer = new Timer();
         Context _context;
         Persistor _persistor;
         private bool _loaded = true;
         private bool _dirty = false;
-        private bool _modified = false;
+        private bool _backupRequired = false;
+        private bool _reloading;
         FindForm _findForm;
         private TreeView treeView1;
         private Button expandButton;
@@ -60,17 +63,26 @@ namespace Vision.Forms
         {
             this.InitializeComponent();
 
+            SetupTreeView();
+
             _context = new Context();
             _persistor = new Persistor();
             _findForm = new FindForm(this);
 
             InitContextMenu();
 
+            ClearDirtyFlag();
+            SetupTimer();
+
             autoSaveCheckBox.Checked = Properties.Settings.Default.AutoSave;
 
             ActiveControl = treeView1;
-            ClearDirtyFlag();
-            SetupBackupTimer();
+        }
+
+        private void SetupTreeView()
+        {
+            treeView1.StateImageList = new ImageList();
+            treeView1.StateImageList.Images.Add(new Bitmap(Properties.Resources.tvImage1));
         }
 
         #region InitializeComponent
@@ -101,8 +113,8 @@ namespace Vision.Forms
             // treeView1
             // 
             this.treeView1.AllowDrop = true;
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView1.HideSelection = false;
             this.treeView1.LabelEdit = true;
@@ -469,7 +481,7 @@ namespace Vision.Forms
             }
             else if (e.KeyCode == Keys.F2)
             {
-                RenameSelectedNode();
+                Rename();
                 e.Handled = true;
             }
             else if (e.KeyCode == Keys.Delete)
@@ -506,6 +518,7 @@ namespace Vision.Forms
 
         private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
+            treeView1.SelectedNode = e.Node;
         }
 
         private bool IsUrlNode(TreeNode treeNode)
@@ -612,6 +625,7 @@ namespace Vision.Forms
                     string nodeTitle = e.Data.GetData(DataFormats.Text).ToString();
                     node.Title = nodeTitle;
                     SetDefaultDisplayType(treeNode);
+                    UpdateLayoutData(treeView1.Nodes);
                     ReloadTree();
                     SelectNodeById(node.Id);
                     SetDirty(true);
@@ -652,6 +666,7 @@ namespace Vision.Forms
                     _context.Nodes.Add(node);
                 }
 
+                UpdateLayoutData(treeView1.Nodes);
                 ReloadTree();
 
                 SelectNodeById(node.Id);
@@ -730,21 +745,26 @@ namespace Vision.Forms
 
 
 
-        private void SetupBackupTimer()
+        private void SetupTimer()
         {
-            _timer.Tick += new EventHandler(BackupTimerEventHandler);
-            _timer.Interval = 2000;
+            _timer.Tick += new EventHandler(TimerEventHandler);
+            _timer.Interval = 1000;
             _timer.Start();
         }
 
-        private void BackupTimerEventHandler(Object myObject, EventArgs myEventArgs)
+        private void TimerEventHandler(Object myObject, EventArgs myEventArgs)
         {
-            if (_modified)
+            if (_backupRequired)
             {
                 string rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var backupFilepath = Path.Combine(rootPath, "Vision.backup.txt");
                 Export(backupFilepath);
-                _modified = false;
+                _backupRequired = false;
+            }
+
+            if (Properties.Settings.Default.AutoSave && _dirty)
+            {
+                SaveProject();
             }
         }
 
@@ -785,15 +805,19 @@ namespace Vision.Forms
             addNodeMenuItem.Text = "Add Node";
             addNodeMenuItem.Click += delegate { AddChildNode(); };
 
-            var deleteNodeMenuItem = new ToolStripMenuItem();
-            deleteNodeMenuItem.Text = "Delete";
-            deleteNodeMenuItem.Click += delegate { DeleteSelectedNode(); };
+            var deleteMenuItem = new ToolStripMenuItem();
+            deleteMenuItem.Text = "Delete";
+            deleteMenuItem.Click += delegate { DeleteSelectedNode(); };
 
-            var renameNodeMenuItem = new ToolStripMenuItem();
-            renameNodeMenuItem.Text = "Rename";
-            renameNodeMenuItem.Click += delegate { RenameSelectedNode(); };
+            var renameMenuItem = new ToolStripMenuItem();
+            renameMenuItem.Text = "Rename";
+            renameMenuItem.Click += delegate { Rename(); };
 
-            _contextMenu.Items.AddRange(new ToolStripMenuItem[] { addNodeMenuItem, deleteNodeMenuItem, renameNodeMenuItem });
+            var toggleFavoriteMenuItem = new ToolStripMenuItem();
+            toggleFavoriteMenuItem.Text = "Toggle Favorite";
+            toggleFavoriteMenuItem.Click += delegate { ToggleFavorite(); };
+
+            _contextMenu.Items.AddRange(new ToolStripMenuItem[] { addNodeMenuItem, deleteMenuItem, renameMenuItem, toggleFavoriteMenuItem });
         }
 
         private TreeNode SelectNodeById(Guid id)
@@ -813,7 +837,7 @@ namespace Vision.Forms
             return treeNode;
         }
 
-        private void RenameSelectedNode()
+        private void Rename()
         {
             var treeNode = treeView1.SelectedNode;
 
@@ -823,12 +847,26 @@ namespace Vision.Forms
             }
         }
 
+        private void ToggleFavorite()
+        {
+            var treeNode = treeView1.SelectedNode;
+
+            if (treeNode != null)
+            {
+                var node = GetNode(treeNode);
+                node.IsFavorite = !node.IsFavorite;
+                SetDirty(true);
+                ReloadTree();
+            }
+        }
+
         private void ReloadTree()
         {
             var nodeId = GetNode(treeView1.SelectedNode)?.Id;
 
             try
             {
+                _reloading = true;
                 treeView1.BeginUpdate();
                 treeView1.Nodes.Clear();
                 ReloadNodes(null, _context.Nodes);
@@ -841,6 +879,7 @@ namespace Vision.Forms
             finally
             {
                 treeView1.EndUpdate();
+                _reloading = false;
             }
         }
 
@@ -850,6 +889,10 @@ namespace Vision.Forms
             {
                 var treeNode = new TreeNode { Text = node.Title, Tag = node };
                 treeNode.ContextMenuStrip = _contextMenu;
+                if (node.IsFavorite)
+                {
+                    treeNode.StateImageIndex = STATEIMAGE_FAVORITE;
+                }
 
                 if (parentNode != null)
                     parentNode.Nodes.Add(treeNode);
@@ -898,6 +941,8 @@ namespace Vision.Forms
 
         private void UpdateLayoutData(TreeNodeCollection treeNodes)
         {
+            Debug.WriteLine("UPDATELAYOUTDATA");
+
             _context.Layout.ExpandedNodes.Clear();
 
             UpdateLayoutDataRec(treeNodes);
@@ -912,6 +957,8 @@ namespace Vision.Forms
                     var node = GetNode(treeNode);
 
                     _context.Layout.ExpandedNodes.Add(node.Id);
+
+                    Debug.WriteLine($"EXPANDED: {node.Id} {node.Title}");
                 }
 
                 UpdateLayoutDataRec(treeNode.Nodes);
@@ -994,7 +1041,7 @@ namespace Vision.Forms
 
         private void SetDirty(bool contentChanged)
         {
-            if (Dead)
+            if (Dead || _reloading)
             {
                 return;
             }
@@ -1005,12 +1052,7 @@ namespace Vision.Forms
 
                 if (contentChanged)
                 {
-                    _modified = true;
-                }
-
-                if (Properties.Settings.Default.AutoSave)
-                {
-                    SaveProject();
+                    _backupRequired = true;
                 }
             }
         }

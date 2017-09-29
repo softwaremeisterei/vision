@@ -26,6 +26,7 @@ namespace Vision.BL.Model
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public int Index { get; set; }
+        public bool IsFavorite { get; set; }
 
         public DisplayType DisplayType { get; set; }
     }

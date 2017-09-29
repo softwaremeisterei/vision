@@ -243,6 +243,7 @@
     <None Include="Resources\Explorer.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\tvImage1.png" />
     <Content Include="Logo.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
