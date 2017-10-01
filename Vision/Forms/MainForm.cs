@@ -37,9 +37,24 @@ namespace Vision.Forms
             IsMdiContainer = true;
             RestoreLastWindowLayout();
 
+            AddRecentProjectFilesToMenu();
+
             OpenLastProjects();
 
             _isLoaded = true;
+        }
+
+        private void AddRecentProjectFilesToMenu()
+        {
+            foreach (var fileName in Properties.Settings.Default.RecentProjectFiles)
+            {
+                var item = new ToolStripMenuItem()
+                {
+                    Text = fileName
+                };
+                item.Click += delegate { OpenExplorer(fileName); };
+                fileToolStripMenuItem.DropDownItems.Add(item);
+            }
         }
 
         private void OpenLastProjects()
@@ -51,8 +66,7 @@ namespace Vision.Forms
 
             foreach (var projectFile in Properties.Settings.Default.OpenProjectFiles)
             {
-                var explorer = OpenExplorer();
-                explorer.OpenProject(projectFile);
+                var explorer = OpenExplorer(projectFile);
             }
         }
 
@@ -85,9 +99,20 @@ namespace Vision.Forms
             {
                 string fileName = openFileDialog.FileName;
 
-                var explorer = OpenExplorer();
-                explorer.OpenProject(fileName);
+                var explorer = OpenExplorer(fileName);
+
+                if (!explorer.IsIncognito())
+                {
+                    AddToRecentProjectFiles(fileName);
+                }
             }
+        }
+
+        private static void AddToRecentProjectFiles(string fileName)
+        {
+            Properties.Settings.Default.RecentProjectFiles.Remove(fileName);
+            Properties.Settings.Default.RecentProjectFiles.Insert(0, fileName);
+            Properties.Settings.Default.Save();
         }
 
         private void fileNewToolStripMenuItem_Click(object sender, EventArgs e)
@@ -107,9 +132,8 @@ namespace Vision.Forms
 
             if (dialogResult == DialogResult.OK)
             {
-                var explorer = OpenExplorer();
-                explorer.ProjectFile = saveFileDialog.FileName;
-                explorer.SaveProject();
+                var explorer = OpenExplorer(saveFileDialog.FileName);
+                AddToRecentProjectFiles(saveFileDialog.FileName);
             }
         }
 
@@ -157,12 +181,24 @@ namespace Vision.Forms
             }
         }
 
-        private ProjectExplorerToolWindow OpenExplorer()
+        private ProjectExplorerToolWindow OpenExplorer(string fileName)
         {
-            var explorer = new ProjectExplorerToolWindow();
+            var explorer = new ProjectExplorerToolWindow(fileName);
             dockContainer1.DockToolWindow(explorer, global::Docking.Controls.DockMode.Left);
             explorer.Show();
+            explorer.IncognitoChanged += Explorer_IncognitoChanged;
             return explorer;
+        }
+
+        private void Explorer_IncognitoChanged(object sender, EventArgs e)
+        {
+            var context = (Context)sender;
+
+            if (context.Incognito)
+            {
+                Properties.Settings.Default.RecentProjectFiles.Remove(context.FileName);
+                Properties.Settings.Default.Save();
+            }
         }
 
         public WebBrowserToolWindow OpenWebBrowser(DockMode dockMode = DockMode.Fill, string url = null)
@@ -216,7 +252,7 @@ namespace Vision.Forms
 
                     if (!explorer.IsIncognito())
                     {
-                        Properties.Settings.Default.OpenProjectFiles.Add(explorer.ProjectFile);
+                        Properties.Settings.Default.OpenProjectFiles.Add(explorer.FileName);
                     }
                 }
 

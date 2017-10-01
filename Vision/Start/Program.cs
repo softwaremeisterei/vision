@@ -19,6 +19,11 @@ namespace Vision.Start
                 Properties.Settings.Default.OpenProjectFiles = new System.Collections.Specialized.StringCollection();
             }
 
+            if (Properties.Settings.Default.RecentProjectFiles == null)
+            {
+                Properties.Settings.Default.RecentProjectFiles = new System.Collections.Specialized.StringCollection();
+            }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(Forms.MainForm.GetInstance());

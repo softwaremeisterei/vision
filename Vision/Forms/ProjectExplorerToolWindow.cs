@@ -59,15 +59,19 @@ namespace Vision.Forms
         private CheckBox incognitoCheckBox;
         private ContextMenuStrip _contextMenu;
 
-        public string ProjectFile { get; internal set; }
+        public string FileName { get; internal set; }
 
-        public ProjectExplorerToolWindow()
+        public event EventHandler IncognitoChanged;
+
+        public ProjectExplorerToolWindow(string fileName)
         {
-            this.InitializeComponent();
+            InitializeComponent();
+
+            FileName = fileName;
 
             SetupTreeView();
 
-            _context = new Context();
+            _context = new Context(fileName);
             _persistor = new Persistor();
             _findForm = new FindForm(this);
 
@@ -77,6 +81,15 @@ namespace Vision.Forms
             SetupTimer();
 
             ActiveControl = treeView1;
+
+            if (File.Exists(fileName))
+            {
+                Open();
+            }
+            else
+            {
+                Save();
+            }
         }
 
         private void SetupTreeView()
@@ -331,10 +344,10 @@ namespace Vision.Forms
 
         private void saveFileMenuItem_Click(object sender, EventArgs e)
         {
-            SaveProject();
+            Save();
         }
 
-        private void openFileMenuItem_Click(object sender, EventArgs e)
+/*        private void openFileMenuItem_Click(object sender, EventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
 
@@ -348,7 +361,7 @@ namespace Vision.Forms
                 OpenProject(fileName);
             }
         }
-
+*/
         private void exportFileMenuItem_Click(object sender, EventArgs e)
         {
             Export();
@@ -525,7 +538,7 @@ namespace Vision.Forms
             }
             else if (e.KeyCode == Keys.S)
             {
-                SaveProject();
+                Save();
                 e.Handled = true;
             }
         }
@@ -740,6 +753,7 @@ namespace Vision.Forms
             {
                 _context.Incognito = !_context.Incognito;
                 SetDirty(true);
+                IncognitoChanged(_context, null);
             }
         }
 
@@ -799,7 +813,7 @@ namespace Vision.Forms
         {
             if (_backupRequired)
             {
-                var backupFilepath = ProjectFile + ".bak";
+                var backupFilepath = FileName + ".bak";
 
                 Export(backupFilepath);
 
@@ -808,7 +822,7 @@ namespace Vision.Forms
 
             if (_context.AutoSave && _dirty)
             {
-                SaveProject();
+                Save();
             }
         }
 
@@ -967,13 +981,13 @@ namespace Vision.Forms
             }
         }
 
-        public bool SaveProject()
+        public bool Save()
         {
             UpdateLayoutData(treeView1.Nodes);
 
             try
             {
-                _persistor.Save(_context, ProjectFile);
+                _persistor.Save(_context, FileName);
                 ClearDirtyFlag();
             }
             catch
@@ -1008,26 +1022,25 @@ namespace Vision.Forms
             }
         }
 
-        public void OpenProject(string fileName)
+        public void Open()
         {
             try
             {
                 _loaded = false;
 
-                _context = _persistor.Load(fileName);
+                _context = _persistor.Load(FileName);
 
                 if (_context != null)
                 {
-                    ProjectFile = fileName;
                     ReloadTree();
-                    Text = Path.GetFileNameWithoutExtension(fileName);
+                    Text = Path.GetFileNameWithoutExtension(FileName);
                     autoSaveCheckBox.Checked = _context.AutoSave;
                     incognitoCheckBox.Checked = _context.Incognito;
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show($"Could not open project file {fileName}");
+                MessageBox.Show($"Could not open project file {FileName}");
             }
             finally
             {
@@ -1354,7 +1367,7 @@ namespace Vision.Forms
                 switch (dialogResult)
                 {
                     case DialogResult.Yes:
-                        if (!SaveProject())
+                        if (!Save())
                         {
                             return false;
                         }

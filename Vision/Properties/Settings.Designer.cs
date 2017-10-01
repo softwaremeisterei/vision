@@ -80,5 +80,16 @@ namespace Vision.Properties {
                 this["LeftPanelWidth"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection RecentProjectFiles {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["RecentProjectFiles"]));
+            }
+            set {
+                this["RecentProjectFiles"] = value;
+            }
+        }
     }
 }
