@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Vision.BL;
@@ -29,7 +30,7 @@ namespace Vision.Forms
     {
         private const int STATEIMAGE_FAVORITE = 0;
 
-        Timer _timer = new Timer();
+        System.Windows.Forms.Timer _timer = new System.Windows.Forms.Timer();
         Context _context;
         Persistor _persistor;
         private bool _loaded = true;
@@ -113,8 +114,8 @@ namespace Vision.Forms
             // treeView1
             // 
             this.treeView1.AllowDrop = true;
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView1.HideSelection = false;
             this.treeView1.LabelEdit = true;
@@ -282,7 +283,7 @@ namespace Vision.Forms
             // 
             this.autoSaveCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.autoSaveCheckBox.AutoSize = true;
-            this.autoSaveCheckBox.Location = new System.Drawing.Point(226, 446);
+            this.autoSaveCheckBox.Location = new System.Drawing.Point(226, 447);
             this.autoSaveCheckBox.Name = "autoSaveCheckBox";
             this.autoSaveCheckBox.Size = new System.Drawing.Size(95, 21);
             this.autoSaveCheckBox.TabIndex = 3;
@@ -294,7 +295,7 @@ namespace Vision.Forms
             // 
             this.incognitoCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.incognitoCheckBox.AutoSize = true;
-            this.incognitoCheckBox.Location = new System.Drawing.Point(334, 446);
+            this.incognitoCheckBox.Location = new System.Drawing.Point(327, 447);
             this.incognitoCheckBox.Name = "incognitoCheckBox";
             this.incognitoCheckBox.Size = new System.Drawing.Size(87, 21);
             this.incognitoCheckBox.TabIndex = 4;
@@ -683,7 +684,6 @@ namespace Vision.Forms
                     }
                 }
 
-
                 UpdateLayoutData(treeView1.Nodes);
                 ReloadTree();
 
@@ -799,9 +799,10 @@ namespace Vision.Forms
         {
             if (_backupRequired)
             {
-                string rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var backupFilepath = Path.Combine(rootPath, "Vision.backup.txt");
+                var backupFilepath = ProjectFile + ".bak";
+
                 Export(backupFilepath);
+
                 _backupRequired = false;
             }
 
@@ -987,7 +988,6 @@ namespace Vision.Forms
             Debug.WriteLine("UPDATELAYOUTDATA");
 
             _context.Layout.ExpandedNodes.Clear();
-
             UpdateLayoutDataRec(treeNodes);
         }
 
@@ -1015,11 +1015,19 @@ namespace Vision.Forms
                 _loaded = false;
 
                 _context = _persistor.Load(fileName);
-                ProjectFile = fileName;
-                ReloadTree();
-                Text = Path.GetFileNameWithoutExtension(fileName);
-                autoSaveCheckBox.Checked = _context.AutoSave;
-                incognitoCheckBox.Checked = _context.Incognito;
+
+                if (_context != null)
+                {
+                    ProjectFile = fileName;
+                    ReloadTree();
+                    Text = Path.GetFileNameWithoutExtension(fileName);
+                    autoSaveCheckBox.Checked = _context.AutoSave;
+                    incognitoCheckBox.Checked = _context.Incognito;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Could not open project file {fileName}");
             }
             finally
             {
