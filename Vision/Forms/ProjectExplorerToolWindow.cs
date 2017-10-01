@@ -55,6 +55,7 @@ namespace Vision.Forms
         private ToolStripMenuItem modeNodeUpToolStripMenuItem;
         private ToolStripMenuItem saveToolStripMenuItem;
         private CheckBox autoSaveCheckBox;
+        private CheckBox incognitoCheckBox;
         private ContextMenuStrip _contextMenu;
 
         public string ProjectFile { get; internal set; }
@@ -73,8 +74,6 @@ namespace Vision.Forms
 
             ClearDirtyFlag();
             SetupTimer();
-
-            autoSaveCheckBox.Checked = Properties.Settings.Default.AutoSave;
 
             ActiveControl = treeView1;
         }
@@ -107,14 +106,15 @@ namespace Vision.Forms
             this.modeNodeUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moveNodeDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoSaveCheckBox = new System.Windows.Forms.CheckBox();
+            this.incognitoCheckBox = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeView1
             // 
             this.treeView1.AllowDrop = true;
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView1.HideSelection = false;
             this.treeView1.LabelEdit = true;
@@ -290,9 +290,22 @@ namespace Vision.Forms
             this.autoSaveCheckBox.UseVisualStyleBackColor = true;
             this.autoSaveCheckBox.CheckedChanged += new System.EventHandler(this.autoSaveCheckBox_CheckedChanged);
             // 
+            // incognitoCheckBox
+            // 
+            this.incognitoCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.incognitoCheckBox.AutoSize = true;
+            this.incognitoCheckBox.Location = new System.Drawing.Point(334, 446);
+            this.incognitoCheckBox.Name = "incognitoCheckBox";
+            this.incognitoCheckBox.Size = new System.Drawing.Size(87, 21);
+            this.incognitoCheckBox.TabIndex = 4;
+            this.incognitoCheckBox.Text = "Incognito";
+            this.incognitoCheckBox.UseVisualStyleBackColor = true;
+            this.incognitoCheckBox.CheckedChanged += new System.EventHandler(this.incognitoCheckBox_CheckedChanged);
+            // 
             // ProjectExplorerToolWindow
             // 
             this.ClientSize = new System.Drawing.Size(640, 473);
+            this.Controls.Add(this.incognitoCheckBox);
             this.Controls.Add(this.autoSaveCheckBox);
             this.Controls.Add(this.collapseButton);
             this.Controls.Add(this.expandButton);
@@ -714,15 +727,21 @@ namespace Vision.Forms
 
         private void autoSaveCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.AutoSave = autoSaveCheckBox.Checked;
-            Properties.Settings.Default.Save();
-
-            if (Properties.Settings.Default.AutoSave && _dirty)
+            if (_loaded)
             {
-                SaveProject();
+                _context.AutoSave = !_context.AutoSave;
+                SetDirty(true);
             }
         }
 
+        private void incognitoCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (_loaded)
+            {
+                _context.Incognito = !_context.Incognito;
+                SetDirty(true);
+            }
+        }
 
         private void findMenuItem_Click(object sender, EventArgs e)
         {
@@ -786,7 +805,7 @@ namespace Vision.Forms
                 _backupRequired = false;
             }
 
-            if (Properties.Settings.Default.AutoSave && _dirty)
+            if (_context.AutoSave && _dirty)
             {
                 SaveProject();
             }
@@ -999,6 +1018,8 @@ namespace Vision.Forms
                 ProjectFile = fileName;
                 ReloadTree();
                 Text = Path.GetFileNameWithoutExtension(fileName);
+                autoSaveCheckBox.Checked = _context.AutoSave;
+                incognitoCheckBox.Checked = _context.Incognito;
             }
             finally
             {
@@ -1342,5 +1363,7 @@ namespace Vision.Forms
         private void treeView1_MouseClick(object sender, MouseEventArgs e)
         {
         }
+
+        public bool IsIncognito() { return incognitoCheckBox.Checked; }
     }
 }

@@ -52,15 +52,8 @@ namespace Vision.Forms
             foreach (var projectFile in Properties.Settings.Default.OpenProjectFiles)
             {
                 var explorer = OpenExplorer();
-                explorer.FormClosing += Explorer_FormClosing;
                 explorer.OpenProject(projectFile);
             }
-        }
-
-        private void Explorer_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            var explorer = (ProjectExplorerToolWindow)sender;
-            Properties.Settings.Default.OpenProjectFiles.Remove(explorer.ProjectFile);
         }
 
         private void RestoreLastWindowLayout()
@@ -94,9 +87,6 @@ namespace Vision.Forms
 
                 var explorer = OpenExplorer();
                 explorer.OpenProject(fileName);
-
-                Properties.Settings.Default.OpenProjectFiles.Add(fileName);
-                Properties.Settings.Default.Save();
             }
         }
 
@@ -120,9 +110,6 @@ namespace Vision.Forms
                 var explorer = OpenExplorer();
                 explorer.ProjectFile = saveFileDialog.FileName;
                 explorer.SaveProject();
-
-                Properties.Settings.Default.OpenProjectFiles.Add(explorer.ProjectFile);
-                Properties.Settings.Default.Save();
             }
         }
 
@@ -219,14 +206,29 @@ namespace Vision.Forms
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Properties.Settings.Default.OpenProjectFiles.Clear();
+
             foreach (var child in dockContainer1.GetToolWindows())
             {
+                if (child is ProjectExplorerToolWindow)
+                {
+                    var explorer = child as ProjectExplorerToolWindow;
+
+                    if (!explorer.IsIncognito())
+                    {
+                        Properties.Settings.Default.OpenProjectFiles.Add(explorer.ProjectFile);
+                    }
+                }
+
                 if (!child.TryClose())
                 {
                     e.Cancel = true;
                     return;
                 }
             }
+
+            Properties.Settings.Default.Save();
+
 
             Properties.Settings.Default.LeftPanelWidth = dockContainer1.LeftPanelWidth;
             Properties.Settings.Default.Save();

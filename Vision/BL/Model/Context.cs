@@ -11,6 +11,8 @@ namespace Vision.BL.Model
     {
         public List<Node> Nodes { get; set; }
         public Layout Layout { get; set; }
+        public bool AutoSave { get; set; }
+        public bool Incognito { get; set; }
 
         public Context()
         {

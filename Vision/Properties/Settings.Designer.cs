@@ -80,17 +80,5 @@ namespace Vision.Properties {
                 this["LeftPanelWidth"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool AutoSave {
-            get {
-                return ((bool)(this["AutoSave"]));
-            }
-            set {
-                this["AutoSave"] = value;
-            }
-        }
     }
 }
