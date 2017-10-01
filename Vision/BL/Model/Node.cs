@@ -14,7 +14,7 @@ namespace Vision.BL.Model
             Title = string.Empty;
             Content = string.Empty;
             Nodes = new List<Node>();
-            CreatedAt = UpdatedAt = DateTime.Now;
+            CreatedAt = DateTime.Now;
             DisplayType = DisplayType.Folder;
         }
 
@@ -24,10 +24,25 @@ namespace Vision.BL.Model
         public string Content { get; set; }
         public List<Node> Nodes { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
         public int Index { get; set; }
         public bool IsFavorite { get; set; }
 
         public DisplayType DisplayType { get; set; }
+
+        public Node Copy()
+        {
+            var copy = new Node();
+            copy.Title = Title;
+            copy.Url = Url;
+            copy.Content = Content;
+            copy.IsFavorite = IsFavorite;
+
+            foreach (var child in Nodes)
+            {
+                copy.Nodes.Add(child.Copy());
+            }
+
+            return copy;
+        }
     }
 }

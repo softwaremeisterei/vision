@@ -578,16 +578,12 @@ namespace Vision.Forms
 
         private void treeView_ItemDrag(object sender, ItemDragEventArgs e)
         {
-            if (Control.ModifierKeys == Keys.Shift)
-            {
-                DoDragDrop(e.Item, DragDropEffects.Copy | DragDropEffects.Move);
-            }
-            else
-            {
-                var node = GetNode((TreeNode)e.Item);
-                var data = node.Url ?? node.Title;
-                DoDragDrop(data, DragDropEffects.Copy | DragDropEffects.Move);
-            }
+            var node = GetNode((TreeNode)e.Item);
+            var text = node.Url ?? node.Title;
+            var data = new DataObject();
+            data.SetData(DataFormats.Text, true, text);
+            data.SetData(e.Item);
+            DoDragDrop(data, DragDropEffects.Copy | DragDropEffects.Move);
         }
 
         private void treeView_DragEnter(object sender, DragEventArgs e)
@@ -596,23 +592,92 @@ namespace Vision.Forms
 
         private void treeView_DragOver(object sender, DragEventArgs e)
         {
-            if ((e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move)
-            {
-                e.Effect = DragDropEffects.Move;
-                var point = new Point(e.X, e.Y);
-                HighlightNodeAtPoint(point);
-            }
-            else if ((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
+            if ((e.KeyState & CONTROL) == CONTROL && (e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
             {
                 e.Effect = DragDropEffects.Copy;
                 var point = new Point(e.X, e.Y);
                 HighlightNodeAtPoint(point);
             }
+            else if ((e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move)
+            {
+                e.Effect = DragDropEffects.Move;
+                var point = new Point(e.X, e.Y);
+                HighlightNodeAtPoint(point);
+            }
         }
+
+        private const int SHIFT = 4;
+        private const int CONTROL = 8;
 
         private void treeView_DragDrop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.Text))
+            if (e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false))
+            {
+                var treeNode = (TreeNode)e.Data.GetData("System.Windows.Forms.TreeNode");
+                var node = GetNode(treeNode);
+                var parentNode = GetNode(treeNode.Parent);
+                var pt = treeView1.PointToClient(new Point(e.X, e.Y));
+                var destinationTreeNode = treeView1.GetNodeAt(pt);
+                var destinationNode = GetNode(destinationTreeNode);
+
+                if (node.Id == destinationNode?.Id)
+                {
+                    // Drop on itself not allowed
+                    return;
+                }
+
+                if ((e.KeyState & CONTROL) == CONTROL)
+                {
+                    // Copy
+                    var copy = node.Copy();
+
+                    if (destinationNode != null)
+                    {
+                        copy.Index = destinationNode.Nodes.Any()
+                            ? destinationNode.Nodes.Last().Index + 1
+                            : 0;
+                        destinationNode.Nodes.Add(copy);
+                    }
+                    else
+                    {
+                        copy.Index = _context.Nodes.Any()
+                            ? _context.Nodes.Last().Index + 1
+                            : 0;
+                        _context.Nodes.Add(copy);
+                    }
+                }
+                else
+                {
+                    // Move
+                    if (parentNode != null)
+                    {
+                        parentNode.Nodes.Remove(node);
+                    }
+                    else
+                    {
+                        _context.Nodes.Remove(node);
+                    }
+
+                    if (destinationNode != null)
+                    {
+                        node.Index = destinationNode.Nodes.Any() ? destinationNode.Nodes.Last().Index + 1 : 0;
+                        destinationNode.Nodes.Add(node);
+                    }
+                    else
+                    {
+                        node.Index = _context.Nodes.Any() ? _context.Nodes.Last().Index + 1 : 0;
+                        _context.Nodes.Add(node);
+                    }
+                }
+
+
+                UpdateLayoutData(treeView1.Nodes);
+                ReloadTree();
+
+                SelectNodeById(node.Id);
+                SetDirty(true);
+            }
+            else if (e.Data.GetDataPresent(DataFormats.Text))
             {
                 var pt = treeView1.PointToClient(new Point(e.X, e.Y));
                 var destinationTreeNode = treeView1.GetNodeAt(pt);
@@ -630,47 +695,6 @@ namespace Vision.Forms
                     SelectNodeById(node.Id);
                     SetDirty(true);
                 }
-            }
-            else if (e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false))
-            {
-                var treeNode = (TreeNode)e.Data.GetData("System.Windows.Forms.TreeNode");
-                var node = GetNode(treeNode);
-                var parentNode = GetNode(treeNode.Parent);
-                var pt = treeView1.PointToClient(new Point(e.X, e.Y));
-                var destinationTreeNode = treeView1.GetNodeAt(pt);
-                var destinationNode = GetNode(destinationTreeNode);
-
-                if (node.Id == destinationNode?.Id)
-                {
-                    // Drop on itself
-                    return;
-                }
-
-                if (parentNode != null)
-                {
-                    parentNode.Nodes.Remove(node);
-                }
-                else
-                {
-                    _context.Nodes.Remove(node);
-                }
-
-                if (destinationNode != null)
-                {
-                    node.Index = destinationNode.Nodes.Any() ? destinationNode.Nodes.Last().Index + 1 : 0;
-                    destinationNode.Nodes.Add(node);
-                }
-                else
-                {
-                    node.Index = _context.Nodes.Any() ? _context.Nodes.Last().Index + 1 : 0;
-                    _context.Nodes.Add(node);
-                }
-
-                UpdateLayoutData(treeView1.Nodes);
-                ReloadTree();
-
-                SelectNodeById(node.Id);
-                SetDirty(true);
             }
         }
 
