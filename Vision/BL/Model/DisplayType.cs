@@ -9,6 +9,7 @@ namespace Vision.BL.Model
     public enum DisplayType
     {
         Folder,
-        Browser
+        Browser,
+        Image
     }
 }

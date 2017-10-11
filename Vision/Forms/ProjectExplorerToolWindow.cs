@@ -347,21 +347,21 @@ namespace Vision.Forms
             Save();
         }
 
-/*        private void openFileMenuItem_Click(object sender, EventArgs e)
-        {
-            var openFileDialog = new OpenFileDialog();
+        /*        private void openFileMenuItem_Click(object sender, EventArgs e)
+                {
+                    var openFileDialog = new OpenFileDialog();
 
-            openFileDialog.Filter = "Vision projects (*.visionproj)|*.visionproj";
-            openFileDialog.RestoreDirectory = true;
+                    openFileDialog.Filter = "Vision projects (*.visionproj)|*.visionproj";
+                    openFileDialog.RestoreDirectory = true;
 
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                string fileName = openFileDialog.FileName;
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string fileName = openFileDialog.FileName;
 
-                OpenProject(fileName);
-            }
-        }
-*/
+                        OpenProject(fileName);
+                    }
+                }
+        */
         private void exportFileMenuItem_Click(object sender, EventArgs e)
         {
             Export();
@@ -369,7 +369,7 @@ namespace Vision.Forms
 
         private void addToplevelNodeMenuItem_Click(object sender, EventArgs e)
         {
-            var treeNode = AddNode();
+            var treeNode = AddTreeNode();
 
             if (treeNode != null)
             {
@@ -386,7 +386,7 @@ namespace Vision.Forms
         {
             if (treeView1.Nodes.Count == 0)
             {
-                var treeNode = AddNode();
+                var treeNode = AddTreeNode();
 
                 if (treeNode != null)
                 {
@@ -396,7 +396,7 @@ namespace Vision.Forms
             else if (treeView1.SelectedNode != null)
             {
                 var parentNode = GetNode(treeView1.SelectedNode.Parent);
-                var treeNode = AddNode(parentNode);
+                var treeNode = AddTreeNode(parentNode);
 
                 if (treeNode != null)
                 {
@@ -420,6 +420,10 @@ namespace Vision.Forms
                         browserForm.Navigate(node.Url);
                         browserForm.SetDocumentCompletedHandler(_contentWebBrowser_DocumentCompleted);
                     }
+                    break;
+                case DisplayType.Image:
+                    var image = ImageRepository.Get(node.ImageId);
+                    var imageViewer = MainForm.GetInstance().OpenImageViewer(DockMode.Fill, image);
                     break;
             }
         }
@@ -708,7 +712,7 @@ namespace Vision.Forms
                 var pt = treeView1.PointToClient(new Point(e.X, e.Y));
                 var destinationTreeNode = treeView1.GetNodeAt(pt);
 
-                var treeNode = AddNode(GetNode(destinationTreeNode));
+                var treeNode = AddTreeNode(GetNode(destinationTreeNode));
 
                 if (treeNode != null)
                 {
@@ -875,7 +879,11 @@ namespace Vision.Forms
             toggleFavoriteMenuItem.Text = "Toggle Favorite";
             toggleFavoriteMenuItem.Click += delegate { ToggleFavorite(); };
 
-            _contextMenu.Items.AddRange(new ToolStripMenuItem[] { addNodeMenuItem, deleteMenuItem, renameMenuItem, toggleFavoriteMenuItem });
+            var pasteMenuItem = new ToolStripMenuItem();
+            pasteMenuItem.Text = "Paste";
+            pasteMenuItem.Click += delegate { Paste(); };
+
+            _contextMenu.Items.AddRange(new ToolStripMenuItem[] { addNodeMenuItem, deleteMenuItem, renameMenuItem, toggleFavoriteMenuItem, pasteMenuItem });
         }
 
         private TreeNode SelectNodeById(Guid id)
@@ -917,6 +925,27 @@ namespace Vision.Forms
                 ReloadTree();
             }
         }
+
+        private void Paste()
+        {
+            var dataObject = Clipboard.GetDataObject();
+            var bitmap = (Bitmap)dataObject.GetData(DataFormats.Bitmap);
+
+            if (bitmap != null)
+            {
+                var filename = ImageRepository.Add(bitmap);
+                var destinationTreeNode = treeView1.SelectedNode;
+                var treeNode = AddTreeNode(GetNode(destinationTreeNode));
+                var node = GetNode(treeNode);
+                node.DisplayType = DisplayType.Image;
+                node.ImageId = filename;
+                UpdateLayoutData(treeView1.Nodes);
+                ReloadTree();
+                SelectNodeById(node.Id);
+                SetDirty(true);
+            }
+        }
+
 
         private void ReloadTree()
         {
@@ -979,6 +1008,10 @@ namespace Vision.Forms
             {
                 treeNode.ForeColor = Color.Blue;
             }
+            else if (node.DisplayType == DisplayType.Image)
+            {
+                treeNode.NodeFont = new Font(treeNode.NodeFont??treeView1.Font, FontStyle.Italic);
+            }
         }
 
         public bool Save()
@@ -1038,9 +1071,9 @@ namespace Vision.Forms
                     incognitoCheckBox.Checked = _context.Incognito;
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                MessageBox.Show($"Could not open project file {FileName}");
+                MessageBox.Show($"Could not open project file {FileName}: " + ex.ToString());
             }
             finally
             {
@@ -1055,7 +1088,7 @@ namespace Vision.Forms
             if (parentTreeNode != null)
             {
                 var parentNode = GetNode(parentTreeNode);
-                var treeNode = AddNode(parentNode);
+                var treeNode = AddTreeNode(parentNode);
 
                 if (treeNode != null)
                 {
@@ -1064,7 +1097,7 @@ namespace Vision.Forms
             }
         }
 
-        private TreeNode AddNode(Node parentNode = null)
+        private TreeNode AddTreeNode(Node parentNode = null)
         {
             var node = _context.AddNode(parentNode, "New");
             UpdateLayoutData(treeView1.Nodes);
@@ -1340,6 +1373,10 @@ namespace Vision.Forms
                 {
                     node.Url = node.Title;
                 }
+            }
+            else if (!string.IsNullOrEmpty(node.ImageId))
+            {
+                node.DisplayType = DisplayType.Image;
             }
             else
             {

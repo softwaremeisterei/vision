@@ -201,6 +201,8 @@ namespace Docking.Controls
             return BoundsBeforeLock.Size;
         }
 
+        public event EventHandler ToolWindowDockChanged;
+
         /// <summary>
         /// Lock the form. This lock should be called when dock begins
         /// </summary>
@@ -220,6 +222,11 @@ namespace Docking.Controls
             _lockedBounds = lockedBounds;
             FormBorderStyle = lockedBorder;
             Bounds = lockedBounds;
+
+            if (ToolWindowDockChanged != null)
+            {
+                ToolWindowDockChanged(this, new EventArgs());
+            }
         }
 
         /// <summary>
@@ -236,6 +243,11 @@ namespace Docking.Controls
             _resizeIsLocked = false;
 
             Application.DoEvents();
+
+            if (ToolWindowDockChanged != null)
+            {
+                ToolWindowDockChanged(this, new EventArgs());
+            }
         }
 
         /// <summary>

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Vision.BL;
 using Vision.BL.Model;
 
 namespace Vision.Forms
@@ -203,26 +204,46 @@ namespace Vision.Forms
 
         public WebBrowserToolWindow OpenWebBrowser(DockMode dockMode = DockMode.Fill, string url = null)
         {
-            var browserForm = new WebBrowserToolWindow();
+            var window = new WebBrowserToolWindow();
 
-            if (dockMode == DockMode.None)
-            {
-                dockContainer1.AddToolWindow(browserForm);
-            }
-            else
-            {
-                dockContainer1.DockToolWindow(browserForm, dockMode);
-            }
-
-            browserForm.Show();
+            DockAndShow(dockMode, window);
 
             if (url != null)
             {
-                browserForm.Navigate(url);
+                window.Navigate(url);
             }
 
-            browserForm.FocusUrl();
-            return browserForm;
+            window.FocusUrl();
+            return window;
+        }
+
+        public ImageViewerToolWindow OpenImageViewer(DockMode dockMode = DockMode.Fill, Image image = null)
+        {
+            var window = new ImageViewerToolWindow();
+
+            DockAndShow(dockMode, window);
+
+            if (image != null)
+            {
+                window.SetImage(image);
+            }
+
+            return window;
+        }
+
+
+        private void DockAndShow(DockMode dockMode, ToolWindow window)
+        {
+            if (dockMode == DockMode.None)
+            {
+                dockContainer1.AddToolWindow(window);
+            }
+            else
+            {
+                dockContainer1.DockToolWindow(window, dockMode);
+            }
+
+            window.Show();
         }
 
         private void MainForm_ResizeEnd(object sender, EventArgs e)
@@ -288,5 +309,6 @@ namespace Vision.Forms
 
             return false;
         }
+
     }
 }
