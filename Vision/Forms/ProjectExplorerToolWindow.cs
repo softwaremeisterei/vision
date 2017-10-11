@@ -30,14 +30,17 @@ namespace Vision.Forms
     {
         private const int STATEIMAGE_FAVORITE = 0;
 
+        private ImageRepository _ImageRepository;
+
         System.Windows.Forms.Timer _timer = new System.Windows.Forms.Timer();
-        Context _context;
-        Persistor _persistor;
-        private bool _loaded = true;
-        private bool _dirty = false;
-        private bool _backupRequired = false;
-        private bool _reloading;
-        FindForm _findForm;
+        Context _Context;
+        Persistor _Persistor;
+        private bool _Loaded = true;
+        private bool _Dirty = false;
+        private bool _BackupRequired = false;
+        private bool _Reloading;
+        FindForm _FindForm;
+
         private TreeView treeView1;
         private Button expandButton;
         private Button collapseButton;
@@ -59,8 +62,7 @@ namespace Vision.Forms
         private CheckBox incognitoCheckBox;
         private ContextMenuStrip _contextMenu;
 
-        public string FileName { get; internal set; }
-
+        public string FileName { get; private set; }
         public event EventHandler IncognitoChanged;
 
         public ProjectExplorerToolWindow(string fileName)
@@ -68,12 +70,13 @@ namespace Vision.Forms
             InitializeComponent();
 
             FileName = fileName;
+            _ImageRepository = new ImageRepository(Path.GetDirectoryName(fileName));
 
             SetupTreeView();
 
-            _context = new Context(fileName);
-            _persistor = new Persistor();
-            _findForm = new FindForm(this);
+            _Context = new Context(fileName);
+            _Persistor = new Persistor();
+            _FindForm = new FindForm(this);
 
             InitContextMenu();
 
@@ -422,7 +425,7 @@ namespace Vision.Forms
                     }
                     break;
                 case DisplayType.Image:
-                    var image = ImageRepository.Get(node.ImageId);
+                    var image = _ImageRepository.Get(node.ImageId);
                     var imageViewer = MainForm.GetInstance().OpenImageViewer(DockMode.Fill, image);
                     break;
             }
@@ -671,10 +674,10 @@ namespace Vision.Forms
                     }
                     else
                     {
-                        copy.Index = _context.Nodes.Any()
-                            ? _context.Nodes.Last().Index + 1
+                        copy.Index = _Context.Nodes.Any()
+                            ? _Context.Nodes.Last().Index + 1
                             : 0;
-                        _context.Nodes.Add(copy);
+                        _Context.Nodes.Add(copy);
                     }
                 }
                 else
@@ -686,7 +689,7 @@ namespace Vision.Forms
                     }
                     else
                     {
-                        _context.Nodes.Remove(node);
+                        _Context.Nodes.Remove(node);
                     }
 
                     if (destinationNode != null)
@@ -696,8 +699,8 @@ namespace Vision.Forms
                     }
                     else
                     {
-                        node.Index = _context.Nodes.Any() ? _context.Nodes.Last().Index + 1 : 0;
-                        _context.Nodes.Add(node);
+                        node.Index = _Context.Nodes.Any() ? _Context.Nodes.Last().Index + 1 : 0;
+                        _Context.Nodes.Add(node);
                     }
                 }
 
@@ -744,20 +747,20 @@ namespace Vision.Forms
 
         private void autoSaveCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (_loaded)
+            if (_Loaded)
             {
-                _context.AutoSave = !_context.AutoSave;
+                _Context.AutoSave = !_Context.AutoSave;
                 SetDirty(true);
             }
         }
 
         private void incognitoCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (_loaded)
+            if (_Loaded)
             {
-                _context.Incognito = !_context.Incognito;
+                _Context.Incognito = !_Context.Incognito;
                 SetDirty(true);
-                IncognitoChanged(_context, null);
+                IncognitoChanged(_Context, null);
             }
         }
 
@@ -815,16 +818,16 @@ namespace Vision.Forms
 
         private void TimerEventHandler(Object myObject, EventArgs myEventArgs)
         {
-            if (_backupRequired)
+            if (_BackupRequired)
             {
                 var backupFilepath = FileName + ".bak";
 
                 Export(backupFilepath);
 
-                _backupRequired = false;
+                _BackupRequired = false;
             }
 
-            if (_context.AutoSave && _dirty)
+            if (_Context.AutoSave && _Dirty)
             {
                 Save();
             }
@@ -928,15 +931,46 @@ namespace Vision.Forms
 
         private void Paste()
         {
-            var dataObject = Clipboard.GetDataObject();
-            var bitmap = (Bitmap)dataObject.GetData(DataFormats.Bitmap);
+            var destinationTreeNode = treeView1.SelectedNode;
 
-            if (bitmap != null)
+            var dataObject = Clipboard.GetDataObject();
+            var image = (Image)dataObject.GetData(DataFormats.Bitmap);
+
+            if (image != null)
             {
-                var filename = ImageRepository.Add(bitmap);
-                var destinationTreeNode = treeView1.SelectedNode;
+                PasteImage(image, "New Image", destinationTreeNode);
+                return;
+            }
+
+            if (image == null)
+            {
+                var filenames = (string[])dataObject.GetData(DataFormats.FileDrop);
+
+                try
+                {
+                    foreach (var filename in filenames)
+                    {
+                        image = Image.FromFile(filename);
+                        PasteImage(image, Path.GetFileName(filename), destinationTreeNode);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString(), "Error");
+                }
+                return;
+            }
+
+        }
+
+        private void PasteImage(Image image, string title, TreeNode destinationTreeNode)
+        {
+            if (image != null)
+            {
+                var filename = _ImageRepository.Add(image);
                 var treeNode = AddTreeNode(GetNode(destinationTreeNode));
                 var node = GetNode(treeNode);
+                node.Title = title;
                 node.DisplayType = DisplayType.Image;
                 node.ImageId = filename;
                 UpdateLayoutData(treeView1.Nodes);
@@ -946,17 +980,16 @@ namespace Vision.Forms
             }
         }
 
-
         private void ReloadTree()
         {
             var nodeId = GetNode(treeView1.SelectedNode)?.Id;
 
             try
             {
-                _reloading = true;
+                _Reloading = true;
                 treeView1.BeginUpdate();
                 treeView1.Nodes.Clear();
-                ReloadNodes(null, _context.Nodes);
+                ReloadNodes(null, _Context.Nodes);
 
                 if (nodeId.HasValue)
                 {
@@ -966,7 +999,7 @@ namespace Vision.Forms
             finally
             {
                 treeView1.EndUpdate();
-                _reloading = false;
+                _Reloading = false;
             }
         }
 
@@ -991,7 +1024,7 @@ namespace Vision.Forms
                     ReloadNodes(treeNode, node.Nodes);
                 }
 
-                if (_context.Layout.ExpandedNodes.Contains(node.Id))
+                if (_Context.Layout.ExpandedNodes.Contains(node.Id))
                 {
                     treeNode.Expand();
                 }
@@ -1010,7 +1043,7 @@ namespace Vision.Forms
             }
             else if (node.DisplayType == DisplayType.Image)
             {
-                treeNode.NodeFont = new Font(treeNode.NodeFont??treeView1.Font, FontStyle.Italic);
+                treeNode.NodeFont = new Font(treeNode.NodeFont ?? treeView1.Font, FontStyle.Italic);
             }
         }
 
@@ -1020,7 +1053,7 @@ namespace Vision.Forms
 
             try
             {
-                _persistor.Save(_context, FileName);
+                _Persistor.Save(_Context, FileName);
                 ClearDirtyFlag();
             }
             catch
@@ -1034,7 +1067,7 @@ namespace Vision.Forms
         {
             Debug.WriteLine("UPDATELAYOUTDATA");
 
-            _context.Layout.ExpandedNodes.Clear();
+            _Context.Layout.ExpandedNodes.Clear();
             UpdateLayoutDataRec(treeNodes);
         }
 
@@ -1046,7 +1079,7 @@ namespace Vision.Forms
                 {
                     var node = GetNode(treeNode);
 
-                    _context.Layout.ExpandedNodes.Add(node.Id);
+                    _Context.Layout.ExpandedNodes.Add(node.Id);
 
                     Debug.WriteLine($"EXPANDED: {node.Id} {node.Title}");
                 }
@@ -1059,25 +1092,25 @@ namespace Vision.Forms
         {
             try
             {
-                _loaded = false;
+                _Loaded = false;
 
-                _context = _persistor.Load(FileName);
+                _Context = _Persistor.Load(FileName);
 
-                if (_context != null)
+                if (_Context != null)
                 {
                     ReloadTree();
                     Text = Path.GetFileNameWithoutExtension(FileName);
-                    autoSaveCheckBox.Checked = _context.AutoSave;
-                    incognitoCheckBox.Checked = _context.Incognito;
+                    autoSaveCheckBox.Checked = _Context.AutoSave;
+                    incognitoCheckBox.Checked = _Context.Incognito;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Could not open project file {FileName}: " + ex.ToString());
             }
             finally
             {
-                _loaded = true;
+                _Loaded = true;
             }
         }
 
@@ -1099,7 +1132,7 @@ namespace Vision.Forms
 
         private TreeNode AddTreeNode(Node parentNode = null)
         {
-            var node = _context.AddNode(parentNode, "New");
+            var node = _Context.AddNode(parentNode, "New");
             UpdateLayoutData(treeView1.Nodes);
             ReloadTree();
             var treeNode = SelectNodeById(node.Id);
@@ -1117,12 +1150,12 @@ namespace Vision.Forms
 
                 if (treeNode.Parent == null)
                 {
-                    _context.RemoveNode(null, node);
+                    _Context.RemoveNode(null, node);
                 }
                 else
                 {
                     var parentNode = GetNode(treeNode.Parent);
-                    _context.RemoveNode(parentNode, node);
+                    _Context.RemoveNode(parentNode, node);
                 }
 
                 SetDirty(true);
@@ -1140,25 +1173,25 @@ namespace Vision.Forms
 
         private void SetDirty(bool contentChanged)
         {
-            if (Dead || _reloading)
+            if (Dead || _Reloading)
             {
                 return;
             }
 
-            if (_loaded)
+            if (_Loaded)
             {
-                _dirty = true;
+                _Dirty = true;
 
                 if (contentChanged)
                 {
-                    _backupRequired = true;
+                    _BackupRequired = true;
                 }
             }
         }
 
         private void ClearDirtyFlag()
         {
-            _dirty = false;
+            _Dirty = false;
         }
 
 
@@ -1221,9 +1254,9 @@ namespace Vision.Forms
 
         private void ShowFindDialog()
         {
-            if (_findForm.Visible) return;
+            if (_FindForm.Visible) return;
 
-            _findForm.Show();
+            _FindForm.Show();
         }
 
         private Guid GetSelectedNodeId()
@@ -1325,7 +1358,7 @@ namespace Vision.Forms
 
         private void Export(string filename)
         {
-            BL.Export.ToTextFile(_context.Nodes, filename);
+            BL.Export.ToTextFile(_Context.Nodes, filename);
         }
 
         private void Swap(Node node1, Node node2)
@@ -1397,7 +1430,7 @@ namespace Vision.Forms
 
         public override bool TryClose()
         {
-            if (_dirty)
+            if (_Dirty)
             {
                 var dialogResult = MessageBox.Show("You have unsaved changes.\nDo you want to save before closing?", "Warning", MessageBoxButtons.YesNoCancel);
 

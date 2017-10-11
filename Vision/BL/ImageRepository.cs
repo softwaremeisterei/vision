@@ -10,16 +10,15 @@ using System.Windows.Forms;
 
 namespace Vision.BL
 {
-    public static class ImageRepository
+    public class ImageRepository
     {
         private const string IMAGE_DIR = "VisionImages";
 
         private static string RepositoryPath { get; set; }
 
-        static ImageRepository()
+        public ImageRepository(string projectRootDir)
         {
-            string rootPath = Path.GetDirectoryName(Application.ExecutablePath);
-            RepositoryPath = Path.Combine(rootPath, IMAGE_DIR);
+            RepositoryPath = Path.Combine(projectRootDir, IMAGE_DIR);
 
             if (!Directory.Exists(RepositoryPath))
             {
@@ -27,14 +26,14 @@ namespace Vision.BL
             }
         }
 
-        public static Image Get(string id)
+        public Image Get(string id)
         {
             var filename = Path.Combine(RepositoryPath, id + ".bmp");
             var image = Image.FromFile(filename);
             return image;
         }
 
-        public static string Add(Image image)
+        public string Add(Image image)
         {
             var id = Guid.NewGuid().ToString();
             var filename = Path.Combine(RepositoryPath, id + ".bmp");
