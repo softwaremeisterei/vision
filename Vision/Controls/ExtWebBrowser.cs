@@ -42,12 +42,12 @@ namespace Vision.Controls
 
         private void backButton_Click(object sender, EventArgs e)
         {
-            webBrowser1.GoBack();
+            webBrowser1.Document.Window.History.Go(-1);
         }
 
         private void forwardButton_Click(object sender, EventArgs e)
         {
-            webBrowser1.GoForward();
+            webBrowser1.Document.Window.History.Go(1);
         }
 
         private void clearUrlButton_Click(object sender, EventArgs e)
