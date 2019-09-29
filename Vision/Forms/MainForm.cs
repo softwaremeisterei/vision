@@ -93,7 +93,7 @@ namespace Vision.Forms
         {
             var openFileDialog = new OpenFileDialog();
 
-            openFileDialog.Filter = "Vision projects (*.visionproj)|*.visionproj";
+            openFileDialog.Filter = "Vision projects (*.visx)|*.visx";
             openFileDialog.RestoreDirectory = true;
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -109,7 +109,7 @@ namespace Vision.Forms
             }
         }
 
-        private static void AddToRecentProjectFiles(string fileName)
+        public static void AddToRecentProjectFiles(string fileName)
         {
             Properties.Settings.Default.RecentProjectFiles.Remove(fileName);
             Properties.Settings.Default.RecentProjectFiles.Insert(0, fileName);
@@ -120,7 +120,7 @@ namespace Vision.Forms
         {
             var saveFileDialog = new SaveFileDialog();
 
-            saveFileDialog.Filter = "Vision projects (*.visionproj)|*.visionproj";
+            saveFileDialog.Filter = "Vision projects (*.visx)|*.visx";
             saveFileDialog.FilterIndex = 2;
             saveFileDialog.RestoreDirectory = true;
 

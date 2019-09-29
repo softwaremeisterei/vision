@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,8 +13,11 @@ namespace Vision.Start
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
             if (Properties.Settings.Default.OpenProjectFiles == null)
             {
                 Properties.Settings.Default.OpenProjectFiles = new System.Collections.Specialized.StringCollection();
@@ -24,8 +28,15 @@ namespace Vision.Start
                 Properties.Settings.Default.RecentProjectFiles = new System.Collections.Specialized.StringCollection();
             }
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            if (args.Any())
+            {
+                var projectFileName = args[0];
+                if (projectFileName.EndsWith(".visx") && File.Exists(projectFileName))
+                {
+                    Forms.MainForm.AddToRecentProjectFiles(projectFileName);
+                }
+            }
+
             Application.Run(Forms.MainForm.GetInstance());
         }
     }
