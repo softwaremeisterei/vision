@@ -37,6 +37,9 @@ namespace Vision.Start
                 }
             }
 
+            Forms.MainForm.GetInstance().RestoreLastWindowLayout();
+            Forms.MainForm.GetInstance().StartPosition = FormStartPosition.CenterScreen;
+
             Application.Run(Forms.MainForm.GetInstance());
         }
     }

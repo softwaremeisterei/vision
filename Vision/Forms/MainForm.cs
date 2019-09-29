@@ -36,7 +36,6 @@ namespace Vision.Forms
         private void MainForm_Load(object sender, EventArgs e)
         {
             IsMdiContainer = true;
-            RestoreLastWindowLayout();
 
             AddRecentProjectFilesToMenu();
 
@@ -71,7 +70,7 @@ namespace Vision.Forms
             }
         }
 
-        private void RestoreLastWindowLayout()
+        public void RestoreLastWindowLayout()
         {
             if (Properties.Settings.Default.WindowSize.Height > 0)
             {
