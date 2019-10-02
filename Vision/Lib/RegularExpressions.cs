@@ -9,6 +9,6 @@ namespace Vision.Lib
 {
     public class RegularExpressions
     {
-        public const string URL = @"^(http|ftp|https)://[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=% &amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?$";
+        public const string URL = @"^((http|ftp|https)://)?[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=% &amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?$";
     }
 }

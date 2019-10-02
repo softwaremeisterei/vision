@@ -37,6 +37,7 @@ namespace Vision.BL.Model
             copy.Url = Url;
             copy.Content = Content;
             copy.IsFavorite = IsFavorite;
+            copy.DisplayType = DisplayType;
 
             foreach (var child in Nodes)
             {

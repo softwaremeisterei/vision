@@ -548,6 +548,28 @@ namespace Vision.Forms
                 Save();
                 e.Handled = true;
             }
+            else if (e.KeyCode == Keys.C && e.Control) // Copy
+            {
+                if (treeView1.SelectedNode != null)
+                {
+                    Clipboard.SetText(treeView1.SelectedNode.Text);
+                }
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.V && e.Control) // Paste
+            {
+                if (treeView1.SelectedNode != null)
+                {
+                    var data = Clipboard.GetText();
+                    if (!string.IsNullOrEmpty(data))
+                    {
+                        PasteText(data, treeView1.SelectedNode);
+                    }
+                }
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+            }
         }
 
         private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -626,18 +648,38 @@ namespace Vision.Forms
 
         private void treeView_DragOver(object sender, DragEventArgs e)
         {
-            if ((e.KeyState & CONTROL) == CONTROL && (e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
+            var treeNode = (TreeNode)e.Data.GetData("System.Windows.Forms.TreeNode");
+
+            if (treeNode != null)
             {
-                e.Effect = DragDropEffects.Copy;
-                var point = new Point(e.X, e.Y);
-                HighlightNodeAtPoint(point);
+                if ((e.KeyState & CONTROL) == CONTROL)
+                {
+                    e.Effect = DragDropEffects.Copy;
+                    var point = new Point(e.X, e.Y);
+                    HighlightNodeAtPoint(point);
+                }
+                else if ((e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move)
+                {
+                    e.Effect = DragDropEffects.Move;
+                    var point = new Point(e.X, e.Y);
+                    HighlightNodeAtPoint(point);
+                }
             }
-            else if ((e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move)
+            else
             {
-                e.Effect = DragDropEffects.Move;
-                var point = new Point(e.X, e.Y);
-                HighlightNodeAtPoint(point);
-            }
+                if ((e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move)
+                {
+                    e.Effect = DragDropEffects.Move;
+                    var point = new Point(e.X, e.Y);
+                    HighlightNodeAtPoint(point);
+                }
+                else if ((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy && (e.KeyState & CONTROL) == CONTROL)
+                {
+                    e.Effect = DragDropEffects.Copy;
+                    var point = new Point(e.X, e.Y);
+                    HighlightNodeAtPoint(point);
+                }
+            }   
         }
 
         private const int SHIFT = 4;
@@ -660,7 +702,7 @@ namespace Vision.Forms
                     return;
                 }
 
-                if ((e.KeyState & CONTROL) == CONTROL)
+                if (e.Effect == DragDropEffects.Copy)
                 {
                     // Copy
                     var copy = node.Copy();
@@ -1417,7 +1459,11 @@ namespace Vision.Forms
 
                 if (node.Url == null)
                 {
-                    node.Url = node.Title;
+                    if (!node.Title.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+                    {
+                        node.Title = "http://" + node.Title;
+                    }
+                    node.Url =  node.Title;
                 }
             }
             else if (!string.IsNullOrEmpty(node.ImageId))
