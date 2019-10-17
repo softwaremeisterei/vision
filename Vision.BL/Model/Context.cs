@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,18 +14,18 @@ namespace Vision.BL.Model
         public bool AutoSave { get; set; }
         public bool Incognito { get; set; }
         public Layout Layout { get; set; }
-        public List<Node> Nodes { get; set; }
+        public ObservableCollection<Node> Nodes { get; set; }
 
         public Context() { }
 
         public Context(string fileName)
         {
             FileName = fileName;
-            Nodes = new List<Node>();
+            Nodes = new ObservableCollection<Node>();
             Layout = new Layout();
         }
 
-        public Node AddNode(Node parentNode, string title)
+        public Node AddNode(FolderNode parentNode, string title)
         {
             var index = 0;
 
@@ -45,7 +46,7 @@ namespace Vision.BL.Model
             return node;
         }
 
-        public void RemoveNode(Node parentNode, Node node)
+        public void RemoveNode(FolderNode parentNode, Node node)
         {
             if (parentNode == null)
                 Nodes.Remove(node);

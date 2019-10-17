@@ -1,6 +1,7 @@
 using Docking.Controls;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
@@ -130,8 +131,8 @@ namespace Vision.Forms
             // treeView1
             // 
             this.treeView1.AllowDrop = true;
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView1.HideSelection = false;
             this.treeView1.LabelEdit = true;
@@ -398,12 +399,16 @@ namespace Vision.Forms
             }
             else if (treeView1.SelectedNode != null)
             {
-                var parentNode = GetNode(treeView1.SelectedNode.Parent);
-                var treeNode = AddTreeNode(parentNode);
+                var parentNode = GetNode(treeView1.SelectedNode.Parent) as FolderNode;
 
-                if (treeNode != null)
+                if (parentNode != null)
                 {
-                    treeNode.BeginEdit();
+                    var treeNode = AddTreeNode(parentNode);
+
+                    if (treeNode != null)
+                    {
+                        treeNode.BeginEdit();
+                    }
                 }
             }
         }
@@ -679,7 +684,7 @@ namespace Vision.Forms
                     var point = new Point(e.X, e.Y);
                     HighlightNodeAtPoint(point);
                 }
-            }   
+            }
         }
 
         private const int SHIFT = 4;
@@ -707,12 +712,13 @@ namespace Vision.Forms
                     // Copy
                     var copy = node.Copy();
 
-                    if (destinationNode != null)
+                    if (destinationNode != null && destinationNode is FolderNode)
                     {
-                        copy.Index = destinationNode.Nodes.Any()
-                            ? destinationNode.Nodes.Last().Index + 1
+                        var destinationFolder = destinationNode as FolderNode;
+                        copy.Index = destinationFolder.Nodes.Any()
+                            ? destinationFolder.Nodes.Last().Index + 1
                             : 0;
-                        destinationNode.Nodes.Add(copy);
+                        destinationFolder.Nodes.Add(copy);
                     }
                     else
                     {
@@ -727,17 +733,19 @@ namespace Vision.Forms
                     // Move
                     if (parentNode != null)
                     {
-                        parentNode.Nodes.Remove(node);
+                        var parentFolder = parentNode as FolderNode;
+                        parentFolder.Nodes.Remove(node);
                     }
                     else
                     {
                         _Context.Nodes.Remove(node);
                     }
 
-                    if (destinationNode != null)
+                    if (destinationNode != null && destinationNode is FolderNode)
                     {
-                        node.Index = destinationNode.Nodes.Any() ? destinationNode.Nodes.Last().Index + 1 : 0;
-                        destinationNode.Nodes.Add(node);
+                        var destinationFolder = destinationNode as FolderNode;
+                        node.Index = destinationFolder.Nodes.Any() ? destinationFolder.Nodes.Last().Index + 1 : 0;
+                        destinationFolder.Nodes.Add(node);
                     }
                     else
                     {
@@ -757,18 +765,23 @@ namespace Vision.Forms
                 var pt = treeView1.PointToClient(new Point(e.X, e.Y));
                 var destinationTreeNode = treeView1.GetNodeAt(pt);
 
-                var treeNode = AddTreeNode(GetNode(destinationTreeNode));
+                var folderNode = GetNode(destinationTreeNode) as FolderNode;
 
-                if (treeNode != null)
+                if (folderNode != null)
                 {
-                    var node = GetNode(treeNode);
-                    string nodeTitle = e.Data.GetData(DataFormats.Text).ToString();
-                    node.Title = nodeTitle;
-                    SetDefaultDisplayType(treeNode);
-                    UpdateLayoutData(treeView1.Nodes);
-                    ReloadTree();
-                    SelectNodeById(node.Id);
-                    SetDirty(true);
+                    var treeNode = AddTreeNode(folderNode);
+
+                    if (treeNode != null)
+                    {
+                        var node = GetNode(treeNode);
+                        string nodeTitle = e.Data.GetData(DataFormats.Text).ToString();
+                        node.Title = nodeTitle;
+                        SetDefaultDisplayType(treeNode);
+                        UpdateLayoutData(treeView1.Nodes);
+                        ReloadTree();
+                        SelectNodeById(node.Id);
+                        SetDirty(true);
+                    }
                 }
             }
         }
@@ -1008,30 +1021,40 @@ namespace Vision.Forms
 
         private void PasteText(string text, TreeNode destinationTreeNode)
         {
-            var treeNode = AddTreeNode(GetNode(destinationTreeNode));
-            var node = GetNode(treeNode);
-            node.Title = text;
-            SetDefaultDisplayType(treeNode);
-            UpdateLayoutData(treeView1.Nodes);
-            ReloadTree();
-            SelectNodeById(node.Id);
-            SetDirty(true);
+            var folderNode = GetNode(destinationTreeNode) as FolderNode;
+
+            if (folderNode != null)
+            {
+                var treeNode = AddTreeNode(folderNode);
+                var node = GetNode(treeNode);
+                node.Title = text;
+                SetDefaultDisplayType(treeNode);
+                UpdateLayoutData(treeView1.Nodes);
+                ReloadTree();
+                SelectNodeById(node.Id);
+                SetDirty(true);
+            }
         }
 
         private void PasteImage(Image image, string title, TreeNode destinationTreeNode)
         {
             if (image != null)
             {
-                var filename = _ImageRepository.Add(image);
-                var treeNode = AddTreeNode(GetNode(destinationTreeNode));
-                var node = GetNode(treeNode);
-                node.Title = title;
-                node.DisplayType = DisplayType.Image;
-                node.ImageId = filename;
-                UpdateLayoutData(treeView1.Nodes);
-                ReloadTree();
-                SelectNodeById(node.Id);
-                SetDirty(true);
+                var folderNode = GetNode(destinationTreeNode) as FolderNode;
+
+                if (folderNode != null)
+                {
+                    var filename = _ImageRepository.Add(image);
+                    var treeNode = AddTreeNode(folderNode);
+                    var node = GetNode(treeNode);
+                    node.Title = title;
+                    node.DisplayType = DisplayType.Image;
+                    node.ImageId = filename;
+                    UpdateLayoutData(treeView1.Nodes);
+                    ReloadTree();
+                    SelectNodeById(node.Id);
+                    SetDirty(true);
+                }
             }
         }
 
@@ -1058,7 +1081,7 @@ namespace Vision.Forms
             }
         }
 
-        private void ReloadNodes(TreeNode parentNode, List<Node> nodes)
+        private void ReloadNodes(TreeNode parentNode, ObservableCollection<Node> nodes)
         {
             foreach (var node in nodes.OrderBy(n => n.Index))
             {
@@ -1074,9 +1097,10 @@ namespace Vision.Forms
                 else
                     treeView1.Nodes.Add(treeNode);
 
-                if (node.Nodes.Any())
+                if (node is FolderNode)
                 {
-                    ReloadNodes(treeNode, node.Nodes);
+                    var folder = node as FolderNode;
+                    ReloadNodes(treeNode, folder.Nodes);
                 }
 
                 if (_Context.Layout.ExpandedNodes.Contains(node.Id))
@@ -1175,17 +1199,21 @@ namespace Vision.Forms
 
             if (parentTreeNode != null)
             {
-                var parentNode = GetNode(parentTreeNode);
-                var treeNode = AddTreeNode(parentNode);
+                var parentNode = GetNode(parentTreeNode) as FolderNode;
 
-                if (treeNode != null)
+                if (parentNode != null)
                 {
-                    treeNode.BeginEdit();
+                    var treeNode = AddTreeNode(parentNode);
+
+                    if (treeNode != null)
+                    {
+                        treeNode.BeginEdit();
+                    }
                 }
             }
         }
 
-        private TreeNode AddTreeNode(Node parentNode = null)
+        private TreeNode AddTreeNode(FolderNode parentNode = null)
         {
             var node = _Context.AddNode(parentNode, "New");
             UpdateLayoutData(treeView1.Nodes);
@@ -1209,8 +1237,11 @@ namespace Vision.Forms
                 }
                 else
                 {
-                    var parentNode = GetNode(treeNode.Parent);
-                    _Context.RemoveNode(parentNode, node);
+                    var parentNode = GetNode(treeNode.Parent) as FolderNode;
+                    if (parentNode != null)
+                    {
+                        _Context.RemoveNode(parentNode, node);
+                    }
                 }
 
                 SetDirty(true);
@@ -1463,7 +1494,7 @@ namespace Vision.Forms
                     {
                         node.Title = "http://" + node.Title;
                     }
-                    node.Url =  node.Title;
+                    node.Url = node.Title;
                 }
             }
             else if (!string.IsNullOrEmpty(node.ImageId))

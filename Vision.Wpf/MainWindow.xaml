@@ -1,0 +1,36 @@
+﻿<Window x:Class="Vision.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Vision.Wpf"
+        mc:Ignorable="d"
+        Title="MainWindow" Width="1200" Height="800" Loaded="Window_Loaded"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <HierarchicalDataTemplate x:Key="NodeTemplate" ItemsSource="{Binding Nodes}">
+            <TextBlock>
+                <Hyperlink NavigateUri="{Binding Url}">
+                    <TextBlock Text="{Binding Title}"></TextBlock>
+                </Hyperlink>
+            </TextBlock>
+        </HierarchicalDataTemplate>
+    </Window.Resources>
+    <DockPanel>
+        <ToolBar DockPanel.Dock="Top">
+            <Button>&lt;</Button>
+            <Button>&gt;</Button>
+        </ToolBar>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="236*"/>
+                <ColumnDefinition Width="281*"/>
+            </Grid.ColumnDefinitions>
+            <TreeView Name="treeView1" MinWidth="100" Grid.Column="0"
+                      ItemsSource="{Binding Context.Nodes}" 
+                      ItemTemplate="{StaticResource NodeTemplate}"/>
+            <GridSplitter Width="3" Background="Blue" Margin="1.5,0,-1.5,0"/>
+            <WebBrowser Name="webBrowser" Grid.Column="1" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Navigating="WebBrowser_Navigating" />
+        </Grid>
+    </DockPanel>
+</Window>

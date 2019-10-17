@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace Vision.BL
 {
     public class Export
     {
-        public static void ToTextFile(List<Node> nodes, string filename)
+        public static void ToTextFile(ObservableCollection<Node> nodes, string filename)
         {
             using (var stream = new FileStream(filename, FileMode.Create))
             {
@@ -23,7 +24,7 @@ namespace Vision.BL
             }
         }
 
-        private static void Write(List<Node> nodes, StreamWriter writer, int indent)
+        private static void Write(ObservableCollection<Node> nodes, StreamWriter writer, int indent)
         {
             var indentSpaces = new String(' ', indent * 4);
             var indentSpacesContent = new String(' ', (indent + 1) * 4);
@@ -52,9 +53,14 @@ namespace Vision.BL
                     writer.WriteLine("{0}{1}", indentSpacesContent, node.Url);
                 }
 
-                if (node.Nodes.Any())
+                if (node is FolderNode)
                 {
-                    Write(node.Nodes, writer, indent + 1);
+                    var folder = node as FolderNode;
+
+                    if (folder.Nodes.Any())
+                    {
+                        Write(folder.Nodes, writer, indent + 1);
+                    }
                 }
             }
         }
