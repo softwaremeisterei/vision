@@ -43,13 +43,18 @@ namespace Vision.Wpf
             icRecentProjects.ItemsSource = RecentProjects;
         }
 
-        private void btnCreateNewProject_Click(object sender, RoutedEventArgs e)
+        private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            var filePath = sharedServices.CreateNewProject(NavigationService);
-            if (filePath != null)
-            {
-                persistor.AddRecentProject(filePath);
-            }
+            FocusFirstRecentProjectLink();
+        }
+
+
+        private void FocusFirstRecentProjectLink()
+        {
+            ContentPresenter presenter = (ContentPresenter)icRecentProjects.ItemContainerGenerator.ContainerFromIndex(0);
+
+            var hyperLink = (Hyperlink)presenter.ContentTemplate.FindName("linkProject", presenter);
+            hyperLink.Focus();
         }
 
         private void projectLink_Click(object sender, RoutedEventArgs e)
@@ -79,6 +84,14 @@ namespace Vision.Wpf
             sharedServices.OpenProject(NavigationService);
         }
 
+        private void btnCreateNewProject_Click(object sender, RoutedEventArgs e)
+        {
+            var filePath = sharedServices.CreateNewProject(NavigationService);
+            if (filePath != null)
+            {
+                persistor.AddRecentProject(filePath);
+            }
+        }
 
     }
 }
