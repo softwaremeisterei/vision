@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Navigation;
 using Vision.BL;
 using Vision.BL.Model;
@@ -210,6 +212,170 @@ namespace Vision.Wpf
                 var migration = new Migration1();
                 migration.Migrate(dlg.ResponseText, Project);
             }
+        }
+
+        /// TREEVIEW DRAG & DROP ///
+
+        Point _dragStartPoint;
+        bool _IsTreeNodeDragging = false;
+        readonly string DragDataFormat = "DDF000";
+
+        private void TreeView1_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed ||
+                e.RightButton == MouseButtonState.Pressed && !_IsTreeNodeDragging)
+            {
+                var position = e.GetPosition(null);
+                if (Math.Abs(position.X - _dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance
+                    || Math.Abs(position.Y - _dragStartPoint.Y) > SystemParameters.MinimumVerticalDragDistance)
+                {
+                    StartDrag(e);
+                }
+            }
+        }
+
+        private void TreeView1_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _dragStartPoint = e.GetPosition(null);
+        }
+
+        private void TreeView1_DragOver(object sender, DragEventArgs e)
+        {
+            var source = e.Data.GetData(DragDataFormat);
+            var targetTreeViewItem = GetNearestContainer(e.OriginalSource as UIElement);
+            e.Effects = (source != null && targetTreeViewItem?.Header != null && targetTreeViewItem.Header.GetType() == source.GetType())
+                    ? DragDropEffects.Move : DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private void StartDrag(MouseEventArgs e)
+        {
+            _IsTreeNodeDragging = true;
+            object selectedItem = this.treeView1.SelectedItem;
+            if (selectedItem != null)
+            {
+                DataObject data = null;
+                data = new DataObject(DragDataFormat, selectedItem);
+
+                DragDropEffects dde = DragDropEffects.Move;
+                if (e.RightButton == MouseButtonState.Pressed)
+                {
+                    dde = DragDropEffects.All;
+                }
+                DragDropEffects de = DragDrop.DoDragDrop(this.treeView1, data, dde);
+            }
+            _IsTreeNodeDragging = false;
+        }
+
+        private void TreeView1_Drop(object sender, DragEventArgs e)
+        {
+            var source = e.Data.GetData(DragDataFormat);
+            if (source is FolderNode)
+            {
+                var sourceEntity = source as FolderNode;
+                var dropItem = GetNearestContainer(e.OriginalSource as UIElement);
+                if (dropItem != null)
+                {
+                    if (dropItem.Header is FolderNode)
+                    {
+                        var dropEntity = dropItem.Header as FolderNode;
+                        if (source != dropEntity && !IsSubNode(sourceEntity, dropEntity))
+                        {
+                            var parentSourceFolder = GetParentFolder(sourceEntity);
+                            dropEntity.Folders.Insert(0, sourceEntity);
+                            parentSourceFolder.Folders.Remove(sourceEntity);
+                        }
+                    }
+                }
+            }
+            else if (source is Node)
+            {
+                var sourceEntity = source as Node;
+                var dropItem = GetNearestContainer(e.OriginalSource as UIElement);
+                if (dropItem != null)
+                {
+                    if (dropItem.Header is FolderNode)
+                    {
+                        var dropEntity = dropItem.Header as FolderNode;
+                        if (source != dropEntity)
+                        {
+                            var parentSourceFolder = GetParentFolder(sourceEntity);
+                            dropEntity.Nodes.Insert(0, sourceEntity);
+                            parentSourceFolder.Nodes.Remove(sourceEntity);
+                        }
+                    }
+                }
+            }
+        }
+
+        private bool IsSubNode(FolderNode node1, FolderNode node2)
+        {
+            if (node1.Folders.Contains(node2))
+            {
+                return true;
+            }
+            var parentOfNode2 = GetParentFolder(node2);
+            if (parentOfNode2 != null)
+            {
+                return IsSubNode(node1, parentOfNode2);
+            }
+            return false;
+        }
+
+        private FolderNode GetParentFolder(FolderNode folder)
+        {
+            return GetParentFolder(Roots, folder);
+        }
+
+        private FolderNode GetParentFolder(ObservableCollection<FolderNode> folders, FolderNode childFolder)
+        {
+            foreach(var folder in folders)
+            {
+                if (folder.Folders.Contains(childFolder))
+                {
+                    return folder;
+                }
+                var result = GetParentFolder(folder.Folders, childFolder);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+            return null;
+        }
+
+        private FolderNode GetParentFolder(Node node)
+        {
+            return GetParentFolder(Roots, node);
+        }
+
+        private FolderNode GetParentFolder(ObservableCollection<FolderNode> folders, Node node)
+        {
+            foreach(var folder in folders)
+            {
+                if (folder.Nodes.Contains(node))
+                {
+                    return folder;
+                }
+                var result = GetParentFolder(folder.Folders, node);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+            return null;
+        }
+
+        private TreeViewItem GetNearestContainer(UIElement element)
+        {
+            // Walk up the element tree to the nearest tree view item.
+            TreeViewItem container = element as TreeViewItem;
+            while ((container == null) && (element != null))
+            {
+                element = VisualTreeHelper.GetParent(element) as UIElement;
+                container = element as TreeViewItem;
+            }
+            return container;
         }
 
     }
