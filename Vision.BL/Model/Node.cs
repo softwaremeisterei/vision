@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Vision.BL.Model
 {
-    public class Node
+    public class Node : Entity
     {
-        public Guid Id { get; set; }
-        public string Title { get; set; }
         public string Url { get; set; }
         public string ImageId { get; set; }
         public string Content { get; set; }
@@ -22,7 +15,7 @@ namespace Vision.BL.Model
         public Node()
         {
             Id = Guid.NewGuid();
-            Title = string.Empty;
+            Name = string.Empty;
             Content = string.Empty;
             CreatedAt = DateTime.Now;
             DisplayType = DisplayType.Folder;
@@ -32,7 +25,7 @@ namespace Vision.BL.Model
         {
             var copy = Create();
 
-            copy.Title = Title;
+            copy.Name = Name;
             copy.Url = Url;
             copy.Content = Content;
             copy.IsFavorite = IsFavorite;
@@ -47,30 +40,4 @@ namespace Vision.BL.Model
         }
     }
 
-    public class FolderNode : Node
-    {
-        public ObservableCollection<Node> Nodes { get; set; }
-
-        public FolderNode()
-        {
-            Nodes = new ObservableCollection<Node>();
-        }
-
-        public override Node Copy()
-        {
-            var copy = (FolderNode)base.Copy();
-
-            foreach (var child in Nodes)
-            {
-                copy.Nodes.Add(child.Copy());
-            }
-
-            return copy;
-        }
-
-        public override Node Create()
-        {
-            return new FolderNode();
-        }
-    }
 }

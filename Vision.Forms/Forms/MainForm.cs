@@ -192,11 +192,11 @@ namespace Vision.Forms
 
         private void Explorer_IncognitoChanged(object sender, EventArgs e)
         {
-            var context = (Context)sender;
+            var project = (Project)sender;
 
-            if (context.Incognito)
+            if (project.Incognito)
             {
-                Properties.Settings.Default.RecentProjectFiles.Remove(context.FileName);
+                Properties.Settings.Default.RecentProjectFiles.Remove(project.Path);
                 Properties.Settings.Default.Save();
             }
         }

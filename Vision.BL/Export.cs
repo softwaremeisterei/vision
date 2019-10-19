@@ -31,7 +31,7 @@ namespace Vision.BL
 
             foreach (var node in nodes.OrderBy(n => n.Index))
             {
-                writer.WriteLine("{0}+ {1}", indentSpaces, node.Title);
+                writer.WriteLine("{0}+ {1}", indentSpaces, node.Name);
 
                 if (node.Content != null)
                 {
@@ -51,16 +51,6 @@ namespace Vision.BL
                 if (!string.IsNullOrWhiteSpace(node.Url))
                 {
                     writer.WriteLine("{0}{1}", indentSpacesContent, node.Url);
-                }
-
-                if (node is FolderNode)
-                {
-                    var folder = node as FolderNode;
-
-                    if (folder.Nodes.Any())
-                    {
-                        Write(folder.Nodes, writer, indent + 1);
-                    }
                 }
             }
         }

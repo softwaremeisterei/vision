@@ -8,40 +8,42 @@ using Vision.BL.Model;
 
 namespace Vision.BL.Model
 {
-    public class Context
+    public class Project : Entity
     {
-        public string FileName { get; set; }
+        public string Path { get; set; }
         public bool AutoSave { get; set; }
         public bool Incognito { get; set; }
         public Layout Layout { get; set; }
-        public ObservableCollection<Node> Nodes { get; set; }
+        public FolderNode Root { get; set; }
 
-        public Context() { }
-
-        public Context(string fileName)
+        public Project()
         {
-            FileName = fileName;
-            Nodes = new ObservableCollection<Node>();
+            Root = new FolderNode { Name = "Root" };
             Layout = new Layout();
         }
 
-        public Node AddNode(FolderNode parentNode, string title)
+        public Project(string fileName) : base()
+        {
+            Path = fileName;
+        }
+
+        public Node AddNode(FolderNode parentNode, string name)
         {
             var index = 0;
 
-            var targetList = parentNode != null ? parentNode.Nodes : Nodes;
+            var targetList = parentNode != null ? parentNode.Nodes : Root.Nodes;
 
             if (targetList.Any())
             {
                 index = targetList.OrderBy(n => n.Index).Last().Index + 1;
             }
 
-            var node = new Node { Title = title, Index = index };
+            var node = new Node { Name = name, Index = index };
 
             if (parentNode != null)
                 parentNode.Nodes.Add(node);
             else
-                Nodes.Add(node);
+                Root.Nodes.Add(node);
 
             return node;
         }
@@ -49,7 +51,7 @@ namespace Vision.BL.Model
         public void RemoveNode(FolderNode parentNode, Node node)
         {
             if (parentNode == null)
-                Nodes.Remove(node);
+                Root.Nodes.Remove(node);
             else
                 parentNode.Nodes.Remove(node);
         }

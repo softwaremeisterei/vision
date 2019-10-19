@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using Softwaremeisterei.Lib;
+using System.IO;
+using System.Text;
 using Vision.Lib;
 
 namespace Vision.Data
@@ -11,14 +13,14 @@ namespace Vision.Data
 
         public void Save<T>(T obj, string filename)
         {
-            var json = JsonSerialization.ToJson(obj);
-            File.WriteAllText(filename, json);
+            var xml = Serialization.ToXml(obj);
+            File.WriteAllText(filename, xml, Encoding.UTF8);
         }
 
         public T Load<T>(string filename) where T : class, new()
         {
-            var json = File.ReadAllText(filename);
-            var obj = JsonSerialization.ParseJson<T>(json);
+            var xml = File.ReadAllText(filename, Encoding.UTF8);
+            var obj = Serialization.ParseXml<T>(xml);
             return obj;
         }
     }

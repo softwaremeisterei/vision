@@ -5,11 +5,33 @@ using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
-namespace Vision.Lib
+namespace Softwaremeisterei.Lib
 {
-    class JsonSerialization
+    public class Serialization
     {
+        public static string ToXml<T>(T obj)
+        {
+            var xmlSerializer = new XmlSerializer(obj.GetType());
+
+            using (var textWriter = new StringWriter())
+            {
+                xmlSerializer.Serialize(textWriter, obj);
+                return textWriter.ToString();
+            }
+        }
+
+        public static T ParseXml<T>(string obj)
+        {
+            var xmlSerializer = new XmlSerializer(typeof(T));
+
+            using (var textReader = new StringReader(obj))
+            {
+                return (T)xmlSerializer.Deserialize(textReader);
+            }
+        }
+
         public static string ToJson(Object obj)
         {
             if (obj == null) throw new ArgumentNullException("obj");
