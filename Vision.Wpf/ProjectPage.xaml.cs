@@ -100,7 +100,7 @@ namespace Vision.Wpf
             Roots.First().Nodes.Add(new Node { Name = "Noname" });
         }
 
-        private void ContextMenuFolder_Edit(object sender, RoutedEventArgs e)
+        private void ContextMenuFolder_EditFolder(object sender, RoutedEventArgs e)
         {
             var menuItem = (MenuItem)sender;
             var folder = (FolderNode)menuItem.Tag;
@@ -121,11 +121,41 @@ namespace Vision.Wpf
             folder.Nodes.Add(new Node { Name = "Noname" });
         }
 
-        private void ContextMenuNode_Edit(object sender, RoutedEventArgs e)
+        private void ContextMenuFolder_DeleteFolder(object sender, RoutedEventArgs e)
+        {
+            var menuItem = (MenuItem)sender;
+            var folder = (FolderNode)menuItem.Tag;
+            DeleteFolder(Project.Root, folder);
+        }
+
+        private bool DeleteFolder(FolderNode parentFolder, FolderNode folder)
+        {
+            var wasRemoved = parentFolder.Folders.Remove(folder);
+            if (!wasRemoved)
+            {
+                foreach(var subFolder in parentFolder.Folders)
+                {
+                    if (DeleteFolder(subFolder, folder))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private void ContextMenuNode_EditNode(object sender, RoutedEventArgs e)
         {
             var menuItem = (MenuItem)sender;
             var node = (Node)menuItem.Tag;
             Edit(node);
+        }
+
+        private void ContextMenuNode_DeleteNode(object sender, RoutedEventArgs e)
+        {
+            var menuItem = (MenuItem)sender;
+            var node = (Node)menuItem.Tag;
+            DeleteNode(Project.Root, node);
         }
 
         private void Node_Click(object sender, RoutedEventArgs e)
@@ -138,6 +168,21 @@ namespace Vision.Wpf
             }
         }
 
+        private bool DeleteNode(FolderNode parentFolder, Node node)
+        {
+            var wasRemoved = parentFolder.Nodes.Remove(node);
+            if (!wasRemoved)
+            {
+                foreach (var subFolder in parentFolder.Folders)
+                {
+                    if (DeleteNode(subFolder, node))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
 
         private void Save()
         {
@@ -153,6 +198,17 @@ namespace Vision.Wpf
             if (dlg.ShowDialog() == true)
             {
                 //
+            }
+        }
+
+        private void mnuImportOldFormatProject_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new PromptWindow("Import old format project", "Path to project file");
+
+            if (dlg.ShowDialog() == true)
+            {
+                var migration = new Migration1();
+                migration.Migrate(dlg.ResponseText, Project);
             }
         }
 

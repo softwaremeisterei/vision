@@ -7,7 +7,6 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800" Loaded="Page_Loaded" Unloaded="Page_Unloaded"
       Title="ProjectPage">
-
     <Page.Resources>
         <HierarchicalDataTemplate x:Key="FolderNodeTemplate" ItemsSource="{Binding Folders}">
             <StackPanel Orientation="Vertical">
@@ -16,8 +15,11 @@
                     <Label Content="{Binding Name}" Foreground="DarkOrange">
                         <Label.ContextMenu>
                             <ContextMenu Name="foo">
-                                <MenuItem Tag="{Binding}" Header="Edit" Click="ContextMenuFolder_Edit" />
+                                <MenuItem Tag="{Binding}" Header="Edit folder" Click="ContextMenuFolder_EditFolder" />
+                                <Separator/>
                                 <MenuItem Tag="{Binding}" Header="Add node" Click="ContextMenuFolder_AddNode" />
+                                <Separator/>
+                                <MenuItem Tag="{Binding}" Header="Delete folder" Click="ContextMenuFolder_DeleteFolder" />
                             </ContextMenu>
                         </Label.ContextMenu>
                     </Label>
@@ -28,16 +30,16 @@
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock>
                                     <TextBlock.ContextMenu>
-                                        <ContextMenu Name="foo">
-                                            <MenuItem Tag="{Binding}" Header="Edit" Click="ContextMenuNode_Edit" />
+                                        <ContextMenu>
+                                            <MenuItem Tag="{Binding}" Header="Edit node" Click="ContextMenuNode_EditNode" />
+                                            <Separator/>
+                                            <MenuItem Tag="{Binding}" Header="Delete node" Click="ContextMenuNode_DeleteNode" />
                                         </ContextMenu>
                                     </TextBlock.ContextMenu>
                                     <Hyperlink Click="Node_Click" Tag="{Binding}">
                                         <TextBlock Text="{Binding Name}" ToolTip="{Binding Url}"></TextBlock>
                                     </Hyperlink>
                                 </TextBlock>
-                                <!--<Button Click="btEditNode_Click" BorderThickness="0" Background="Transparent" 
-                                        FontSize="6" ToolTip="Edit" Tag="{Binding}" >✎</Button>-->
                             </StackPanel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -51,6 +53,9 @@
                 <MenuItem Header="Content" Height="20">
                     <MenuItem Header="Add toplevel folder" HorizontalAlignment="Left" Click="mnuAddTopLevelFolder_Click" />
                     <MenuItem Header="Add toplevel node" HorizontalAlignment="Left" Click="mnuAddTopLevelNode_Click" />
+                </MenuItem>
+                <MenuItem Header="Import" Height="20">
+                    <MenuItem Header="Import old format project" HorizontalAlignment="Left" Click="mnuImportOldFormatProject_Click" />
                 </MenuItem>
             </Menu>
         </ToolBar>
