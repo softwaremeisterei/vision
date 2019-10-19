@@ -1,22 +1,13 @@
-﻿using Softwaremeisterei.Lib;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.IO;
 using Vision.BL;
 using Vision.BL.Model;
-using Vision.Wpf.Converters;
 
 namespace Vision.Wpf
 {
@@ -39,7 +30,7 @@ namespace Vision.Wpf
 
             // Get recent projects
             var recentProjects = persistor.LoadRecentProjects();
-            RecentProjects = new ObservableCollection<RecentProject>(recentProjects.Projects.OrderBy(p => p.LastUsageDate));
+            RecentProjects = new ObservableCollection<RecentProject>(recentProjects.Projects.OrderByDescending(p => p.LastUsageDate));
             icRecentProjects.ItemsSource = RecentProjects;
         }
 
@@ -51,10 +42,12 @@ namespace Vision.Wpf
 
         private void FocusFirstRecentProjectLink()
         {
-            ContentPresenter presenter = (ContentPresenter)icRecentProjects.ItemContainerGenerator.ContainerFromIndex(0);
-
-            var hyperLink = (Hyperlink)presenter.ContentTemplate.FindName("linkProject", presenter);
-            hyperLink.Focus();
+            if (icRecentProjects.Items.Count > 0)
+            {
+                var presenter = (ContentPresenter)icRecentProjects.ItemContainerGenerator.ContainerFromIndex(0);
+                var hyperLink = (Hyperlink)presenter.ContentTemplate.FindName("linkProject", presenter);
+                hyperLink.Focus();
+            }
         }
 
         private void projectLink_Click(object sender, RoutedEventArgs e)

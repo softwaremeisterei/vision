@@ -5,22 +5,19 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Vision.Wpf"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"  Loaded="Page_Loaded"
+      d:DesignHeight="450" d:DesignWidth="800" Loaded="Page_Loaded" Unloaded="Page_Unloaded"
       Title="ProjectPage">
 
     <Page.Resources>
         <HierarchicalDataTemplate x:Key="FolderNodeTemplate" ItemsSource="{Binding Folders}">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="📁 " Foreground="Blue"></Label>
-                    <Label Content="{Binding Name}">
+                    <Label Content="📁 " Foreground="DarkOrange"></Label>
+                    <Label Content="{Binding Name}" Foreground="DarkOrange">
                         <Label.ContextMenu>
                             <ContextMenu Name="foo">
-                                <MenuItem
-                                  Tag="{Binding}"
-                                  Header="Add node"
-                                  Click="ContextMenuFolder_AddNode" 
-                             />
+                                <MenuItem Tag="{Binding}" Header="Edit" Click="ContextMenuFolder_Edit" />
+                                <MenuItem Tag="{Binding}" Header="Add node" Click="ContextMenuFolder_AddNode" />
                             </ContextMenu>
                         </Label.ContextMenu>
                     </Label>
@@ -28,11 +25,20 @@
                 <ItemsControl ItemsSource="{Binding Nodes}" Margin="20,0,0,0">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock>
-                                <Hyperlink NavigateUri="{Binding Url}">
-                                    <TextBlock Text="{Binding Name}"></TextBlock>
-                                </Hyperlink>
-                            </TextBlock>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock>
+                                    <TextBlock.ContextMenu>
+                                        <ContextMenu Name="foo">
+                                            <MenuItem Tag="{Binding}" Header="Edit" Click="ContextMenuNode_Edit" />
+                                        </ContextMenu>
+                                    </TextBlock.ContextMenu>
+                                    <Hyperlink Click="Node_Click" Tag="{Binding}">
+                                        <TextBlock Text="{Binding Name}" ToolTip="{Binding Url}"></TextBlock>
+                                    </Hyperlink>
+                                </TextBlock>
+                                <!--<Button Click="btEditNode_Click" BorderThickness="0" Background="Transparent" 
+                                        FontSize="6" ToolTip="Edit" Tag="{Binding}" >✎</Button>-->
+                            </StackPanel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -41,12 +47,7 @@
     </Page.Resources>
     <DockPanel>
         <ToolBar DockPanel.Dock="Top">
-            <Button>&lt;</Button>
-            <Button>&gt;</Button>
             <Menu Margin="0,0,0,0" Height="22" Name="menu1" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                <MenuItem Header="File" Height="20">
-                    <MenuItem Header="Save" HorizontalAlignment="Left" Click="mnuFileSave_Click" />
-                </MenuItem>
                 <MenuItem Header="Content" Height="20">
                     <MenuItem Header="Add toplevel folder" HorizontalAlignment="Left" Click="mnuAddTopLevelFolder_Click" />
                     <MenuItem Header="Add toplevel node" HorizontalAlignment="Left" Click="mnuAddTopLevelNode_Click" />

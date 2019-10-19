@@ -39,7 +39,7 @@ namespace Vision.BL
         {
             if (File.Exists(RecentProjectsFilePath))
             {
-                var xml = File.ReadAllText(RecentProjectsFilePath);
+                var xml = File.ReadAllText(RecentProjectsFilePath, Encoding.UTF8);
                 var recentProjects = Serialization.ParseXml<RecentProjects>(xml);
                 return recentProjects;
             }
@@ -64,7 +64,7 @@ namespace Vision.BL
         private void SaveRecentProjects(RecentProjects recentProjects)
         {
             var xml = Serialization.ToXml(recentProjects);
-            File.WriteAllText(RecentProjectsFilePath, xml);
+            File.WriteAllText(RecentProjectsFilePath, xml, Encoding.UTF8);
         }
 
         public void RemoveRecentProject(RecentProject recentProject)

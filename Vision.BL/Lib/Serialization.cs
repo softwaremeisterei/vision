@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using Vision.BL.Lib;
 
 namespace Softwaremeisterei.Lib
 {
@@ -15,7 +16,7 @@ namespace Softwaremeisterei.Lib
         {
             var xmlSerializer = new XmlSerializer(obj.GetType());
 
-            using (var textWriter = new StringWriter())
+            using (var textWriter = new Utf8StringWriter())
             {
                 xmlSerializer.Serialize(textWriter, obj);
                 return textWriter.ToString();
