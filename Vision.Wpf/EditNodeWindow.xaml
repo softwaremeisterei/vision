@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Edit node" Width="240.196" Height="156.395" Loaded="Window_Loaded">
+        Title="Edit node" Width="533.075" Height="158.395" Loaded="Window_Loaded">
     <StackPanel>
         <Label Content="Name" />
         <TextBox Text="{Binding Node.Name}" />
