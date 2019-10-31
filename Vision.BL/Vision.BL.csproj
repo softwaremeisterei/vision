@@ -51,7 +51,6 @@
     <Compile Include="Lib\Utf8StringWriter.cs" />
     <Compile Include="Migration1.cs" />
     <Compile Include="Model\Entity.cs" />
-    <Compile Include="Model\FolderNode.cs" />
     <Compile Include="Model\Project.cs" />
     <Compile Include="Model\DisplayType.cs" />
     <Compile Include="Model\Layout.cs" />

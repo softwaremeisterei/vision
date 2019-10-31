@@ -415,11 +415,11 @@ namespace Vision.Forms
 
         private void DisplayContent(Node node)
         {
-            switch (node.DisplayType)
+            switch (node.NodeType)
             {
-                case DisplayType.Folder:
+                case NodeType.Folder:
                     break;
-                case DisplayType.Browser:
+                case NodeType.Link:
                     if (!MainForm.GetInstance().FindWebBrowserAndShow(node.Url))
                     {
                         var browserForm = MainForm.GetInstance().OpenWebBrowser();
@@ -429,7 +429,7 @@ namespace Vision.Forms
                         browserForm.SetDocumentCompletedHandler(_contentWebBrowser_DocumentCompleted);
                     }
                     break;
-                case DisplayType.Image:
+                case NodeType.Image:
                     var image = _ImageRepository.Get(node.ImageId);
                     var imageViewer = MainForm.GetInstance().OpenImageViewer(DockMode.Fill, image);
                     break;
@@ -627,7 +627,7 @@ namespace Vision.Forms
 
             if (Control.ModifierKeys == Keys.Shift)
             {
-                if (node.DisplayType == DisplayType.Browser)
+                if (node.NodeType == NodeType.Link)
                 {
                     Process.Start(node.Url);
                     return;
@@ -1110,11 +1110,11 @@ namespace Vision.Forms
         {
             var node = GetNode(treeNode);
 
-            if (node.DisplayType == DisplayType.Browser)
+            if (node.NodeType == NodeType.Link)
             {
                 treeNode.ForeColor = Color.Blue;
             }
-            else if (node.DisplayType == DisplayType.Image)
+            else if (node.NodeType == NodeType.Image)
             {
                 treeNode.NodeFont = new Font(treeNode.NodeFont ?? treeView1.Font, FontStyle.Italic);
             }
@@ -1207,7 +1207,7 @@ namespace Vision.Forms
             }
         }
 
-        private TreeNode AddTreeNode(FolderNode parentNode = null)
+        private TreeNode AddTreeNode(Node parentNode = null)
         {
             var node = Project.AddNode(parentNode, "New");
             UpdateLayoutData(treeView1.Nodes);
@@ -1480,7 +1480,7 @@ namespace Vision.Forms
 
             if (IsUrlNode(treeNode))
             {
-                node.DisplayType = DisplayType.Browser;
+                node.NodeType = NodeType.Link;
 
                 if (node.Url == null)
                 {
@@ -1493,11 +1493,11 @@ namespace Vision.Forms
             }
             else if (!string.IsNullOrEmpty(node.ImageId))
             {
-                node.DisplayType = DisplayType.Image;
+                node.NodeType = NodeType.Image;
             }
             else
             {
-                node.DisplayType = DisplayType.Folder;
+                node.NodeType = NodeType.Folder;
                 node.Url = null;
             }
         }

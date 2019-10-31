@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Vision.BL.Model
 {
-    public enum DisplayType
+    public enum NodeType
     {
         Folder,
-        Browser,
+        Link,
         Image
     }
 }

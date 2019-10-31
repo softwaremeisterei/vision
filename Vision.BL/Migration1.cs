@@ -19,7 +19,7 @@ namespace Vision.BL
             Migrate(project.Root, oldFormat.Nodes);
         }
 
-        private void Migrate(FolderNode parentFolder, List<OldFormat.Node> oldNodes)
+        private void Migrate(Node parentFolder, List<OldFormat.Node> oldNodes)
         {
             if (oldNodes != null)
             {
@@ -27,12 +27,12 @@ namespace Vision.BL
                 {
                     if (oldNode.Nodes.Any())
                     {
-                        var folder = new FolderNode { Name = oldNode.Title };
+                        var folder = new Node { Name = oldNode.Title };
                         if (!string.IsNullOrEmpty(oldNode.Url))
                         {
                             folder.Nodes.Add(new Node { Name = oldNode.Title, Url = oldNode.Url });
                         }
-                        parentFolder.Folders.Add(folder);
+                        parentFolder.Nodes.Add(folder);
                         Migrate(folder, oldNode.Nodes);
                     }
                     else

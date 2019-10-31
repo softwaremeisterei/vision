@@ -14,11 +14,11 @@ namespace Vision.BL.Model
         public bool AutoSave { get; set; }
         public bool Incognito { get; set; }
         public Layout Layout { get; set; }
-        public FolderNode Root { get; set; }
+        public Node Root { get; set; }
 
         public Project()
         {
-            Root = new FolderNode { Name = "Root" };
+            Root = new Node { Name = "Root" };
             Layout = new Layout();
         }
 
@@ -27,7 +27,7 @@ namespace Vision.BL.Model
             Path = fileName;
         }
 
-        public Node AddNode(FolderNode parentNode, string name)
+        public Node AddNode(Node parentNode, string name)
         {
             var index = 0;
 
@@ -48,7 +48,7 @@ namespace Vision.BL.Model
             return node;
         }
 
-        public void RemoveNode(FolderNode parentNode, Node node)
+        public void RemoveNode(Node parentNode, Node node)
         {
             if (parentNode == null)
                 Root.Nodes.Remove(node);

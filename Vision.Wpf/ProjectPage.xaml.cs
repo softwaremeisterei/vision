@@ -21,7 +21,7 @@ namespace Vision.Wpf
     public partial class ProjectPage : Page
     {
         public Project Project { get; set; }
-        public ObservableCollection<FolderNode> Roots { get; set; }
+        public ObservableCollection<Node> Roots { get; set; }
 
         private Persistor persistor;
 
@@ -35,7 +35,7 @@ namespace Vision.Wpf
             persistor = new Persistor();
 
             this.Project = project;
-            this.Roots = new ObservableCollection<FolderNode>();
+            this.Roots = new ObservableCollection<Node>();
             this.Roots.Add(project.Root);
 
             this.Dispatcher.ShutdownStarted += Dispatcher_ShutdownStarted;
@@ -43,7 +43,7 @@ namespace Vision.Wpf
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            ExpandAll(treeView1.Items.OfType<FolderNode>().ToList());
+            ExpandAll(treeView1.Items.OfType<Node>().ToList());
 
             _NavigationService = this.NavigationService;
             _NavigationService.Navigating += NavigationService_Navigating;
@@ -79,9 +79,9 @@ namespace Vision.Wpf
             Save();
         }
 
-        private void ExpandAll(IList<FolderNode> folders)
+        private void ExpandAll(IList<Node> folders)
         {
-            foreach (FolderNode folder in folders)
+            foreach (Node folder in folders)
             {
                 var item = treeView1.ItemContainerGenerator.ContainerFromItem(folder) as TreeViewItem;
                 item.ExpandSubtree();
@@ -94,7 +94,7 @@ namespace Vision.Wpf
 
         private void mnuAddTopLevelFolder_Click(object sender, RoutedEventArgs e)
         {
-            Roots.First().Folders.Add(new FolderNode { Name = "NONAME" });
+            Roots.First().Nodes.Add(new Node { Name = "NONAME" });
         }
 
         private void mnuAddTopLevelNode_Click(object sender, RoutedEventArgs e)
@@ -102,40 +102,59 @@ namespace Vision.Wpf
             Roots.First().Nodes.Add(new Node { Name = "Noname" });
         }
 
-        private void ContextMenuFolder_EditFolder(object sender, RoutedEventArgs e)
+        private void ContextMenuNode_Edit(object sender, RoutedEventArgs e)
         {
             var menuItem = (MenuItem)sender;
-            var folder = (FolderNode)menuItem.Tag;
-            var dlg = new EditFolderWindow(folder);
-            dlg.Owner = Window.GetWindow(this);
-            dlg.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            var node = (Node)menuItem.Tag;
 
-            if (dlg.ShowDialog() == true)
+            if (node.NodeType == NodeType.Folder)
             {
-                //
+                var dlg = new EditFolderWindow(node)
+                {
+                    Owner = Window.GetWindow(this),
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                };
+                dlg.ShowDialog();
+            }
+            else if (node.NodeType == NodeType.Link)
+            {
+                var dlg = new EditNodeWindow(node)
+                {
+                    Owner = Window.GetWindow(this),
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                };
+                dlg.ShowDialog();
             }
         }
 
-        private void ContextMenuFolder_AddNode(object sender, RoutedEventArgs e)
+        private void ContextMenuNode_AddNode(object sender, RoutedEventArgs e)
         {
             var menuItem = (MenuItem)sender;
-            var folder = (FolderNode)menuItem.Tag;
-            folder.Nodes.Add(new Node { Name = "Noname" });
+            var folder = (Node)menuItem.Tag;
+            folder.Nodes.Add(new Node { Name = "Noname", NodeType = NodeType.Link });
         }
 
-        private void ContextMenuFolder_DeleteFolder(object sender, RoutedEventArgs e)
+        private void ContextMenuNode_AddFolder(object sender, RoutedEventArgs e)
         {
             var menuItem = (MenuItem)sender;
-            var folder = (FolderNode)menuItem.Tag;
+            var folder = (Node)menuItem.Tag;
+            folder.Nodes.Add(new Node { Name = "Noname", NodeType = NodeType.Folder });
+        }
+
+
+        private void ContextMenuNode_Delete(object sender, RoutedEventArgs e)
+        {
+            var menuItem = (MenuItem)sender;
+            var folder = (Node)menuItem.Tag;
             DeleteFolder(Project.Root, folder);
         }
 
-        private bool DeleteFolder(FolderNode parentFolder, FolderNode folder)
+        private bool DeleteFolder(Node parentFolder, Node folder)
         {
-            var wasRemoved = parentFolder.Folders.Remove(folder);
+            var wasRemoved = parentFolder.Nodes.Remove(folder);
             if (!wasRemoved)
             {
-                foreach(var subFolder in parentFolder.Folders)
+                foreach (var subFolder in parentFolder.Nodes)
                 {
                     if (DeleteFolder(subFolder, folder))
                     {
@@ -144,13 +163,6 @@ namespace Vision.Wpf
                 }
             }
             return false;
-        }
-
-        private void ContextMenuNode_EditNode(object sender, RoutedEventArgs e)
-        {
-            var menuItem = (MenuItem)sender;
-            var node = (Node)menuItem.Tag;
-            Edit(node);
         }
 
         private void ContextMenuNode_DeleteNode(object sender, RoutedEventArgs e)
@@ -170,12 +182,12 @@ namespace Vision.Wpf
             }
         }
 
-        private bool DeleteNode(FolderNode parentFolder, Node node)
+        private bool DeleteNode(Node parentFolder, Node node)
         {
             var wasRemoved = parentFolder.Nodes.Remove(node);
             if (!wasRemoved)
             {
-                foreach (var subFolder in parentFolder.Folders)
+                foreach (var subFolder in parentFolder.Nodes)
                 {
                     if (DeleteNode(subFolder, node))
                     {
@@ -189,18 +201,6 @@ namespace Vision.Wpf
         private void Save()
         {
             persistor.SaveProject(Project);
-        }
-
-        private void Edit(Node node)
-        {
-            var dlg = new EditNodeWindow(node);
-            dlg.Owner = Window.GetWindow(this);
-            dlg.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-
-            if (dlg.ShowDialog() == true)
-            {
-                //
-            }
         }
 
         private void mnuImportOldFormatProject_Click(object sender, RoutedEventArgs e)
@@ -270,20 +270,20 @@ namespace Vision.Wpf
         private void TreeView1_Drop(object sender, DragEventArgs e)
         {
             var source = e.Data.GetData(DragDataFormat);
-            if (source is FolderNode)
+            if (source is Node)
             {
-                var sourceEntity = source as FolderNode;
+                var sourceEntity = source as Node;
                 var dropItem = GetNearestContainer(e.OriginalSource as UIElement);
                 if (dropItem != null)
                 {
-                    if (dropItem.Header is FolderNode)
+                    if (dropItem.Header is Node)
                     {
-                        var dropEntity = dropItem.Header as FolderNode;
+                        var dropEntity = dropItem.Header as Node;
                         if (source != dropEntity && !IsSubNode(sourceEntity, dropEntity))
                         {
                             var parentSourceFolder = GetParentFolder(sourceEntity);
-                            dropEntity.Folders.Insert(0, sourceEntity);
-                            parentSourceFolder.Folders.Remove(sourceEntity);
+                            dropEntity.Nodes.Insert(0, sourceEntity);
+                            parentSourceFolder.Nodes.Remove(sourceEntity);
                         }
                     }
                 }
@@ -294,9 +294,9 @@ namespace Vision.Wpf
                 var dropItem = GetNearestContainer(e.OriginalSource as UIElement);
                 if (dropItem != null)
                 {
-                    if (dropItem.Header is FolderNode)
+                    if (dropItem.Header is Node)
                     {
-                        var dropEntity = dropItem.Header as FolderNode;
+                        var dropEntity = dropItem.Header as Node;
                         if (source != dropEntity)
                         {
                             var parentSourceFolder = GetParentFolder(sourceEntity);
@@ -308,9 +308,9 @@ namespace Vision.Wpf
             }
         }
 
-        private bool IsSubNode(FolderNode node1, FolderNode node2)
+        private bool IsSubNode(Node node1, Node node2)
         {
-            if (node1.Folders.Contains(node2))
+            if (node1.Nodes.Contains(node2))
             {
                 return true;
             }
@@ -322,42 +322,20 @@ namespace Vision.Wpf
             return false;
         }
 
-        private FolderNode GetParentFolder(FolderNode folder)
+        private Node GetParentFolder(Node folder)
         {
             return GetParentFolder(Roots, folder);
         }
 
-        private FolderNode GetParentFolder(ObservableCollection<FolderNode> folders, FolderNode childFolder)
+        private Node GetParentFolder(ObservableCollection<Node> folders, Node childFolder)
         {
-            foreach(var folder in folders)
+            foreach (var folder in folders)
             {
-                if (folder.Folders.Contains(childFolder))
+                if (folder.Nodes.Contains(childFolder))
                 {
                     return folder;
                 }
-                var result = GetParentFolder(folder.Folders, childFolder);
-                if (result != null)
-                {
-                    return result;
-                }
-            }
-            return null;
-        }
-
-        private FolderNode GetParentFolder(Node node)
-        {
-            return GetParentFolder(Roots, node);
-        }
-
-        private FolderNode GetParentFolder(ObservableCollection<FolderNode> folders, Node node)
-        {
-            foreach(var folder in folders)
-            {
-                if (folder.Nodes.Contains(node))
-                {
-                    return folder;
-                }
-                var result = GetParentFolder(folder.Folders, node);
+                var result = GetParentFolder(folder.Nodes, childFolder);
                 if (result != null)
                 {
                     return result;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 
 namespace Vision.BL.Model
 {
@@ -10,7 +11,8 @@ namespace Vision.BL.Model
         public DateTime CreatedAt { get; set; }
         public int Index { get; set; }
         public bool IsFavorite { get; set; }
-        public DisplayType DisplayType { get; set; }
+        public NodeType NodeType { get; set; }
+        public ObservableCollection<Node> Nodes { get; set; }
 
         public Node()
         {
@@ -18,7 +20,8 @@ namespace Vision.BL.Model
             Name = string.Empty;
             Content = string.Empty;
             CreatedAt = DateTime.Now;
-            DisplayType = DisplayType.Folder;
+            NodeType = NodeType.Folder;
+            Nodes = new ObservableCollection<Node>();
         }
 
         public virtual Node Copy()
@@ -29,7 +32,7 @@ namespace Vision.BL.Model
             copy.Url = Url;
             copy.Content = Content;
             copy.IsFavorite = IsFavorite;
-            copy.DisplayType = DisplayType;
+            copy.NodeType = NodeType;
 
             return copy;
         }

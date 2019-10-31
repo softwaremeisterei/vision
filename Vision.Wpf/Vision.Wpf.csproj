@@ -59,6 +59,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\FolderIconConverter.cs" />
     <Compile Include="Converters\FolderNameConverter.cs" />
     <Compile Include="Converters\ShortNameConverter.cs" />
     <Compile Include="EditFolderWindow.xaml.cs">

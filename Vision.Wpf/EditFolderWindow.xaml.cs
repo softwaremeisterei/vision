@@ -20,9 +20,9 @@ namespace Vision.Wpf
     /// </summary>
     public partial class EditFolderWindow : Window
     {
-        public FolderNode Folder { get; set; }
+        public Node Folder { get; set; }
 
-        public EditFolderWindow(FolderNode folder)
+        public EditFolderWindow(Node folder)
         {
             InitializeComponent();
             DataContext = this;

@@ -3,28 +3,40 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:converters="clr-namespace:Vision.Wpf.Converters"
       xmlns:local="clr-namespace:Vision.Wpf"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800" Loaded="Page_Loaded" Unloaded="Page_Unloaded"
       Title="ProjectPage">
     <Page.Resources>
-        <HierarchicalDataTemplate x:Key="FolderNodeTemplate" ItemsSource="{Binding Folders}">
+        <converters:FolderIconConverter x:Key="FolderIconConverter" />
+        <HierarchicalDataTemplate x:Key="FolderNodeTemplate" ItemsSource="{Binding Nodes}">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="📁 " Foreground="DarkOrange"></Label>
-                    <Label Content="{Binding Name}" Foreground="DarkOrange">
+                    <Label Content="{Binding ., Converter={StaticResource FolderIconConverter}}"/>
+                    <Label Content="{Binding Name}">
+                        <Label.Style>
+                            <Style TargetType="Label">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=NodeType}" Value="Link">
+                                        <Setter Property="Foreground" Value="Blue"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Label.Style>
                         <Label.ContextMenu>
                             <ContextMenu Name="foo">
-                                <MenuItem Tag="{Binding}" Header="Edit folder" Click="ContextMenuFolder_EditFolder" />
+                                <MenuItem Tag="{Binding}" Header="Edit" Click="ContextMenuNode_Edit" />
                                 <Separator/>
-                                <MenuItem Tag="{Binding}" Header="Add node" Click="ContextMenuFolder_AddNode" />
+                                <MenuItem Tag="{Binding}" Header="Add node" Click="ContextMenuNode_AddNode" />
+                                <MenuItem Tag="{Binding}" Header="Add folder" Click="ContextMenuNode_AddFolder" />
                                 <Separator/>
-                                <MenuItem Tag="{Binding}" Header="Delete folder" Click="ContextMenuFolder_DeleteFolder" />
+                                <MenuItem Tag="{Binding}" Header="Delete" Click="ContextMenuNode_Delete" />
                             </ContextMenu>
                         </Label.ContextMenu>
                     </Label>
                 </StackPanel>
-                <ItemsControl ItemsSource="{Binding Nodes}" Margin="20,0,0,0">
+                <!--<ItemsControl ItemsSource="{Binding Nodes}" Margin="20,0,0,0">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
@@ -43,7 +55,7 @@
                             </StackPanel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                </ItemsControl>-->
             </StackPanel>
         </HierarchicalDataTemplate>
     </Page.Resources>
