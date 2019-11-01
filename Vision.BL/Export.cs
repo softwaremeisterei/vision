@@ -33,21 +33,6 @@ namespace Vision.BL
             {
                 writer.WriteLine("{0}+ {1}", indentSpaces, node.Name);
 
-                if (node.Content != null)
-                {
-                    var plainText = RichTextStripper.StripRichTextFormat(node.Content);
-
-                    if (!IsEmpty(plainText))
-                    {
-                        plainText = plainText.TrimEnd(WHITESPACE_CHARS);
-
-                        foreach (var line in plainText.Split('\n'))
-                        {
-                            writer.WriteLine("{0}{1}", indentSpacesContent, line);
-                        }
-                    }
-                }
-
                 if (!string.IsNullOrWhiteSpace(node.Url))
                 {
                     writer.WriteLine("{0}{1}", indentSpacesContent, node.Url);

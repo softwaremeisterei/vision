@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Vision.BL.Model;
+using Vision.Wpf.Model;
 
 namespace Vision.Wpf
 {
@@ -20,14 +21,14 @@ namespace Vision.Wpf
     /// </summary>
     public partial class EditFolderWindow : Window
     {
-        public Node Folder { get; set; }
+        public NodeView Node { get; set; }
 
-        public EditFolderWindow(Node folder)
+        public EditFolderWindow(NodeView node)
         {
             InitializeComponent();
             DataContext = this;
 
-            Folder = folder;
+            Node = node;
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -37,6 +38,7 @@ namespace Vision.Wpf
 
         private void BtnOK_Click(object sender, RoutedEventArgs e)
         {
+            Global.Mapper.Map(Node, Node.Tag as Node);
             DialogResult = true;
         }
 

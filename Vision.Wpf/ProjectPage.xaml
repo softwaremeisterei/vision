@@ -13,12 +13,11 @@
             <EventSetter Event="Hyperlink.Click" Handler="Node_Click"></EventSetter>
         </Style>
         <converters:FolderIconConverter x:Key="FolderIconConverter" />
-        <converters:FavoriteConverter x:Key="FavoriteConverter" />
         <HierarchicalDataTemplate x:Key="NodeTemplate" ItemsSource="{Binding Nodes}">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
                     <Label Content="{Binding ., Converter={StaticResource FolderIconConverter}}"/>
-                    <Image Source="{Binding ., Converter={StaticResource FavoriteConverter}}" />
+                    <Image Source="{Binding ImageSource, UpdateSourceTrigger=PropertyChanged}" />
                     <ContentControl>
                         <ContentControl.Style>
                             <Style TargetType="{x:Type ContentControl}">

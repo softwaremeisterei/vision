@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Vision.BL.Model;
+using Vision.Wpf.Model;
 
 namespace Vision.Wpf
 {
@@ -20,9 +21,9 @@ namespace Vision.Wpf
     /// </summary>
     public partial class EditNodeWindow : Window
     {
-        public Node Node { get; set; }
+        public NodeView Node { get; set; }
 
-        public EditNodeWindow(Node node)
+        public EditNodeWindow(NodeView node)
         {
             InitializeComponent();
             DataContext = this;
@@ -34,6 +35,7 @@ namespace Vision.Wpf
 
         private void BtnOK_Click(object sender, RoutedEventArgs e)
         {
+            Global.Mapper.Map(Node, Node.Tag as Node);
             DialogResult = true;
         }
 

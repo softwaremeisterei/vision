@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Navigation;
 using Vision.BL;
 using Vision.BL.Model;
+using Vision.Wpf.Model;
 
 namespace Vision.Wpf
 {
@@ -21,7 +22,7 @@ namespace Vision.Wpf
     public partial class ProjectPage : Page
     {
         public Project Project { get; set; }
-        public ObservableCollection<Node> Roots { get; set; }
+        public ObservableCollection<NodeView> Roots { get; set; }
 
         private Persistor persistor;
 
@@ -35,10 +36,16 @@ namespace Vision.Wpf
             persistor = new Persistor();
 
             this.Project = project;
-            this.Roots = new ObservableCollection<Node>();
-            this.Roots.Add(project.Root);
+            this.Roots = new ObservableCollection<NodeView>();
+            this.Roots.Add(MapToView(project.Root));
 
             this.Dispatcher.ShutdownStarted += Dispatcher_ShutdownStarted;
+        }
+
+        private NodeView MapToView(Node root)
+        {
+            var result = Global.Mapper.Map<NodeView>(root);
+            return result;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -54,7 +61,7 @@ namespace Vision.Wpf
             });
         }
 
-        private void ApplyLayout(TreeViewItem item, Node node)
+        private void ApplyLayout(TreeViewItem item, NodeView node)
         {
             if (item != null && node != null)
             {
@@ -72,7 +79,7 @@ namespace Vision.Wpf
             }
         }
 
-        private void UpdateLayoutRec(TreeViewItem item, Node node)
+        private void UpdateLayoutRec(TreeViewItem item, NodeView node)
         {
             if (item != null)
             {
@@ -123,20 +130,28 @@ namespace Vision.Wpf
 
         private void mnuAddTopLevelFolder_Click(object sender, RoutedEventArgs e)
         {
-            Roots.First().Nodes.Add(new Node { Name = "NONAME" });
+            var node = new Node { Name = "NONAME", NodeType = BL.Model.NodeType.Folder };
+            (Roots.First().Tag as Node).Nodes.Add(node);
+
+            var nodeView = Global.Mapper.Map<NodeView>(node);
+            Roots.First().Nodes.Add(nodeView);
         }
 
         private void mnuAddTopLevelNode_Click(object sender, RoutedEventArgs e)
         {
-            Roots.First().Nodes.Add(new Node { Name = "Noname" });
+            var node = new Node { Name = "Noname", NodeType = BL.Model.NodeType.Link };
+            (Roots.First().Tag as Node).Nodes.Add(node);
+
+            var nodeView = Global.Mapper.Map<NodeView>(node);
+            Roots.First().Nodes.Add(nodeView);
         }
 
         private void ContextMenuNode_Edit(object sender, RoutedEventArgs e)
         {
             var menuItem = (MenuItem)sender;
-            var node = (Node)menuItem.Tag;
+            var node = (NodeView)menuItem.Tag;
 
-            if (node.NodeType == NodeType.Folder)
+            if (node.NodeType == NodeViewType.Folder)
             {
                 var dlg = new EditFolderWindow(node)
                 {
@@ -145,7 +160,7 @@ namespace Vision.Wpf
                 };
                 dlg.ShowDialog();
             }
-            else if (node.NodeType == NodeType.Link)
+            else if (node.NodeType == NodeViewType.Link)
             {
                 var dlg = new EditNodeWindow(node)
                 {
@@ -204,15 +219,18 @@ namespace Vision.Wpf
         private void ContextMenuNode_ToggleFavorite(object sender, RoutedEventArgs e)
         {
             var menuItem = (MenuItem)sender;
-            var node = (Node)menuItem.Tag;
+            var node = (NodeView)menuItem.Tag;
             node.IsFavorite = !node.IsFavorite;
-            node.NotifyPropertyChanged(nameof(Node.IsFavorite));
+            (node.Tag as Node).IsFavorite = !(node.Tag as Node).IsFavorite;
+            node.ImageSource = node.IsFavorite ? Global.FavoriteStarUri : "";
+            node.NotifyPropertyChanged(nameof(NodeView.IsFavorite));
+            node.NotifyPropertyChanged(nameof(NodeView.ImageSource));
         }
 
 
         private void Node_Click(object sender, RoutedEventArgs e)
         {
-            var node = (Node)((Hyperlink)sender).Tag;
+            var node = (NodeView)((Hyperlink)sender).Tag;
             var url = Urls.NormalizeUrl(node.Url);
             if (url != null)
             {
@@ -310,15 +328,15 @@ namespace Vision.Wpf
         private void TreeView1_Drop(object sender, DragEventArgs e)
         {
             var source = e.Data.GetData(DragDataFormat);
-            if (source is Node)
+            if (source is NodeView)
             {
-                var sourceEntity = source as Node;
+                var sourceEntity = source as NodeView;
                 var dropItem = GetNearestContainer(e.OriginalSource as UIElement);
                 if (dropItem != null)
                 {
-                    if (dropItem.Header is Node)
+                    if (dropItem.Header is NodeView)
                     {
-                        var dropEntity = dropItem.Header as Node;
+                        var dropEntity = dropItem.Header as NodeView;
                         if (source != dropEntity && !IsSubNode(sourceEntity, dropEntity))
                         {
                             var parentSourceFolder = GetParentFolder(sourceEntity);
@@ -328,15 +346,15 @@ namespace Vision.Wpf
                     }
                 }
             }
-            else if (source is Node)
+            else if (source is NodeView)
             {
-                var sourceEntity = source as Node;
+                var sourceEntity = source as NodeView;
                 var dropItem = GetNearestContainer(e.OriginalSource as UIElement);
                 if (dropItem != null)
                 {
-                    if (dropItem.Header is Node)
+                    if (dropItem.Header is NodeView)
                     {
-                        var dropEntity = dropItem.Header as Node;
+                        var dropEntity = dropItem.Header as NodeView;
                         if (source != dropEntity)
                         {
                             var parentSourceFolder = GetParentFolder(sourceEntity);
@@ -348,7 +366,7 @@ namespace Vision.Wpf
             }
         }
 
-        private bool IsSubNode(Node node1, Node node2)
+        private bool IsSubNode(NodeView node1, NodeView node2)
         {
             if (node1.Nodes.Contains(node2))
             {
@@ -362,12 +380,12 @@ namespace Vision.Wpf
             return false;
         }
 
-        private Node GetParentFolder(Node folder)
+        private NodeView GetParentFolder(NodeView folder)
         {
             return GetParentFolder(Roots, folder);
         }
 
-        private Node GetParentFolder(ObservableCollection<Node> folders, Node childFolder)
+        private NodeView GetParentFolder(ObservableCollection<NodeView> folders, NodeView childFolder)
         {
             foreach (var folder in folders)
             {

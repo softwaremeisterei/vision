@@ -429,10 +429,6 @@ namespace Vision.Forms
                         browserForm.SetDocumentCompletedHandler(_contentWebBrowser_DocumentCompleted);
                     }
                     break;
-                case NodeType.Image:
-                    var image = _ImageRepository.Get(node.ImageId);
-                    var imageViewer = MainForm.GetInstance().OpenImageViewer(DockMode.Fill, image);
-                    break;
             }
         }
 
@@ -1114,10 +1110,6 @@ namespace Vision.Forms
             {
                 treeNode.ForeColor = Color.Blue;
             }
-            else if (node.NodeType == NodeType.Image)
-            {
-                treeNode.NodeFont = new Font(treeNode.NodeFont ?? treeView1.Font, FontStyle.Italic);
-            }
         }
 
         public bool Save()
@@ -1390,7 +1382,6 @@ namespace Vision.Forms
 
                 var isMatch = node.Name?.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0;
                 isMatch = isMatch || node.Url?.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0;
-                isMatch = isMatch || node.Content?.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0;
 
                 if (isMatch)
                 {
@@ -1490,10 +1481,6 @@ namespace Vision.Forms
                     }
                     node.Url = node.Name;
                 }
-            }
-            else if (!string.IsNullOrEmpty(node.ImageId))
-            {
-                node.NodeType = NodeType.Image;
             }
             else
             {

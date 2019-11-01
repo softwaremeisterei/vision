@@ -4,16 +4,12 @@ using System.ComponentModel;
 
 namespace Vision.BL.Model
 {
-    public class Node : Entity, INotifyPropertyChanged
+    public class Node : Entity
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public string Url { get; set; }
-        public string ImageId { get; set; }
-        public string Content { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public int Index { get; set; }
         public bool IsFavorite { get; set; }
+        public int Index { get; set; }
+        public DateTime CreatedAt { get; set; }
         public NodeType NodeType { get; set; }
         public ObservableCollection<Node> Nodes { get; set; }
 
@@ -21,7 +17,6 @@ namespace Vision.BL.Model
         {
             Id = Guid.NewGuid();
             Name = string.Empty;
-            Content = string.Empty;
             CreatedAt = DateTime.Now;
             NodeType = NodeType.Folder;
             Nodes = new ObservableCollection<Node>();
@@ -33,7 +28,6 @@ namespace Vision.BL.Model
 
             copy.Name = Name;
             copy.Url = Url;
-            copy.Content = Content;
             copy.IsFavorite = IsFavorite;
             copy.NodeType = NodeType;
 
@@ -45,10 +39,6 @@ namespace Vision.BL.Model
             return new Node();
         }
 
-        public void NotifyPropertyChanged(string propertyName)
-        {
-            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
 
 }

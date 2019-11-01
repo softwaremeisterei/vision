@@ -9,7 +9,6 @@ namespace Vision.BL.Model
     public enum NodeType
     {
         Folder,
-        Link,
-        Image
+        Link
     }
 }
