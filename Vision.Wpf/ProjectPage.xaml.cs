@@ -158,7 +158,10 @@ namespace Vision.Wpf
                     Owner = Window.GetWindow(this),
                     WindowStartupLocation = WindowStartupLocation.CenterOwner
                 };
-                dlg.ShowDialog();
+                if (dlg.ShowDialog() == true)
+                {
+                    node.NotifyPropertyChanged(nameof(NodeView.Name));
+                }
             }
             else if (node.NodeType == NodeViewType.Link)
             {
@@ -174,46 +177,76 @@ namespace Vision.Wpf
         private void ContextMenuNode_AddNode(object sender, RoutedEventArgs e)
         {
             var menuItem = (MenuItem)sender;
-            var folder = (Node)menuItem.Tag;
-            folder.Nodes.Add(new Node { Name = "Noname", NodeType = NodeType.Link });
+            var folder = (NodeView)menuItem.Tag;
+            var node = new Node { Name = "Noname", NodeType = NodeType.Link };
+            (folder.Tag as Node).Nodes.Add(node);
+            var nodeView = Global.Mapper.Map<NodeView>(node);
+            folder.Nodes.Add(nodeView);
         }
 
         private void ContextMenuNode_AddFolder(object sender, RoutedEventArgs e)
         {
             var menuItem = (MenuItem)sender;
-            var folder = (Node)menuItem.Tag;
-            folder.Nodes.Add(new Node { Name = "Noname", NodeType = NodeType.Folder });
+            var folder = (NodeView)menuItem.Tag;
+            var node = new Node { Name = "Noname", NodeType = NodeType.Folder };
+            (folder.Tag as Node).Nodes.Add(node);
+            var nodeView = Global.Mapper.Map<NodeView>(node);
+            folder.Nodes.Add(nodeView);
         }
 
 
         private void ContextMenuNode_Delete(object sender, RoutedEventArgs e)
         {
             var menuItem = (MenuItem)sender;
-            var folder = (Node)menuItem.Tag;
-            DeleteFolder(Project.Root, folder);
+            var folder = (NodeView)menuItem.Tag;
+            DeleteNodeView(Roots, folder.Id);
+            DeleteNode(Project.Root, folder.Id);
         }
 
-        private bool DeleteFolder(Node parentFolder, Node folder)
+        private bool DeleteNode(Node root, Guid nodeId)
         {
-            var wasRemoved = parentFolder.Nodes.Remove(folder);
-            if (!wasRemoved)
+            var matchingNode = root.Nodes.FirstOrDefault(n => n.Id == nodeId);
+
+            if (matchingNode != null)
             {
-                foreach (var subFolder in parentFolder.Nodes)
+                root.Nodes.Remove(matchingNode);
+                return true;
+            }
+            else
+            {
+                foreach (var node in root.Nodes)
                 {
-                    if (DeleteFolder(subFolder, folder))
+                    if (DeleteNode(node, nodeId))
                     {
                         return true;
                     }
                 }
             }
+
             return false;
         }
 
-        private void ContextMenuNode_DeleteNode(object sender, RoutedEventArgs e)
+        private bool DeleteNodeView(ObservableCollection<NodeView> nodes, Guid nodeId)
         {
-            var menuItem = (MenuItem)sender;
-            var node = (Node)menuItem.Tag;
-            DeleteNode(Project.Root, node);
+            var matchingNode = nodes.FirstOrDefault(n => n.Id == nodeId);
+
+            if (matchingNode != null)
+            {
+                nodes.Remove(matchingNode);
+                return true;
+            }
+            else
+            {
+                foreach (var node in nodes)
+                {
+                    if (DeleteNodeView(node.Nodes, nodeId))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         private void ContextMenuNode_ToggleFavorite(object sender, RoutedEventArgs e)
@@ -236,22 +269,6 @@ namespace Vision.Wpf
             {
                 webBrowser.Navigate(url);
             }
-        }
-
-        private bool DeleteNode(Node parentFolder, Node node)
-        {
-            var wasRemoved = parentFolder.Nodes.Remove(node);
-            if (!wasRemoved)
-            {
-                foreach (var subFolder in parentFolder.Nodes)
-                {
-                    if (DeleteNode(subFolder, node))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
         }
 
         private void Save()

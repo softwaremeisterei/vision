@@ -20,6 +20,7 @@ namespace Vision.Wpf.Model
         public NodeViewType NodeType { get; set; }
         public ObservableCollection<NodeView> Nodes { get; set; }
 
+        public string Icon { get; set; }
         public string ImageSource { get; set; }
 
         public object Tag { get; set; }

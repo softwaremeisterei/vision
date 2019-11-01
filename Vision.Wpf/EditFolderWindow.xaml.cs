@@ -26,10 +26,10 @@ namespace Vision.Wpf
         public EditFolderWindow(NodeView node)
         {
             InitializeComponent();
-            DataContext = this;
-
             Node = node;
+            DataContext = Node;
         }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             tbName.SelectAll();

@@ -69,7 +69,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BootStrapper.cs" />
-    <Compile Include="Converters\FolderIconConverter.cs" />
     <Compile Include="Converters\FolderNameConverter.cs" />
     <Compile Include="Converters\ShortNameConverter.cs" />
     <Compile Include="EditFolderWindow.xaml.cs">
