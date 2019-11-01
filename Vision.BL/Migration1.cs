@@ -11,49 +11,53 @@ namespace Vision.BL
 
     public class Migration1
     {
-        public void Migrate(string oldProjectFilePath, Project project)
+        public void Migrate(string oldProjectFilePath, BL.Model.Project destProject)
         {
-            var json = File.ReadAllText(oldProjectFilePath);
-            var oldFormat = Serialization.ParseJson<OldFormat>(json);
+            var xml = File.ReadAllText(oldProjectFilePath);
+            var srcProject = Serialization.ParseXml<Migration1.Project>(xml);
 
-            Migrate(project.Root, oldFormat.Nodes);
+            Migrate(destProject.Root, srcProject.Root);
         }
 
-        private void Migrate(Node parentFolder, List<OldFormat.Node> oldNodes)
+        private void Migrate(Node destParentNode, Migration1.Project.FolderNode srcFolder)
         {
-            if (oldNodes != null)
+            foreach (var srcSubFolder in srcFolder.Folders)
             {
-                foreach (var oldNode in oldNodes)
-                {
-                    if (oldNode.Nodes.Any())
-                    {
-                        var folder = new Node { Name = oldNode.Title };
-                        if (!string.IsNullOrEmpty(oldNode.Url))
-                        {
-                            folder.Nodes.Add(new Node { Name = oldNode.Title, Url = oldNode.Url });
-                        }
-                        parentFolder.Nodes.Add(folder);
-                        Migrate(folder, oldNode.Nodes);
-                    }
-                    else
-                    {
-                        parentFolder.Nodes.Add(new Node { Name = oldNode.Title, Url = oldNode.Url });
-                    }
-                }
+                var destFolder = new Node { Name = srcSubFolder.Name, NodeType = NodeType.Folder };
+                destParentNode.Nodes.Add(destFolder);
+                Migrate(destFolder, srcSubFolder);
+            }
+
+            foreach (var oldNode in srcFolder.Nodes)
+            {
+                destParentNode.Nodes.Add(new Node { Name = oldNode.Name, Url = oldNode.Url, NodeType = NodeType.Link });
             }
         }
 
-        [DataContract]
-        class OldFormat
+        [DataContract(Name="Project")]
+        public class Project
         {
             [DataMember]
-            public List<Node> Nodes { get; set; }
+            public FolderNode Root { get; set; }
+
+            [DataContract]
+            public class FolderNode
+            {
+                [DataMember]
+                public string Name { get; set; }
+
+                [DataMember]
+                public List<FolderNode> Folders { get; set; }
+
+                [DataMember]
+                public List<Node> Nodes { get; set; }
+            }
 
             [DataContract]
             public class Node
             {
                 [DataMember]
-                public string Title { get; set; }
+                public string Name { get; set; }
 
                 [DataMember]
                 public string Url { get; set; }
