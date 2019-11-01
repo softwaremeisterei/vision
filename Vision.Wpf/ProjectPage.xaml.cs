@@ -43,13 +43,51 @@ namespace Vision.Wpf
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            ExpandAll(treeView1.Items.OfType<Node>().ToList());
-
             _NavigationService = this.NavigationService;
             _NavigationService.Navigating += NavigationService_Navigating;
-
             HideScriptErrors(webBrowser, true);
+
+            Roots.ToList().ForEach(n =>
+            {
+                var item = treeView1.ItemContainerGenerator.ContainerFromItem(n) as TreeViewItem;
+                ApplyExpandStates(item, n);
+            });
         }
+
+        private void ApplyExpandStates(TreeViewItem item, Node node)
+        {
+            if (item != null && node != null)
+            {
+                if (Project.Layout.ExpandedNodes.Contains(node.Id))
+                {
+                    item.IsExpanded = true;
+                    item.UpdateLayout(); // needed, otherwise ContainerFromItem(childnode) will return null
+
+                    foreach (var childNode in node.Nodes)
+                    {
+                        var childItem = item.ItemContainerGenerator.ContainerFromItem(childNode) as TreeViewItem;
+                        ApplyExpandStates(childItem as TreeViewItem, childNode);
+                    }
+                }
+            }
+        }
+
+        private void UpdateLayoutRec(TreeViewItem item, Node node)
+        {
+            if (item != null)
+            {
+                if (item.IsExpanded)
+                {
+                    Project.Layout.ExpandedNodes.Add(node.Id);
+                }
+
+                foreach (var childNode in node.Nodes)
+                {
+                    UpdateLayoutRec(item.ItemContainerGenerator.ContainerFromItem(childNode) as TreeViewItem, childNode);
+                }
+            }
+        }
+
 
         public void HideScriptErrors(WebBrowser wb, bool hide)
         {
@@ -77,15 +115,6 @@ namespace Vision.Wpf
         private void Dispatcher_ShutdownStarted(object sender, EventArgs e)
         {
             Save();
-        }
-
-        private void ExpandAll(IList<Node> folders)
-        {
-            foreach (Node folder in folders)
-            {
-                var item = treeView1.ItemContainerGenerator.ContainerFromItem(folder) as TreeViewItem;
-                item.ExpandSubtree();
-            }
         }
 
         private void WebBrowser_Navigating(object sender, NavigatingCancelEventArgs e)
@@ -200,6 +229,8 @@ namespace Vision.Wpf
 
         private void Save()
         {
+            Project.Layout.ExpandedNodes.Clear();
+            Roots.ToList().ForEach(node => UpdateLayoutRec(treeView1.ItemContainerGenerator.ContainerFromItem(node) as TreeViewItem, node));
             persistor.SaveProject(Project);
         }
 
