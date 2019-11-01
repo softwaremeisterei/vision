@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace Vision.BL.Model
 {
-    public class Node : Entity
+    public class Node : Entity, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public string Url { get; set; }
         public string ImageId { get; set; }
         public string Content { get; set; }
@@ -40,6 +43,11 @@ namespace Vision.BL.Model
         public virtual Node Create()
         {
             return new Node();
+        }
+
+        public void NotifyPropertyChanged(string propertyName)
+        {
+            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 

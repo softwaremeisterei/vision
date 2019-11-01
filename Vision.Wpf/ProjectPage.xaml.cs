@@ -201,6 +201,15 @@ namespace Vision.Wpf
             DeleteNode(Project.Root, node);
         }
 
+        private void ContextMenuNode_ToggleFavorite(object sender, RoutedEventArgs e)
+        {
+            var menuItem = (MenuItem)sender;
+            var node = (Node)menuItem.Tag;
+            node.IsFavorite = !node.IsFavorite;
+            node.NotifyPropertyChanged(nameof(Node.IsFavorite));
+        }
+
+
         private void Node_Click(object sender, RoutedEventArgs e)
         {
             var node = (Node)((Hyperlink)sender).Tag;

@@ -13,10 +13,12 @@
             <EventSetter Event="Hyperlink.Click" Handler="Node_Click"></EventSetter>
         </Style>
         <converters:FolderIconConverter x:Key="FolderIconConverter" />
-        <HierarchicalDataTemplate x:Key="FolderNodeTemplate" ItemsSource="{Binding Nodes}">
+        <converters:FavoriteConverter x:Key="FavoriteConverter" />
+        <HierarchicalDataTemplate x:Key="NodeTemplate" ItemsSource="{Binding Nodes}">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
                     <Label Content="{Binding ., Converter={StaticResource FolderIconConverter}}"/>
+                    <Image Source="{Binding ., Converter={StaticResource FavoriteConverter}}" />
                     <ContentControl>
                         <ContentControl.Style>
                             <Style TargetType="{x:Type ContentControl}">
@@ -54,6 +56,8 @@
                                 <MenuItem Tag="{Binding}" Header="Add node" Click="ContextMenuNode_AddNode" />
                                 <MenuItem Tag="{Binding}" Header="Add folder" Click="ContextMenuNode_AddFolder" />
                                 <Separator/>
+                                <MenuItem Tag="{Binding}" Header="Add/remove favorite" Click="ContextMenuNode_ToggleFavorite" />
+                                <Separator/>
                                 <MenuItem Tag="{Binding}" Header="Delete" Click="ContextMenuNode_Delete" />
                             </ContextMenu>
                         </ContentControl.ContextMenu>
@@ -81,7 +85,7 @@
             </Grid.ColumnDefinitions>
             <TreeView Name="treeView1" MinWidth="100" Grid.Column="0"
                       ItemsSource="{Binding Roots}" 
-                      ItemTemplate="{StaticResource FolderNodeTemplate}"
+                      ItemTemplate="{StaticResource NodeTemplate}"
                       PreviewMouseMove="TreeView1_PreviewMouseMove"
                       DragOver="TreeView1_DragOver"
                       Drop="TreeView1_Drop"
