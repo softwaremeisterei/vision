@@ -39,16 +39,6 @@
                                             <Setter.Value>
                                                 <ControlTemplate>
                                                     <Label Content="{Binding Name}">
-                                                        <Label.ContextMenu>
-                                                            <ContextMenu Name="foo">
-                                                                <!--<MenuItem Tag="{Binding}" Header="Edit" Click="ContextMenuNode_Edit" />
-                                                                <Separator/>
-                                                                <MenuItem Tag="{Binding}" Header="Add node" Click="ContextMenuNode_AddNode" />
-                                                                <MenuItem Tag="{Binding}" Header="Add folder" Click="ContextMenuNode_AddFolder" />
-                                                                <Separator/>
-                                                                <MenuItem Tag="{Binding}" Header="Delete" Click="ContextMenuNode_Delete" />-->
-                                                            </ContextMenu>
-                                                        </Label.ContextMenu>
                                                     </Label>
                                                 </ControlTemplate>
                                             </Setter.Value>
@@ -57,28 +47,18 @@
                                 </Style.Triggers>
                             </Style>
                         </ContentControl.Style>
+                        <ContentControl.ContextMenu>
+                            <ContextMenu Name="foo">
+                                <MenuItem Tag="{Binding}" Header="Edit" Click="ContextMenuNode_Edit" />
+                                <Separator/>
+                                <MenuItem Tag="{Binding}" Header="Add node" Click="ContextMenuNode_AddNode" />
+                                <MenuItem Tag="{Binding}" Header="Add folder" Click="ContextMenuNode_AddFolder" />
+                                <Separator/>
+                                <MenuItem Tag="{Binding}" Header="Delete" Click="ContextMenuNode_Delete" />
+                            </ContextMenu>
+                        </ContentControl.ContextMenu>
                     </ContentControl>
                 </StackPanel>
-                <!--<ItemsControl ItemsSource="{Binding Nodes}" Margin="20,0,0,0">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock>
-                                    <TextBlock.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Tag="{Binding}" Header="Edit node" Click="ContextMenuNode_EditNode" />
-                                            <Separator/>
-                                            <MenuItem Tag="{Binding}" Header="Delete node" Click="ContextMenuNode_DeleteNode" />
-                                        </ContextMenu>
-                                    </TextBlock.ContextMenu>
-                                    <Hyperlink Click="Node_Click" Tag="{Binding}">
-                                        <TextBlock Text="{Binding Name}" ToolTip="{Binding Url}"></TextBlock>
-                                    </Hyperlink>
-                                </TextBlock>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>-->
             </StackPanel>
         </HierarchicalDataTemplate>
     </Page.Resources>

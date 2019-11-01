@@ -8,7 +8,6 @@ using System.Linq;
 
 namespace Vision.BL
 {
-
     public class Migration1
     {
         public void Migrate(string oldProjectFilePath, BL.Model.Project destProject)
