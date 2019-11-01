@@ -50,11 +50,11 @@ namespace Vision.Wpf
             Roots.ToList().ForEach(n =>
             {
                 var item = treeView1.ItemContainerGenerator.ContainerFromItem(n) as TreeViewItem;
-                ApplyExpandStates(item, n);
+                ApplyLayout(item, n);
             });
         }
 
-        private void ApplyExpandStates(TreeViewItem item, Node node)
+        private void ApplyLayout(TreeViewItem item, Node node)
         {
             if (item != null && node != null)
             {
@@ -66,7 +66,7 @@ namespace Vision.Wpf
                     foreach (var childNode in node.Nodes)
                     {
                         var childItem = item.ItemContainerGenerator.ContainerFromItem(childNode) as TreeViewItem;
-                        ApplyExpandStates(childItem as TreeViewItem, childNode);
+                        ApplyLayout(childItem as TreeViewItem, childNode);
                     }
                 }
             }
