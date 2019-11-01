@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
 using Vision.BL;
+using Vision.BL.Lib;
 using Vision.BL.Model;
 using Vision.Wpf.Model;
 
@@ -44,7 +45,8 @@ namespace Vision.Wpf
 
         private NodeView MapToView(Node root)
         {
-            var result = Global.Mapper.Map<NodeView>(root);
+            var mapper = Global.Mapper;
+            var result = mapper.Map<NodeView>(root);
             return result;
         }
 
@@ -59,6 +61,29 @@ namespace Vision.Wpf
                 var item = treeView1.ItemContainerGenerator.ContainerFromItem(n) as TreeViewItem;
                 ApplyLayout(item, n);
             });
+            WebBrowser wb = webBrowser;
+            webBrowser.LoadCompleted += webBrowser_LoadCompleted;
+        }
+
+        private void webBrowser_LoadCompleted(object sender, NavigationEventArgs e)
+        {
+            var webBrowser = (WebBrowser)sender;
+
+            if (webBrowser.Source == null)
+            {
+                return;
+            }
+
+            var nodeView = (NodeView)webBrowser.Tag;
+
+            if (webBrowser.Document != null)
+            {
+                var newName = ((dynamic)webBrowser.Document).Title;
+                nodeView.Name = newName;
+                (nodeView.Tag as Node).Name = newName;
+            }
+
+            treeView1.Focus();
         }
 
         private void ApplyLayout(TreeViewItem item, NodeView node)
@@ -159,9 +184,7 @@ namespace Vision.Wpf
                     WindowStartupLocation = WindowStartupLocation.CenterOwner
                 };
                 if (dlg.ShowDialog() == true)
-                {
-                    node.NotifyPropertyChanged(nameof(NodeView.Name));
-                }
+                { }
             }
             else if (node.NodeType == NodeViewType.Link)
             {
@@ -256,18 +279,23 @@ namespace Vision.Wpf
             node.IsFavorite = !node.IsFavorite;
             (node.Tag as Node).IsFavorite = !(node.Tag as Node).IsFavorite;
             node.ImageSource = node.IsFavorite ? Global.FavoriteStarUri : "";
-            node.NotifyPropertyChanged(nameof(NodeView.IsFavorite));
-            node.NotifyPropertyChanged(nameof(NodeView.ImageSource));
         }
 
 
         private void Node_Click(object sender, RoutedEventArgs e)
         {
-            var node = (NodeView)((Hyperlink)sender).Tag;
+            var hyperlink = (Hyperlink)sender;
+            var node = (NodeView)hyperlink.Tag;
             var url = Urls.NormalizeUrl(node.Url);
             if (url != null)
             {
+                webBrowser.Tag = node;
                 webBrowser.Navigate(url);
+            }
+            var tvItem = WpfHelper.GetParentOfType<TreeViewItem>(hyperlink.Parent);
+            if (tvItem != null)
+            {
+                tvItem.IsSelected = true;
             }
         }
 

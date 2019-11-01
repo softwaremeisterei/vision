@@ -27,7 +27,7 @@
                                                 <ControlTemplate>
                                                     <TextBlock>
                                                         <Hyperlink Tag="{Binding}" Style="{DynamicResource HyperLinkStyle}">
-                                                            <TextBlock Text="{Binding Name}" ToolTip="{Binding Url}"></TextBlock>
+                                                            <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" ToolTip="{Binding Url}"></TextBlock>
                                                         </Hyperlink>
                                                     </TextBlock>
                                                 </ControlTemplate>
