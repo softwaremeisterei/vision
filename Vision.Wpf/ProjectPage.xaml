@@ -92,7 +92,10 @@
                       PreviewMouseLeftButtonDown="TreeView1_PreviewMouseLeftButtonDown"
                       AllowDrop="True"/>
             <GridSplitter Width="3" Background="Blue" Margin="1.5,0,-1.5,0"/>
-            <WebBrowser Name="webBrowser" Grid.Column="1" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Navigating="WebBrowser_Navigating" />
+            <DockPanel Grid.Column="1">
+                <TextBox Name="tbUrl" Text="{Binding Url}" KeyDown="TextBoxUrl_KeyDown" DockPanel.Dock="Top"/>
+                <WebBrowser Name="webBrowser" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Navigating="WebBrowser_Navigating" />
+            </DockPanel>
         </Grid>
     </DockPanel>
 </Page>

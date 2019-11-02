@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -20,14 +21,18 @@ namespace Vision.Wpf
     /// <summary>
     /// Interaction logic for ProjectPage.xaml
     /// </summary>
-    public partial class ProjectPage : Page
+    public partial class ProjectPage : Page, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public Project Project { get; set; }
         public ObservableCollection<NodeView> Roots { get; set; }
 
         private Persistor persistor;
 
         private NavigationService _NavigationService;
+
+        public string Url { get; set; }
 
         public ProjectPage(Project project)
         {
@@ -76,9 +81,7 @@ namespace Vision.Wpf
         {
             try
             {
-                var webBrowser = (WebBrowser)sender;
-
-                if (webBrowser.Source == null)
+                if (webBrowser.Source == null || webBrowser.Tag == null)
                 {
                     return;
                 }
@@ -188,6 +191,8 @@ namespace Vision.Wpf
         {
             try
             {
+                Url = e.Uri.AbsoluteUri;
+                NotifyPropertyChanged(nameof(Url));
             }
             catch (Exception ex)
             {
@@ -605,5 +610,22 @@ namespace Vision.Wpf
             return container;
         }
 
+        private void TextBoxUrl_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                if (!string.IsNullOrEmpty(tbUrl.Text))
+                {
+                    var builder = new UriBuilder(tbUrl.Text);
+
+                    webBrowser.Navigate(builder.Uri);
+                }
+            }
+        }
+
+        private void NotifyPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }
