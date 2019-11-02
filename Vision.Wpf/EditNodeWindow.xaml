@@ -7,9 +7,9 @@
         Title="Edit node" Width="533.075" Height="158.395" Loaded="Window_Loaded">
     <StackPanel>
         <Label Content="Name" />
-        <TextBox Text="{Binding Node.Name}" />
+        <TextBox Text="{Binding Name}" />
         <Label Content="Url" />
-        <TextBox Text="{Binding Node.Url}" />
+        <TextBox Text="{Binding Url}" />
         <Button Content="OK" Click="BtnOK_Click" IsDefault="True" Margin="0,10,0,0" />
     </StackPanel>
 </Window>

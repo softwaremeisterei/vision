@@ -6,8 +6,10 @@
       xmlns:converters="clr-namespace:Vision.Wpf.Converters"
       xmlns:local="clr-namespace:Vision.Wpf"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800" Loaded="Page_Loaded" Unloaded="Page_Unloaded"
-      Title="ProjectPage">
+      Title="ProjectPage"
+      d:DesignHeight="450" d:DesignWidth="800"
+      FontSize="14"
+      Loaded="Page_Loaded" Unloaded="Page_Unloaded">
     <Page.Resources>
         <Style x:Key="HyperLinkStyle" TargetType="Hyperlink">
             <EventSetter Event="Hyperlink.Click" Handler="Node_Click"></EventSetter>
@@ -15,9 +17,9 @@
         <HierarchicalDataTemplate x:Key="NodeTemplate" ItemsSource="{Binding Nodes}">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="{Binding Icon}"/>
-                    <Image Source="{Binding ImageSource, UpdateSourceTrigger=PropertyChanged}" />
-                    <ContentControl>
+                    <Label Content="{Binding Icon}" VerticalAlignment="Center" />
+                    <Image Source="{Binding ImageSource, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="0,0,4,0" />
+                    <ContentControl VerticalAlignment="Center">
                         <ContentControl.Style>
                             <Style TargetType="{x:Type ContentControl}">
                                 <Style.Triggers>

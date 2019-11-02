@@ -21,21 +21,20 @@ namespace Vision.Wpf
     /// </summary>
     public partial class EditNodeWindow : Window
     {
-        public NodeView Node { get; set; }
+        public NodeView NodeView { get; set; }
 
-        public EditNodeWindow(NodeView node)
+        public EditNodeWindow(NodeView nodeView)
         {
             InitializeComponent();
-            DataContext = this;
-
-            Node = node;
+            NodeView = nodeView;
+            DataContext = NodeView;
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         { }
 
         private void BtnOK_Click(object sender, RoutedEventArgs e)
         {
-            Global.Mapper.Map(Node, Node.Tag as Node);
+            Global.Mapper.Map(NodeView, NodeView.Tag as Node);
             DialogResult = true;
         }
 

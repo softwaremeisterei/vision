@@ -52,38 +52,52 @@ namespace Vision.Wpf
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            _NavigationService = this.NavigationService;
-            _NavigationService.Navigating += NavigationService_Navigating;
-            HideScriptErrors(webBrowser, true);
-
-            Roots.ToList().ForEach(n =>
+            try
             {
-                var item = treeView1.ItemContainerGenerator.ContainerFromItem(n) as TreeViewItem;
-                ApplyLayout(item, n);
-            });
-            WebBrowser wb = webBrowser;
-            webBrowser.LoadCompleted += webBrowser_LoadCompleted;
+                _NavigationService = this.NavigationService;
+                _NavigationService.Navigating += NavigationService_Navigating;
+                HideScriptErrors(webBrowser, true);
+
+                Roots.ToList().ForEach(n =>
+                {
+                    var item = treeView1.ItemContainerGenerator.ContainerFromItem(n) as TreeViewItem;
+                    ApplyLayout(item, n);
+                });
+                WebBrowser wb = webBrowser;
+                webBrowser.LoadCompleted += webBrowser_LoadCompleted;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void webBrowser_LoadCompleted(object sender, NavigationEventArgs e)
         {
-            var webBrowser = (WebBrowser)sender;
-
-            if (webBrowser.Source == null)
+            try
             {
-                return;
+                var webBrowser = (WebBrowser)sender;
+
+                if (webBrowser.Source == null)
+                {
+                    return;
+                }
+
+                var nodeView = (NodeView)webBrowser.Tag;
+
+                if (webBrowser.Document != null)
+                {
+                    var newName = ((dynamic)webBrowser.Document).Title;
+                    nodeView.Name = newName;
+                    (nodeView.Tag as Node).Name = newName;
+                }
+
+                treeView1.Focus();
             }
-
-            var nodeView = (NodeView)webBrowser.Tag;
-
-            if (webBrowser.Document != null)
+            catch (Exception ex)
             {
-                var newName = ((dynamic)webBrowser.Document).Title;
-                nodeView.Name = newName;
-                (nodeView.Tag as Node).Name = newName;
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            treeView1.Focus();
         }
 
         private void ApplyLayout(TreeViewItem item, NodeView node)
@@ -136,46 +150,100 @@ namespace Vision.Wpf
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            _NavigationService.Navigating -= NavigationService_Navigating;
+            try
+            {
+                _NavigationService.Navigating -= NavigationService_Navigating;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void NavigationService_Navigating(object sender, NavigatingCancelEventArgs e)
         {
-            Save();
+            try
+            {
+                Save();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Dispatcher_ShutdownStarted(object sender, EventArgs e)
         {
-            Save();
+            try
+            {
+                Save();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void WebBrowser_Navigating(object sender, NavigatingCancelEventArgs e)
         {
+            try
+            {
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void mnuAddTopLevelFolder_Click(object sender, RoutedEventArgs e)
         {
-            var node = new Node { Name = "NONAME", NodeType = BL.Model.NodeType.Folder };
-            (Roots.First().Tag as Node).Nodes.Add(node);
+            try
+            {
+                var node = new Node { Name = "NONAME", NodeType = BL.Model.NodeType.Folder };
+                (Roots.First().Tag as Node).Nodes.Add(node);
 
-            var nodeView = Global.Mapper.Map<NodeView>(node);
-            Roots.First().Nodes.Add(nodeView);
+                var nodeView = Global.Mapper.Map<NodeView>(node);
+                Roots.First().Nodes.Add(nodeView);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void mnuAddTopLevelNode_Click(object sender, RoutedEventArgs e)
         {
-            var node = new Node { Name = "Noname", NodeType = BL.Model.NodeType.Link };
-            (Roots.First().Tag as Node).Nodes.Add(node);
+            try
+            {
+                var node = new Node { Name = "Noname", NodeType = BL.Model.NodeType.Link };
+                (Roots.First().Tag as Node).Nodes.Add(node);
 
-            var nodeView = Global.Mapper.Map<NodeView>(node);
-            Roots.First().Nodes.Add(nodeView);
+                var nodeView = Global.Mapper.Map<NodeView>(node);
+                Roots.First().Nodes.Add(nodeView);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ContextMenuNode_Edit(object sender, RoutedEventArgs e)
         {
-            var menuItem = (MenuItem)sender;
-            var node = (NodeView)menuItem.Tag;
+            try
+            {
+                var menuItem = (MenuItem)sender;
+                var node = (NodeView)menuItem.Tag;
 
+                EditNode(node);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void EditNode(NodeView node)
+        {
             if (node.NodeType == NodeViewType.Folder)
             {
                 var dlg = new EditFolderWindow(node)
@@ -199,31 +267,54 @@ namespace Vision.Wpf
 
         private void ContextMenuNode_AddNode(object sender, RoutedEventArgs e)
         {
-            var menuItem = (MenuItem)sender;
-            var folder = (NodeView)menuItem.Tag;
-            var node = new Node { Name = "Noname", NodeType = NodeType.Link };
-            (folder.Tag as Node).Nodes.Add(node);
-            var nodeView = Global.Mapper.Map<NodeView>(node);
-            folder.Nodes.Add(nodeView);
+            try
+            {
+                var menuItem = (MenuItem)sender;
+                var parentFolderView = (NodeView)menuItem.Tag;
+                var newNode = new Node { Name = "Noname", NodeType = NodeType.Link };
+                (parentFolderView.Tag as Node).Nodes.Add(newNode);
+                var newNodeView = Global.Mapper.Map<NodeView>(newNode);
+                parentFolderView.Nodes.Add(newNodeView);
+                EditNode(newNodeView);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ContextMenuNode_AddFolder(object sender, RoutedEventArgs e)
         {
-            var menuItem = (MenuItem)sender;
-            var folder = (NodeView)menuItem.Tag;
-            var node = new Node { Name = "Noname", NodeType = NodeType.Folder };
-            (folder.Tag as Node).Nodes.Add(node);
-            var nodeView = Global.Mapper.Map<NodeView>(node);
-            folder.Nodes.Add(nodeView);
+            try
+            {
+                var menuItem = (MenuItem)sender;
+                var parentFolderView = (NodeView)menuItem.Tag;
+                var newFolder = new Node { Name = "Noname", NodeType = NodeType.Folder };
+                (parentFolderView.Tag as Node).Nodes.Add(newFolder);
+                var newFolderView = Global.Mapper.Map<NodeView>(newFolder);
+                parentFolderView.Nodes.Add(newFolderView);
+                EditNode(newFolderView);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
 
         private void ContextMenuNode_Delete(object sender, RoutedEventArgs e)
         {
-            var menuItem = (MenuItem)sender;
-            var folder = (NodeView)menuItem.Tag;
-            DeleteNodeView(Roots, folder.Id);
-            DeleteNode(Project.Root, folder.Id);
+            try
+            {
+                var menuItem = (MenuItem)sender;
+                var folder = (NodeView)menuItem.Tag;
+                DeleteNodeView(Roots, folder.Id);
+                DeleteNode(Project.Root, folder.Id);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private bool DeleteNode(Node root, Guid nodeId)
@@ -274,28 +365,42 @@ namespace Vision.Wpf
 
         private void ContextMenuNode_ToggleFavorite(object sender, RoutedEventArgs e)
         {
-            var menuItem = (MenuItem)sender;
-            var node = (NodeView)menuItem.Tag;
-            node.IsFavorite = !node.IsFavorite;
-            (node.Tag as Node).IsFavorite = !(node.Tag as Node).IsFavorite;
-            node.ImageSource = node.IsFavorite ? Global.FavoriteStarUri : "";
+            try
+            {
+                var menuItem = (MenuItem)sender;
+                var node = (NodeView)menuItem.Tag;
+                node.IsFavorite = !node.IsFavorite;
+                (node.Tag as Node).IsFavorite = !(node.Tag as Node).IsFavorite;
+                node.ImageSource = node.IsFavorite ? Global.FavoriteStarUri : "";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
 
         private void Node_Click(object sender, RoutedEventArgs e)
         {
-            var hyperlink = (Hyperlink)sender;
-            var node = (NodeView)hyperlink.Tag;
-            var url = Urls.NormalizeUrl(node.Url);
-            if (url != null)
+            try
             {
-                webBrowser.Tag = node;
-                webBrowser.Navigate(url);
+                var hyperlink = (Hyperlink)sender;
+                var node = (NodeView)hyperlink.Tag;
+                var url = Urls.NormalizeUrl(node.Url);
+                if (url != null)
+                {
+                    webBrowser.Tag = node;
+                    webBrowser.Navigate(url);
+                }
+                var tvItem = WpfHelper.GetParentOfType<TreeViewItem>(hyperlink.Parent);
+                if (tvItem != null)
+                {
+                    tvItem.IsSelected = true;
+                }
             }
-            var tvItem = WpfHelper.GetParentOfType<TreeViewItem>(hyperlink.Parent);
-            if (tvItem != null)
+            catch (Exception ex)
             {
-                tvItem.IsSelected = true;
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -308,12 +413,19 @@ namespace Vision.Wpf
 
         private void mnuImportOldFormatProject_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new PromptWindow("Import old format project", "Path to project file");
-
-            if (dlg.ShowDialog() == true)
+            try
             {
-                var migration = new Migration1();
-                migration.Migrate(dlg.ResponseText, Project);
+                var dlg = new PromptWindow("Import old format project", "Path to project file");
+
+                if (dlg.ShowDialog() == true)
+                {
+                    var migration = new Migration1();
+                    migration.Migrate(dlg.ResponseText, Project);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -325,30 +437,51 @@ namespace Vision.Wpf
 
         private void TreeView1_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed ||
-                e.RightButton == MouseButtonState.Pressed && !_IsTreeNodeDragging)
+            try
             {
-                var position = e.GetPosition(null);
-                if (Math.Abs(position.X - _dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance
-                    || Math.Abs(position.Y - _dragStartPoint.Y) > SystemParameters.MinimumVerticalDragDistance)
+                if (e.LeftButton == MouseButtonState.Pressed ||
+                    e.RightButton == MouseButtonState.Pressed && !_IsTreeNodeDragging)
                 {
-                    StartDrag(e);
+                    var position = e.GetPosition(null);
+                    if (Math.Abs(position.X - _dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance
+                        || Math.Abs(position.Y - _dragStartPoint.Y) > SystemParameters.MinimumVerticalDragDistance)
+                    {
+                        StartDrag(e);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void TreeView1_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            _dragStartPoint = e.GetPosition(null);
+            try
+            {
+                _dragStartPoint = e.GetPosition(null);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void TreeView1_DragOver(object sender, DragEventArgs e)
         {
-            var source = e.Data.GetData(DragDataFormat);
-            var targetTreeViewItem = GetNearestContainer(e.OriginalSource as UIElement);
-            e.Effects = (source != null && targetTreeViewItem?.Header != null && targetTreeViewItem.Header.GetType() == source.GetType())
-                    ? DragDropEffects.Move : DragDropEffects.None;
-            e.Handled = true;
+            try
+            {
+                var source = e.Data.GetData(DragDataFormat);
+                var targetTreeViewItem = GetNearestContainer(e.OriginalSource as UIElement);
+                e.Effects = (source != null && targetTreeViewItem?.Header != null && targetTreeViewItem.Header.GetType() == source.GetType())
+                        ? DragDropEffects.Move : DragDropEffects.None;
+                e.Handled = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void StartDrag(MouseEventArgs e)
@@ -372,42 +505,55 @@ namespace Vision.Wpf
 
         private void TreeView1_Drop(object sender, DragEventArgs e)
         {
-            var source = e.Data.GetData(DragDataFormat);
-            if (source is NodeView)
+            try
             {
-                var sourceEntity = source as NodeView;
-                var dropItem = GetNearestContainer(e.OriginalSource as UIElement);
-                if (dropItem != null)
+                var source = e.Data.GetData(DragDataFormat);
+                if (source is NodeView)
                 {
-                    if (dropItem.Header is NodeView)
+                    var sourceEntity = source as NodeView;
+                    var dropItem = GetNearestContainer(e.OriginalSource as UIElement);
+                    if (dropItem != null)
                     {
-                        var dropEntity = dropItem.Header as NodeView;
-                        if (source != dropEntity && !IsSubNode(sourceEntity, dropEntity))
+                        if (dropItem.Header is NodeView)
                         {
-                            var parentSourceFolder = GetParentFolder(sourceEntity);
-                            dropEntity.Nodes.Insert(0, sourceEntity);
-                            parentSourceFolder.Nodes.Remove(sourceEntity);
+                            var dropEntity = dropItem.Header as NodeView;
+                            if (source != dropEntity && !IsSubNode(sourceEntity, dropEntity))
+                            {
+                                var parentSourceFolder = GetParentFolder(sourceEntity);
+                                dropEntity.Nodes.Insert(0, sourceEntity);
+                                parentSourceFolder.Nodes.Remove(sourceEntity);
+
+                                (dropEntity.Tag as Node).Nodes.Insert(0, sourceEntity.Tag as Node);
+                                (parentSourceFolder.Tag as Node).Nodes.Remove(sourceEntity.Tag as Node);
+                            }
+                        }
+                    }
+                }
+                else if (source is NodeView)
+                {
+                    var sourceEntity = source as NodeView;
+                    var dropItem = GetNearestContainer(e.OriginalSource as UIElement);
+                    if (dropItem != null)
+                    {
+                        if (dropItem.Header is NodeView)
+                        {
+                            var dropEntity = dropItem.Header as NodeView;
+                            if (source != dropEntity)
+                            {
+                                var parentSourceFolder = GetParentFolder(sourceEntity);
+                                dropEntity.Nodes.Insert(0, sourceEntity);
+                                parentSourceFolder.Nodes.Remove(sourceEntity);
+
+                                (dropEntity.Tag as Node).Nodes.Insert(0, sourceEntity.Tag as Node);
+                                (parentSourceFolder.Tag as Node).Nodes.Remove(sourceEntity.Tag as Node);
+                            }
                         }
                     }
                 }
             }
-            else if (source is NodeView)
+            catch (Exception ex)
             {
-                var sourceEntity = source as NodeView;
-                var dropItem = GetNearestContainer(e.OriginalSource as UIElement);
-                if (dropItem != null)
-                {
-                    if (dropItem.Header is NodeView)
-                    {
-                        var dropEntity = dropItem.Header as NodeView;
-                        if (source != dropEntity)
-                        {
-                            var parentSourceFolder = GetParentFolder(sourceEntity);
-                            dropEntity.Nodes.Insert(0, sourceEntity);
-                            parentSourceFolder.Nodes.Remove(sourceEntity);
-                        }
-                    }
-                }
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -21,13 +21,13 @@ namespace Vision.Wpf
     /// </summary>
     public partial class EditFolderWindow : Window
     {
-        public NodeView Node { get; set; }
+        public NodeView NodeView { get; set; }
 
-        public EditFolderWindow(NodeView node)
+        public EditFolderWindow(NodeView nodeView)
         {
             InitializeComponent();
-            Node = node;
-            DataContext = Node;
+            NodeView = nodeView;
+            DataContext = NodeView;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -38,7 +38,7 @@ namespace Vision.Wpf
 
         private void BtnOK_Click(object sender, RoutedEventArgs e)
         {
-            Global.Mapper.Map(Node, Node.Tag as Node);
+            Global.Mapper.Map(NodeView, NodeView.Tag as Node);
             DialogResult = true;
         }
 
