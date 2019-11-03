@@ -87,6 +87,7 @@ namespace Vision.Wpf
                 }
 
                 var nodeView = (NodeView)webBrowser.Tag;
+                webBrowser.Tag = null;
 
                 if (webBrowser.Document != null)
                 {
@@ -513,47 +514,37 @@ namespace Vision.Wpf
             try
             {
                 var source = e.Data.GetData(DragDataFormat);
-                if (source is NodeView)
-                {
-                    var sourceEntity = source as NodeView;
-                    var dropItem = GetNearestContainer(e.OriginalSource as UIElement);
-                    if (dropItem != null)
-                    {
-                        if (dropItem.Header is NodeView)
-                        {
-                            var dropEntity = dropItem.Header as NodeView;
-                            if (source != dropEntity && !IsSubNode(sourceEntity, dropEntity))
-                            {
-                                var parentSourceFolder = GetParentFolder(sourceEntity);
-                                dropEntity.Nodes.Insert(0, sourceEntity);
-                                parentSourceFolder.Nodes.Remove(sourceEntity);
+                var target = GetNearestContainer(e.OriginalSource as UIElement);
 
-                                (dropEntity.Tag as Node).Nodes.Insert(0, sourceEntity.Tag as Node);
-                                (parentSourceFolder.Tag as Node).Nodes.Remove(sourceEntity.Tag as Node);
-                            }
-                        }
+                if (source == null || target == null) { return; }
+
+                var targetNodeView = target.Header as NodeView;
+                var sourceNodeView = source as NodeView;
+
+                if (sourceNodeView == targetNodeView) { return; }
+
+                if (targetNodeView.NodeType == NodeViewType.Folder) // drop on folder
+                {
+                    if (!IsSubNode(sourceNodeView, targetNodeView))
+                    {
+                        var parentSourceFolderView = GetParentFolder(sourceNodeView);
+                        targetNodeView.Nodes.Insert(0, sourceNodeView);
+                        parentSourceFolderView.Nodes.Remove(sourceNodeView);
+
+                        (targetNodeView.Tag as Node).Nodes.Insert(0, sourceNodeView.Tag as Node);
+                        (parentSourceFolderView.Tag as Node).Nodes.Remove(sourceNodeView.Tag as Node);
                     }
                 }
-                else if (source is NodeView)
+                else if (targetNodeView.NodeType == NodeViewType.Link) // drop on link
                 {
-                    var sourceEntity = source as NodeView;
-                    var dropItem = GetNearestContainer(e.OriginalSource as UIElement);
-                    if (dropItem != null)
-                    {
-                        if (dropItem.Header is NodeView)
-                        {
-                            var dropEntity = dropItem.Header as NodeView;
-                            if (source != dropEntity)
-                            {
-                                var parentSourceFolder = GetParentFolder(sourceEntity);
-                                dropEntity.Nodes.Insert(0, sourceEntity);
-                                parentSourceFolder.Nodes.Remove(sourceEntity);
+                    var parentSourceFolderView = GetParentFolder(sourceNodeView);
+                    var parentTargetFolderView = GetParentFolder(targetNodeView);
+                    var index = parentTargetFolderView.Nodes.IndexOf(targetNodeView);
+                    parentSourceFolderView.Nodes.Remove(sourceNodeView);
+                    parentTargetFolderView.Nodes.Insert(index, sourceNodeView);
 
-                                (dropEntity.Tag as Node).Nodes.Insert(0, sourceEntity.Tag as Node);
-                                (parentSourceFolder.Tag as Node).Nodes.Remove(sourceEntity.Tag as Node);
-                            }
-                        }
-                    }
+                    (parentSourceFolderView.Tag as Node).Nodes.Remove(sourceNodeView.Tag as Node);
+                    (parentTargetFolderView.Tag as Node).Nodes.Insert(index, sourceNodeView.Tag as Node);
                 }
             }
             catch (Exception ex)
@@ -585,15 +576,11 @@ namespace Vision.Wpf
         {
             foreach (var folder in folders)
             {
-                if (folder.Nodes.Contains(childFolder))
-                {
-                    return folder;
-                }
+                if (folder.Nodes.Contains(childFolder)) { return folder; }
+
                 var result = GetParentFolder(folder.Nodes, childFolder);
-                if (result != null)
-                {
-                    return result;
-                }
+
+                if (result != null) { return result; }
             }
             return null;
         }
@@ -617,7 +604,7 @@ namespace Vision.Wpf
                 if (!string.IsNullOrEmpty(tbUrl.Text))
                 {
                     var builder = new UriBuilder(tbUrl.Text);
-
+                    webBrowser.Tag = null;
                     webBrowser.Navigate(builder.Uri);
                 }
             }
