@@ -29,16 +29,7 @@ namespace Vision.BL.Model
 
         public Node AddNode(Node parentNode, string name)
         {
-            var index = 0;
-
-            var targetList = parentNode != null ? parentNode.Nodes : Root.Nodes;
-
-            if (targetList.Any())
-            {
-                index = targetList.OrderBy(n => n.Index).Last().Index + 1;
-            }
-
-            var node = new Node { Name = name, Index = index };
+            var node = new Node { Name = name };
 
             if (parentNode != null)
                 parentNode.Nodes.Add(node);

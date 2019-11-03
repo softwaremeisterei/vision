@@ -8,7 +8,6 @@ namespace Vision.BL.Model
     {
         public string Url { get; set; }
         public bool IsFavorite { get; set; }
-        public int Index { get; set; }
         public DateTime CreatedAt { get; set; }
         public NodeType NodeType { get; set; }
         public ObservableCollection<Node> Nodes { get; set; }

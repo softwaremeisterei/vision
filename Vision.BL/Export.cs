@@ -29,7 +29,7 @@ namespace Vision.BL
             var indentSpaces = new String(' ', indent * 4);
             var indentSpacesContent = new String(' ', (indent + 1) * 4);
 
-            foreach (var node in nodes.OrderBy(n => n.Index))
+            foreach (var node in nodes)
             {
                 writer.WriteLine("{0}+ {1}", indentSpaces, node.Name);
 
