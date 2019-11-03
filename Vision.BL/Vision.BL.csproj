@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Export.cs" />
+    <Compile Include="Lib\KeyHelper.cs" />
     <Compile Include="Lib\Paths.cs" />
     <Compile Include="Lib\RichTextStripper.cs" />
     <Compile Include="Lib\Serialization.cs" />

@@ -73,8 +73,10 @@
                     <MenuItem Header="Add toplevel folder" HorizontalAlignment="Left" Click="mnuAddTopLevelFolder_Click" />
                     <MenuItem Header="Add toplevel node" HorizontalAlignment="Left" Click="mnuAddTopLevelNode_Click" />
                 </MenuItem>
-                <MenuItem Header="Import" Height="20">
-                    <MenuItem Header="Import old format project" HorizontalAlignment="Left" Click="mnuImportOldFormatProject_Click" />
+                <!--<MenuItem Header="Import old format project" HorizontalAlignment="Left" Click="mnuImportOldFormatProject_Click" />-->
+                <MenuItem Header="View" Height="20">
+                    <MenuItem Header="Search" HorizontalAlignment="Left" Click="mnuSearch_Click" />
+                    <MenuItem Header="Find Next" HorizontalAlignment="Left" Click="mnuFindNext_Click" />
                 </MenuItem>
             </Menu>
         </ToolBar>
@@ -84,7 +86,7 @@
                 <ColumnDefinition Width="281*"/>
             </Grid.ColumnDefinitions>
             <TreeView Name="treeView1" MinWidth="100" Grid.Column="0"
-                      ItemsSource="{Binding Roots}" 
+                      ItemsSource="{Binding Root.Nodes}" 
                       ItemTemplate="{StaticResource NodeTemplate}"
                       PreviewMouseMove="TreeView1_PreviewMouseMove"
                       DragOver="TreeView1_DragOver"

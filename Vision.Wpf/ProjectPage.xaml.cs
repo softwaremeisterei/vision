@@ -1,4 +1,5 @@
-﻿using Softwaremeisterei.Lib;
+﻿using Microsoft.Expression.Interactivity.Core;
+using Softwaremeisterei.Lib;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -26,7 +27,7 @@ namespace Vision.Wpf
         public event PropertyChangedEventHandler PropertyChanged;
 
         public Project Project { get; set; }
-        public ObservableCollection<NodeView> Roots { get; set; }
+        public NodeView Root { get; set; }
 
         private Persistor persistor;
 
@@ -42,10 +43,14 @@ namespace Vision.Wpf
             persistor = new Persistor();
 
             this.Project = project;
-            this.Roots = new ObservableCollection<NodeView>();
-            this.Roots.Add(MapToView(project.Root));
+            this.Root = MapToView(project.Root);
 
             this.Dispatcher.ShutdownStarted += Dispatcher_ShutdownStarted;
+
+            InputBindings.Add(new KeyBinding(new ActionCommand(() => { Search(); }),
+                Key.F, ModifierKeys.Control));
+            InputBindings.Add(new KeyBinding(new ActionCommand(() => { if (searchText == null) Search(); else FindNext(); }),
+                Key.F3, ModifierKeys.None));
         }
 
         private NodeView MapToView(Node root)
@@ -63,13 +68,16 @@ namespace Vision.Wpf
                 _NavigationService.Navigating += NavigationService_Navigating;
                 HideScriptErrors(webBrowser, true);
 
-                Roots.ToList().ForEach(n =>
+                Root.Nodes.ToList().ForEach(nodeView =>
                 {
-                    var item = treeView1.ItemContainerGenerator.ContainerFromItem(n) as TreeViewItem;
-                    ApplyLayout(item, n);
+                    var item = treeView1.ItemContainerGenerator.ContainerFromItem(nodeView) as TreeViewItem;
+                    ApplyLayout(item, nodeView);
                 });
+
                 WebBrowser wb = webBrowser;
                 webBrowser.LoadCompleted += webBrowser_LoadCompleted;
+
+                treeView1.Focus();
             }
             catch (Exception ex)
             {
@@ -206,10 +214,10 @@ namespace Vision.Wpf
             try
             {
                 var node = new Node { Name = "NONAME", NodeType = BL.Model.NodeType.Folder };
-                (Roots.First().Tag as Node).Nodes.Add(node);
+                (Root.Tag as Node).Nodes.Add(node);
 
                 var nodeView = Global.Mapper.Map<NodeView>(node);
-                Roots.First().Nodes.Add(nodeView);
+                Root.Nodes.Add(nodeView);
             }
             catch (Exception ex)
             {
@@ -222,10 +230,10 @@ namespace Vision.Wpf
             try
             {
                 var node = new Node { Name = "Noname", NodeType = BL.Model.NodeType.Link };
-                (Roots.First().Tag as Node).Nodes.Add(node);
+                (Root.Tag as Node).Nodes.Add(node);
 
                 var nodeView = Global.Mapper.Map<NodeView>(node);
-                Roots.First().Nodes.Add(nodeView);
+                Root.Nodes.Add(nodeView);
             }
             catch (Exception ex)
             {
@@ -314,7 +322,7 @@ namespace Vision.Wpf
             {
                 var menuItem = (MenuItem)sender;
                 var folder = (NodeView)menuItem.Tag;
-                DeleteNodeView(Roots, folder.Id);
+                DeleteNodeView(Root.Nodes, folder.Id);
                 DeleteNode(Project.Root, folder.Id);
             }
             catch (Exception ex)
@@ -413,7 +421,8 @@ namespace Vision.Wpf
         private void Save()
         {
             Project.Layout.ExpandedNodes.Clear();
-            Roots.ToList().ForEach(node => UpdateLayoutRec(treeView1.ItemContainerGenerator.ContainerFromItem(node) as TreeViewItem, node));
+            Root.Nodes.ToList()
+                .ForEach(nodeView => UpdateLayoutRec(treeView1.ItemContainerGenerator.ContainerFromItem(nodeView) as TreeViewItem, nodeView));
             persistor.SaveProject(Project);
         }
 
@@ -569,7 +578,7 @@ namespace Vision.Wpf
 
         private NodeView GetParentFolder(NodeView folder)
         {
-            return GetParentFolder(Roots, folder);
+            return GetParentFolder(Root.Nodes, folder);
         }
 
         private NodeView GetParentFolder(ObservableCollection<NodeView> folders, NodeView childFolder)
@@ -613,6 +622,89 @@ namespace Vision.Wpf
         private void NotifyPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private string searchText = null;
+
+        private void Search()
+        {
+            try
+            {
+                var dlg = new PromptWindow("Search", "Search text")
+                {
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen
+                };
+
+                if (dlg.ShowDialog() == true)
+                {
+                    searchText = dlg.ResponseText;
+                    FindNext();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void FindNext()
+        {
+            if (searchText == null) { return; }
+
+            var flatItems = FlattenTree(null, treeView1.Items);
+
+            if (treeView1.SelectedItem != null)
+            {
+                var tvItem = treeView1
+                       .ItemContainerGenerator
+                       .ContainerFromItemRecursive(treeView1.SelectedItem);
+                var index = flatItems.IndexOf(tvItem);
+                index = (index + 1) % flatItems.Count; // start at next item
+                flatItems = flatItems.Skip(index).Union(flatItems.Take(index)).ToList();
+            }
+
+            foreach (var tvItem in flatItems)
+            {
+                var nodeView = tvItem.Header as NodeView;
+                if (nodeView.Name.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    tvItem.IsSelected = true;
+                    tvItem.BringIntoView();
+                    break;
+                }
+            }
+        }
+
+        private List<TreeViewItem> FlattenTree(TreeViewItem parentTvItem, ItemCollection childItemCollection)
+        {
+            var result = new List<TreeViewItem>();
+
+            if (parentTvItem != null)
+            {
+                result.Add(parentTvItem);
+            }
+            foreach (var childItem in childItemCollection)
+            {
+                var childTvItem =
+                    parentTvItem != null
+                    ? parentTvItem.ItemContainerGenerator.ContainerFromItem(childItem) as TreeViewItem
+                    : treeView1.ItemContainerGenerator.ContainerFromItem(childItem) as TreeViewItem;
+                childTvItem.IsExpanded = true;
+                childTvItem.ExpandSubtree();
+                var flatChildren = FlattenTree(childTvItem, childTvItem.Items);
+                result.AddRange(flatChildren);
+            }
+            return result;
+        }
+
+        private void mnuSearch_Click(object sender, RoutedEventArgs e)
+        {
+            Search();
+        }
+
+        private void mnuFindNext_Click(object sender, RoutedEventArgs e)
+        {
+            FindNext();
         }
     }
 }

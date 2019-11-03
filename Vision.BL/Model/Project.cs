@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Vision.BL.Model;
-
-namespace Vision.BL.Model
+﻿namespace Vision.BL.Model
 {
     public class Project : Entity
     {
