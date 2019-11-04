@@ -8,6 +8,9 @@ namespace Vision.BL.Model
 {
     public class Layout
     {
+        public bool IsMaximized { get; set; }
+        public double WindowWidth { get; set; }
+        public double WindowHeight { get; set; }
         public List<Guid> ExpandedNodes { get; set; }
 
         public Layout()

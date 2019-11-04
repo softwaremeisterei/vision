@@ -45,12 +45,22 @@ namespace Vision.Wpf
             this.Project = project;
             this.Root = MapToView(project.Root);
 
-            this.Dispatcher.ShutdownStarted += Dispatcher_ShutdownStarted;
-
             InputBindings.Add(new KeyBinding(new ActionCommand(() => { Search(); }),
                 Key.F, ModifierKeys.Control));
             InputBindings.Add(new KeyBinding(new ActionCommand(() => { if (searchText == null) Search(); else FindNext(); }),
                 Key.F3, ModifierKeys.None));
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            try
+            {
+                Save();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private NodeView MapToView(Node root)
@@ -64,6 +74,9 @@ namespace Vision.Wpf
         {
             try
             {
+                var window = Window.GetWindow(this);
+                window.Closing += new CancelEventHandler(Window_Closing);
+
                 _NavigationService = this.NavigationService;
                 _NavigationService.Navigating += NavigationService_Navigating;
                 HideScriptErrors(webBrowser, true);
@@ -114,11 +127,26 @@ namespace Vision.Wpf
 
         private void ApplyLayout(TreeViewItem item, NodeView node)
         {
+            var window = Window.GetWindow(this);
+
+            if (Project.Layout.WindowWidth > 0 && Project.Layout.WindowHeight > 0)
+            {
+                window.Width = Project.Layout.WindowWidth;
+                window.Height = Project.Layout.WindowHeight;
+                CenterWindowOnScreen(window);
+            }
+
+            if (Project.Layout.IsMaximized)
+            {
+                window.WindowState = WindowState.Maximized;
+            }
+
             if (item != null && node != null)
             {
                 if (Project.Layout.ExpandedNodes.Contains(node.Id))
                 {
                     item.IsExpanded = true;
+                    item.UpdateLayout(); // needed, otherwise ContainerFromItem(childnode) will return null
                     item.UpdateLayout(); // needed, otherwise ContainerFromItem(childnode) will return null
 
                     foreach (var childNode in node.Nodes)
@@ -130,7 +158,14 @@ namespace Vision.Wpf
             }
         }
 
-        private void UpdateLayoutRec(TreeViewItem item, NodeView node)
+        private void UpdateLayoutSize()
+        {
+            Project.Layout.WindowWidth = this.WindowWidth;
+            Project.Layout.WindowHeight = this.WindowHeight;
+            Project.Layout.IsMaximized = Window.GetWindow(this).WindowState == WindowState.Maximized;
+        }
+
+        private void UpdateLayoutExpandedNodes(TreeViewItem item, NodeView node)
         {
             if (item != null)
             {
@@ -141,7 +176,7 @@ namespace Vision.Wpf
 
                 foreach (var childNode in node.Nodes)
                 {
-                    UpdateLayoutRec(item.ItemContainerGenerator.ContainerFromItem(childNode) as TreeViewItem, childNode);
+                    UpdateLayoutExpandedNodes(item.ItemContainerGenerator.ContainerFromItem(childNode) as TreeViewItem, childNode);
                 }
             }
         }
@@ -173,18 +208,6 @@ namespace Vision.Wpf
         }
 
         private void NavigationService_Navigating(object sender, NavigatingCancelEventArgs e)
-        {
-            try
-            {
-                Save();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void Dispatcher_ShutdownStarted(object sender, EventArgs e)
         {
             try
             {
@@ -421,8 +444,8 @@ namespace Vision.Wpf
         private void Save()
         {
             Project.Layout.ExpandedNodes.Clear();
-            Root.Nodes.ToList()
-                .ForEach(nodeView => UpdateLayoutRec(treeView1.ItemContainerGenerator.ContainerFromItem(nodeView) as TreeViewItem, nodeView));
+            UpdateLayoutSize();
+            Root.Nodes.ToList().ForEach(nodeView => UpdateLayoutExpandedNodes(treeView1.ItemContainerGenerator.ContainerFromItem(nodeView) as TreeViewItem, nodeView));
             persistor.SaveProject(Project);
         }
 
@@ -705,6 +728,16 @@ namespace Vision.Wpf
         private void mnuFindNext_Click(object sender, RoutedEventArgs e)
         {
             FindNext();
+        }
+
+        private void CenterWindowOnScreen(Window window)
+        {
+            double screenWidth = SystemParameters.PrimaryScreenWidth;
+            double screenHeight = SystemParameters.PrimaryScreenHeight;
+            double windowWidth = window.Width;
+            double windowHeight = window.Height;
+            window.Left = (screenWidth / 2) - (windowWidth / 2);
+            window.Top = (screenHeight / 2) - (windowHeight / 2);
         }
     }
 }
