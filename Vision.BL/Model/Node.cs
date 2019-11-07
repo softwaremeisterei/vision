@@ -5,10 +5,12 @@ namespace Vision.BL.Model
 {
     public class Node : Entity
     {
+        public NodeType NodeType { get; set; }
         public string Url { get; set; }
         public bool IsFavorite { get; set; }
+        public string BackgroundColor { get; set; }
+        public string ForegroundColor { get; set; }
         public DateTime CreatedAt { get; set; }
-        public NodeType NodeType { get; set; }
         public ObservableCollection<Node> Nodes { get; set; }
 
         public Node()
@@ -28,6 +30,8 @@ namespace Vision.BL.Model
             copy.Url = Url;
             copy.IsFavorite = IsFavorite;
             copy.NodeType = NodeType;
+            copy.BackgroundColor = BackgroundColor;
+            copy.ForegroundColor = ForegroundColor;
 
             return copy;
         }

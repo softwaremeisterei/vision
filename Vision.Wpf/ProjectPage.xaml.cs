@@ -15,7 +15,9 @@ using System.Windows.Navigation;
 using Vision.BL;
 using Vision.BL.Lib;
 using Vision.BL.Model;
+using Vision.Wpf.Mappers;
 using Vision.Wpf.Model;
+using Vision.Wpf.Styles;
 
 namespace Vision.Wpf
 {
@@ -43,12 +45,23 @@ namespace Vision.Wpf
             persistor = new Persistor();
 
             this.Project = project;
-            this.Root = MapToView(project.Root);
+
+            //Migrate(Project.Root);
+
+            this.Root = NodeMappers.MapToView(project.Root);
+            this.TilesControl.Init(this.Root);
 
             InputBindings.Add(new KeyBinding(new ActionCommand(() => { Search(); }),
                 Key.F, ModifierKeys.Control));
             InputBindings.Add(new KeyBinding(new ActionCommand(() => { if (searchText == null) Search(); else FindNext(); }),
                 Key.F3, ModifierKeys.None));
+
+        }
+        private void Migrate(Node node)
+        {
+            node.ForegroundColor = node.NodeType == NodeType.Folder ? NodeStyles.FolderForegroundColor : NodeStyles.LinkForegroundColor;
+            node.BackgroundColor = node.NodeType == NodeType.Folder ? NodeStyles.FolderBackgroundColor : NodeStyles.LinkBackgroundColor;
+            node.Nodes.ToList().ForEach(n => Migrate(n));
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -61,13 +74,6 @@ namespace Vision.Wpf
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        private NodeView MapToView(Node root)
-        {
-            var mapper = Global.Mapper;
-            var result = mapper.Map<NodeView>(root);
-            return result;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -236,7 +242,13 @@ namespace Vision.Wpf
         {
             try
             {
-                var node = new Node { Name = "NONAME", NodeType = BL.Model.NodeType.Folder };
+                var node = new Node
+                {
+                    Name = "NONAME",
+                    NodeType = BL.Model.NodeType.Folder,
+                    BackgroundColor = NodeStyles.FolderBackgroundColor,
+                    ForegroundColor = NodeStyles.FolderForegroundColor
+                };
                 (Root.Tag as Node).Nodes.Add(node);
 
                 var nodeView = Global.Mapper.Map<NodeView>(node);
@@ -252,7 +264,13 @@ namespace Vision.Wpf
         {
             try
             {
-                var node = new Node { Name = "Noname", NodeType = BL.Model.NodeType.Link };
+                var node = new Node
+                {
+                    Name = "Noname",
+                    NodeType = BL.Model.NodeType.Link,
+                    BackgroundColor = NodeStyles.LinkBackgroundColor,
+                    ForegroundColor = NodeStyles.LinkForegroundColor
+                };
                 (Root.Tag as Node).Nodes.Add(node);
 
                 var nodeView = Global.Mapper.Map<NodeView>(node);
@@ -308,7 +326,13 @@ namespace Vision.Wpf
             {
                 var menuItem = (MenuItem)sender;
                 var parentFolderView = (NodeView)menuItem.Tag;
-                var newNode = new Node { Name = "Noname", NodeType = NodeType.Link };
+                var newNode = new Node
+                {
+                    Name = "Noname",
+                    NodeType = NodeType.Link,
+                    BackgroundColor = NodeStyles.LinkBackgroundColor,
+                    ForegroundColor = NodeStyles.LinkForegroundColor
+                };
                 (parentFolderView.Tag as Node).Nodes.Add(newNode);
                 var newNodeView = Global.Mapper.Map<NodeView>(newNode);
                 parentFolderView.Nodes.Add(newNodeView);
@@ -326,7 +350,13 @@ namespace Vision.Wpf
             {
                 var menuItem = (MenuItem)sender;
                 var parentFolderView = (NodeView)menuItem.Tag;
-                var newFolder = new Node { Name = "Noname", NodeType = NodeType.Folder };
+                var newFolder = new Node
+                {
+                    Name = "Noname",
+                    NodeType = NodeType.Folder,
+                    BackgroundColor = NodeStyles.FolderBackgroundColor,
+                    ForegroundColor = NodeStyles.FolderForegroundColor
+                };
                 (parentFolderView.Tag as Node).Nodes.Add(newFolder);
                 var newFolderView = Global.Mapper.Map<NodeView>(newFolder);
                 parentFolderView.Nodes.Add(newFolderView);
@@ -422,13 +452,8 @@ namespace Vision.Wpf
             try
             {
                 var hyperlink = (Hyperlink)sender;
-                var node = (NodeView)hyperlink.Tag;
-                var url = Urls.NormalizeUrl(node.Url);
-                if (url != null)
-                {
-                    webBrowser.Tag = node;
-                    webBrowser.Navigate(url);
-                }
+                var nodeView = (NodeView)hyperlink.Tag;
+                OpenLinkInWebBrowser(nodeView);
                 var tvItem = WpfHelper.GetParentOfType<TreeViewItem>(hyperlink.Parent);
                 if (tvItem != null)
                 {
@@ -739,5 +764,21 @@ namespace Vision.Wpf
             window.Left = (screenWidth / 2) - (windowWidth / 2);
             window.Top = (screenHeight / 2) - (windowHeight / 2);
         }
+
+        private void TilesControl_LinkClicked(NodeView nodeView)
+        {
+            OpenLinkInWebBrowser(nodeView);
+        }
+
+        private void OpenLinkInWebBrowser(NodeView nodeView)
+        {
+            var url = Urls.NormalizeUrl(nodeView.Url);
+            if (url != null)
+            {
+                webBrowser.Tag = nodeView;
+                webBrowser.Navigate(url);
+            }
+        }
+
     }
 }

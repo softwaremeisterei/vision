@@ -78,6 +78,8 @@
     </Compile>
     <Compile Include="Extensions.cs" />
     <Compile Include="Global.cs" />
+    <Compile Include="Mappers\NodeMappers.cs" />
+    <Compile Include="Model\BreadcrumbView.cs" />
     <Compile Include="Model\NodeView.cs" />
     <Compile Include="ProjectPage.xaml.cs">
       <DependentUpon>ProjectPage.xaml</DependentUpon>
@@ -91,6 +93,10 @@
     <Compile Include="SharedServices.cs" />
     <Compile Include="StartPage.xaml.cs">
       <DependentUpon>StartPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Styles\NodeStyles.cs" />
+    <Compile Include="TilesControl.xaml.cs">
+      <DependentUpon>TilesControl.xaml</DependentUpon>
     </Compile>
     <Page Include="EditFolderWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -121,6 +127,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="StartPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TilesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

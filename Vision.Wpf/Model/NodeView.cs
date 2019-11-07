@@ -10,9 +10,10 @@ namespace Vision.Wpf.Model
         private string name;
         private string url;
         private bool isFavorite;
-        private int index;
         private string icon;
         private string imageSource;
+        private string backgroundColor;
+        private string foregroundColor;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -52,16 +53,9 @@ namespace Vision.Wpf.Model
                 NotifyPropertyChanged(nameof(IsFavorite));
             }
         }
-        public int Index
-        {
-            get => index;
-            set
-            {
-                index = value;
-                NotifyPropertyChanged(nameof(Index));
-            }
-        }
+
         public NodeViewType NodeType { get; set; }
+
         public ObservableCollection<NodeView> Nodes { get; set; }
 
         public string Icon
@@ -80,6 +74,25 @@ namespace Vision.Wpf.Model
             {
                 imageSource = value;
                 NotifyPropertyChanged(nameof(ImageSource));
+            }
+        }
+
+        public string BackgroundColor
+        {
+            get => backgroundColor;
+            set
+            {
+                backgroundColor = value;
+                NotifyPropertyChanged(nameof(BackgroundColor));
+            }
+        }
+        public string ForegroundColor
+        {
+            get => foregroundColor;
+            set
+            {
+                foregroundColor = value;
+                NotifyPropertyChanged(nameof(ForegroundColor));
             }
         }
 

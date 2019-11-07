@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:Vision.Wpf"
         mc:Ignorable="d"
         Title="MainWindow" Width="1200" Height="800"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+                  Loaded="NavigationWindow_Loaded">
     <NavigationWindow.Content>
         <Grid>
             <Menu Margin="0,0,0,0" Height="22" Name="menu1" VerticalAlignment="Top" HorizontalAlignment="Stretch">
@@ -17,7 +18,8 @@
             </Menu>
             <Border BorderThickness="1" Margin="0,22,0,0"
                     BorderBrush="DarkGray">
-                <Frame Source="StartPage.xaml" />
+                <Frame Name="frame" />
+                <!--<Frame Source="StartPage.xaml" />-->
             </Border>
         </Grid>
     </NavigationWindow.Content>

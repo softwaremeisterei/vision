@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using Vision.BL;
 using Vision.BL.Model;
+using Vision.Wpf.Mappers;
 
 namespace Vision.Wpf
 {
@@ -43,6 +44,11 @@ namespace Vision.Wpf
         private void mnuFileOpenProject_Click(object sender, RoutedEventArgs e)
         {
             sharedServices.OpenProject(NavigationService);
+        }
+
+        private void NavigationWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            frame.Navigate(new StartPage());
         }
     }
 }

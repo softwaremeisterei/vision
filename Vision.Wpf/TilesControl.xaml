@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="Vision.Wpf.TilesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Vision.Wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <DockPanel>
+        <StackPanel  DockPanel.Dock="Left">
+            <StackPanel Orientation="Horizontal">
+                <ItemsControl ItemsSource="{Binding Breadcrumbs}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content=">"/>
+                                <TextBlock VerticalAlignment="Center">
+                                    <Hyperlink Tag="{Binding}" Click="Breadcrumb_Click">
+                                        <TextBlock Text="{Binding NodeView.Name}" Margin="0" Padding="0"/>
+                                    </Hyperlink>
+                                </TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+            <WrapPanel>
+                <ItemsControl ItemsSource="{Binding Nodes}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,0,5,5" Width="100" Height="100"
+                                BorderBrush="Black" Background="{Binding BackgroundColor}"
+                                BorderThickness="1" UseLayoutRounding="True" MouseDown="Border_MouseDown" Tag="{Binding}">
+                                <DockPanel>
+                                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding Name}" FontSize="17" FontWeight="Normal" 
+                                           Foreground="{Binding ForegroundColor}"
+                                           HorizontalAlignment="Center" Padding="0,0,0,10"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Nodes.Count}"/>
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </WrapPanel>
+        </StackPanel>
+    </DockPanel>
+</UserControl>

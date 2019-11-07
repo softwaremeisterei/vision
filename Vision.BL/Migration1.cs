@@ -22,7 +22,11 @@ namespace Vision.BL
         {
             foreach (var srcSubFolder in srcFolder.Folders)
             {
-                var destFolder = new Node { Name = srcSubFolder.Name, NodeType = NodeType.Folder };
+                var destFolder = new Node
+                {
+                    Name = srcSubFolder.Name,
+                    NodeType = NodeType.Folder
+                };
                 destParentNode.Nodes.Add(destFolder);
                 Migrate(destFolder, srcSubFolder);
             }
@@ -33,7 +37,7 @@ namespace Vision.BL
             }
         }
 
-        [DataContract(Name="Project")]
+        [DataContract(Name = "Project")]
         public class Project
         {
             [DataMember]

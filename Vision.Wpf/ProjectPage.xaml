@@ -85,7 +85,13 @@
                 <ColumnDefinition Width="236*"/>
                 <ColumnDefinition Width="281*"/>
             </Grid.ColumnDefinitions>
-            <TreeView Name="treeView1" MinWidth="100" Grid.Column="0"
+            <TabControl Grid.Column="0">
+                <TabItem Header="Tiles">
+                    <local:TilesControl x:Name="TilesControl" LinkClicked="TilesControl_LinkClicked">                        
+                    </local:TilesControl>
+                </TabItem>
+                <TabItem Header="Tree">
+                    <TreeView Name="treeView1" MinWidth="100"
                       ItemsSource="{Binding Root.Nodes}" 
                       ItemTemplate="{StaticResource NodeTemplate}"
                       PreviewMouseMove="TreeView1_PreviewMouseMove"
@@ -93,6 +99,8 @@
                       Drop="TreeView1_Drop"
                       PreviewMouseLeftButtonDown="TreeView1_PreviewMouseLeftButtonDown"
                       AllowDrop="True"/>
+                </TabItem>
+            </TabControl>
             <GridSplitter Width="3" Background="Blue" Margin="1.5,0,-1.5,0"/>
             <DockPanel Grid.Column="1">
                 <TextBox Name="tbUrl" Text="{Binding Url}" KeyDown="TextBoxUrl_KeyDown" DockPanel.Dock="Top"/>
