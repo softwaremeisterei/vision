@@ -38,16 +38,18 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Margin="0,0,5,5" Width="100" Height="100"
+                            <Border Margin="0,0,5,5" Width="150" Height="150"
                                 BorderBrush="Black" Background="{Binding BackgroundColor}"
                                 BorderThickness="1" UseLayoutRounding="True" MouseDown="Border_MouseDown" Tag="{Binding}">
                                 <DockPanel>
-                                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding Name}" FontSize="17" FontWeight="Normal" 
-                                           Foreground="{Binding ForegroundColor}"
-                                           HorizontalAlignment="Center" Padding="0,0,0,10"/>
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel DockPanel.Dock="Bottom"  Orientation="Horizontal">
                                         <TextBlock Text="{Binding Nodes.Count}"/>
+                                        <Image Source="{Binding ImageSource, UpdateSourceTrigger=PropertyChanged}" Width="25" Height="25" />
                                     </StackPanel>
+                                    <TextBlock Text="{Binding Name}"
+                                        TextWrapping="Wrap"
+                                        FontSize="15" FontWeight="Normal" Foreground="{Binding ForegroundColor}"
+                                        HorizontalAlignment="Center" Padding="0,0,0,10"/>
                                 </DockPanel>
                             </Border>
                         </DataTemplate>
