@@ -81,6 +81,7 @@ namespace Vision.Wpf
             try
             {
                 var window = Window.GetWindow(this);
+                window.SizeChanged += new SizeChangedEventHandler(Window_SizeChanged);
                 window.Closing += new CancelEventHandler(Window_Closing);
 
                 _NavigationService = this.NavigationService;
@@ -103,6 +104,11 @@ namespace Vision.Wpf
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateLayoutSize();
         }
 
         private void webBrowser_LoadCompleted(object sender, NavigationEventArgs e)
@@ -470,7 +476,6 @@ namespace Vision.Wpf
         private void Save()
         {
             Project.Layout.ExpandedNodes.Clear();
-            UpdateLayoutSize();
             Root.Nodes.ToList().ForEach(nodeView => UpdateLayoutExpandedNodes(treeView1.ItemContainerGenerator.ContainerFromItem(nodeView) as TreeViewItem, nodeView));
             persistor.SaveProject(Project);
         }
