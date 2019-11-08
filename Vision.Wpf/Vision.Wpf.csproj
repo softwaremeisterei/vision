@@ -7,7 +7,7 @@
     <ProjectGuid>{3CB83D82-1A79-4BB3-A96A-69915B5B4898}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Vision.Wpf</RootNamespace>
-    <AssemblyName>Vision</AssemblyName>
+    <AssemblyName>Vision.Wpf</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -194,6 +194,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) c:\bin\</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
