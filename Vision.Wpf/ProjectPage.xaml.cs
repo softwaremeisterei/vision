@@ -93,8 +93,9 @@ namespace Vision.Wpf
                     ApplyLayout(item, nodeView);
                 });
 
-                WebBrowser wb = webBrowser;
                 webBrowser.LoadCompleted += webBrowser_LoadCompleted;
+
+                UpdateEnablingWebBrowserNavButtons();
 
                 treeView1.Focus();
             }
@@ -780,5 +781,31 @@ namespace Vision.Wpf
             }
         }
 
+        private void BtnBack_Click(object sender, RoutedEventArgs e)
+        {
+            if (webBrowser.CanGoBack)
+            {
+                webBrowser.GoBack();
+            }
+        }
+
+        private void BtnForward_Click(object sender, RoutedEventArgs e)
+        {
+            if (webBrowser.CanGoForward)
+            {
+                webBrowser.GoForward();
+            }
+        }
+
+        private void WebBrowser_Navigated(object sender, NavigationEventArgs e)
+        {
+            UpdateEnablingWebBrowserNavButtons();
+        }
+
+        private void UpdateEnablingWebBrowserNavButtons()
+        {
+            btnBack.IsEnabled = webBrowser.CanGoBack;
+            btnForward.IsEnabled = webBrowser.CanGoForward;
+        }
     }
 }

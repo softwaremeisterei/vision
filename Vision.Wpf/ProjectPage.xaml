@@ -82,12 +82,12 @@
         </ToolBar>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="236*"/>
-                <ColumnDefinition Width="281*"/>
+                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="200*"/>
             </Grid.ColumnDefinitions>
             <TabControl Grid.Column="0">
                 <TabItem Header="Tiles">
-                    <local:TilesControl x:Name="TilesControl" LinkClicked="TilesControl_LinkClicked">                        
+                    <local:TilesControl x:Name="TilesControl" LinkClicked="TilesControl_LinkClicked">
                     </local:TilesControl>
                 </TabItem>
                 <TabItem Header="Tree">
@@ -101,10 +101,23 @@
                       AllowDrop="True"/>
                 </TabItem>
             </TabControl>
-            <GridSplitter Width="3" Background="Blue" Margin="1.5,0,-1.5,0"/>
+            <GridSplitter Width="8" Background="Blue" Margin="1.5,0,-1.5,0">
+                <GridSplitter.Template>
+                    <ControlTemplate TargetType="{x:Type GridSplitter}">
+                        <Grid>
+                            <Button Content="⁞" />
+                            <Rectangle Fill="#00FFFFFF" />
+                        </Grid>
+                    </ControlTemplate>
+                </GridSplitter.Template>
+            </GridSplitter>
             <DockPanel Grid.Column="1">
-                <TextBox Name="tbUrl" Text="{Binding Url}" KeyDown="TextBoxUrl_KeyDown" DockPanel.Dock="Top"/>
-                <WebBrowser Name="webBrowser" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Navigating="WebBrowser_Navigating" />
+                <DockPanel DockPanel.Dock="Top">
+                    <Button Name="btnBack" Content="⇦" Click="BtnBack_Click" DockPanel.Dock="Left" />
+                    <Button Name="btnForward" Content="⇨" Click="BtnForward_Click" DockPanel.Dock="Left"/>
+                    <TextBox Name="tbUrl" Width="Auto" Text="{Binding Url}" KeyDown="TextBoxUrl_KeyDown"/>
+                </DockPanel>
+                <WebBrowser Name="webBrowser" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Navigating="WebBrowser_Navigating" Navigated="WebBrowser_Navigated" />
             </DockPanel>
         </Grid>
     </DockPanel>
