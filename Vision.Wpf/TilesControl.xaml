@@ -7,8 +7,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
-        <StackPanel  DockPanel.Dock="Left">
-            <StackPanel Orientation="Horizontal">
+        <DockPanel DockPanel.Dock="Left">
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
                 <ItemsControl ItemsSource="{Binding Model.Breadcrumbs}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -29,11 +29,11 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </StackPanel>
-            <WrapPanel>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding Model.ParentNodeView.Nodes}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel />
+                            <WrapPanel/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
@@ -67,7 +67,7 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-            </WrapPanel>
-        </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
     </DockPanel>
 </UserControl>
