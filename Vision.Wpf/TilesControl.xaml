@@ -9,7 +9,7 @@
     <DockPanel>
         <StackPanel  DockPanel.Dock="Left">
             <StackPanel Orientation="Horizontal">
-                <ItemsControl ItemsSource="{Binding Breadcrumbs}">
+                <ItemsControl ItemsSource="{Binding Model.Breadcrumbs}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel />
@@ -17,7 +17,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal" Background="Transparent">
                                 <Label Content=">"/>
                                 <TextBlock VerticalAlignment="Center">
                                     <Hyperlink Tag="{Binding}" Click="Breadcrumb_Click">
@@ -30,7 +30,7 @@
                 </ItemsControl>
             </StackPanel>
             <WrapPanel>
-                <ItemsControl ItemsSource="{Binding Nodes}">
+                <ItemsControl ItemsSource="{Binding Model.ParentNodeView.Nodes}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel />
@@ -51,6 +51,18 @@
                                         FontSize="15" FontWeight="Normal" Foreground="{Binding ForegroundColor}"
                                         HorizontalAlignment="Center" Padding="0,0,0,10"/>
                                 </DockPanel>
+                                <Border.ContextMenu>
+                                    <ContextMenu Name="foo">
+                                        <MenuItem Tag="{Binding}" Header="Edit" Click="ContextMenuNode_Edit" />
+                                        <Separator/>
+                                        <MenuItem Tag="{Binding}" Header="Add node" Click="ContextMenuNode_AddNode" />
+                                        <MenuItem Tag="{Binding}" Header="Add folder" Click="ContextMenuNode_AddFolder" />
+                                        <Separator/>
+                                        <MenuItem Tag="{Binding}" Header="Add/remove favorite" Click="ContextMenuNode_ToggleFavorite" />
+                                        <Separator/>
+                                        <MenuItem Tag="{Binding}" Header="Delete" Click="ContextMenuNode_Delete" />
+                                    </ContextMenu>
+                                </Border.ContextMenu>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

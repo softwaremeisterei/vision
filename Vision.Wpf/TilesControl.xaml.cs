@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,9 +16,27 @@ namespace Vision.Wpf
     /// </summary>
     public partial class TilesControl : UserControl
     {
-        public class ViewModel {
-            public ObservableCollection<NodeView> Nodes { get; set; }
+        public class ViewModel : INotifyPropertyChanged
+        {
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            private NodeView parentNodeView;
+            public NodeView ParentNodeView
+            {
+                get => parentNodeView;
+                set
+                {
+                    parentNodeView = value;
+                    NotifyPropertyChanged(nameof(ParentNodeView));
+                }
+            }
+
             public ObservableCollection<BreadcrumbView> Breadcrumbs { get; set; }
+
+            private void NotifyPropertyChanged(string propertyName)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
 
         public ViewModel Model { get; set; }
@@ -45,20 +65,22 @@ namespace Vision.Wpf
 
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            var uiElement = sender as Border;
-            var nodeView = uiElement.Tag as NodeView;
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                var uiElement = sender as Border;
+                var nodeView = uiElement.Tag as NodeView;
 
-            if (nodeView.NodeType == NodeViewType.Folder)
-            {
-                Model.Breadcrumbs.Add(new BreadcrumbView(nodeView));
-                ReplaceRoot(nodeView);
-            }
-            else if (nodeView.NodeType == NodeViewType.Link)
-            {
-                if (LinkClicked != null)
+                if (nodeView.NodeType == NodeViewType.Folder)
                 {
-                    LinkClicked(nodeView);
+                    Model.Breadcrumbs.Add(new BreadcrumbView(nodeView));
+                    ReplaceRoot(nodeView);
                 }
+                else if (nodeView.NodeType == NodeViewType.Link)
+                {
+                    LinkClicked?.Invoke(nodeView);
+                }
+
+                e.Handled = true;
             }
         }
 
@@ -66,22 +88,53 @@ namespace Vision.Wpf
         {
             this.Model = new ViewModel
             {
-                Nodes = new ObservableCollection<NodeView>(),
+                ParentNodeView = root,
                 Breadcrumbs = new ObservableCollection<BreadcrumbView>(breadcrumbs ?? new[] { new BreadcrumbView(root) }.ToList())
             };
             ReplaceRoot(root);
-            DataContext = Model;
+            DataContext = this;
         }
 
         private void ReplaceRoot(NodeView rootNodeView)
         {
-            Model.Nodes.Clear();
-
-            foreach (var childNodeView in rootNodeView.Nodes)
-            {
-                Model.Nodes.Add(childNodeView);
-            }
+            Model.ParentNodeView = rootNodeView;
         }
 
+        private void ContextMenuNode_Edit(object sender, RoutedEventArgs e)
+        {
+            var menuItem = (MenuItem)sender;
+            var nodeView = (NodeView)menuItem.Tag;
+            Shared.EditNode(Window.GetWindow(this), nodeView);
+        }
+
+        private void ContextMenuNode_AddNode(object sender, RoutedEventArgs e)
+        {
+            var menuItem = (MenuItem)sender;
+            var parentFolderView = (NodeView)menuItem.Tag;
+            Shared.AddNode(Window.GetWindow(this), parentFolderView);
+        }
+
+        private void ContextMenuNode_AddFolder(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ContextMenuNode_ToggleFavorite(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ContextMenuNode_Delete(object sender, RoutedEventArgs e)
+        {
+            var menuItem = (MenuItem)sender;
+            var nodeView = (NodeView)menuItem.Tag;
+            var parentNodeView = GetParentFolder();
+            Shared.DeleteNode(parentNodeView, nodeView);
+        }
+
+        private NodeView GetParentFolder()
+        {
+            return Model.Breadcrumbs.Last().NodeView;
+        }
     }
 }

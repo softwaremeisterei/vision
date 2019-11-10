@@ -296,59 +296,19 @@ namespace Vision.Wpf
                 var menuItem = (MenuItem)sender;
                 var node = (NodeView)menuItem.Tag;
 
-                EditNode(node);
+                Shared.EditNode(Window.GetWindow(this), node);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void EditNode(NodeView node)
-        {
-            if (node.NodeType == NodeViewType.Folder)
-            {
-                var dlg = new EditFolderWindow(node)
-                {
-                    Owner = Window.GetWindow(this),
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner
-                };
-                if (dlg.ShowDialog() == true)
-                { }
-            }
-            else if (node.NodeType == NodeViewType.Link)
-            {
-                var dlg = new EditNodeWindow(node)
-                {
-                    Owner = Window.GetWindow(this),
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner
-                };
-                dlg.ShowDialog();
             }
         }
 
         private void ContextMenuNode_AddNode(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var menuItem = (MenuItem)sender;
-                var parentFolderView = (NodeView)menuItem.Tag;
-                var newNode = new Node
-                {
-                    Name = "Noname",
-                    NodeType = NodeType.Link,
-                    BackgroundColor = NodeStyles.LinkBackgroundColor,
-                    ForegroundColor = NodeStyles.LinkForegroundColor
-                };
-                (parentFolderView.Tag as Node).Nodes.Add(newNode);
-                var newNodeView = Global.Mapper.Map<NodeView>(newNode);
-                parentFolderView.Nodes.Add(newNodeView);
-                EditNode(newNodeView);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            var menuItem = (MenuItem)sender;
+            var parentFolderView = (NodeView)menuItem.Tag;
+            Shared.AddNode(Window.GetWindow(this), parentFolderView);
         }
 
         private void ContextMenuNode_AddFolder(object sender, RoutedEventArgs e)
@@ -367,7 +327,7 @@ namespace Vision.Wpf
                 (parentFolderView.Tag as Node).Nodes.Add(newFolder);
                 var newFolderView = Global.Mapper.Map<NodeView>(newFolder);
                 parentFolderView.Nodes.Add(newFolderView);
-                EditNode(newFolderView);
+                Shared.EditNode(Window.GetWindow(this), newFolderView);
             }
             catch (Exception ex)
             {
@@ -378,63 +338,10 @@ namespace Vision.Wpf
 
         private void ContextMenuNode_Delete(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var menuItem = (MenuItem)sender;
-                var folder = (NodeView)menuItem.Tag;
-                DeleteNodeView(Root.Nodes, folder.Id);
-                DeleteNode(Project.Root, folder.Id);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private bool DeleteNode(Node root, Guid nodeId)
-        {
-            var matchingNode = root.Nodes.FirstOrDefault(n => n.Id == nodeId);
-
-            if (matchingNode != null)
-            {
-                root.Nodes.Remove(matchingNode);
-                return true;
-            }
-            else
-            {
-                foreach (var node in root.Nodes)
-                {
-                    if (DeleteNode(node, nodeId))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        private bool DeleteNodeView(ObservableCollection<NodeView> nodes, Guid nodeId)
-        {
-            var matchingNode = nodes.FirstOrDefault(n => n.Id == nodeId);
-
-            if (matchingNode != null)
-            {
-                nodes.Remove(matchingNode);
-                return true;
-            }
-            else
-            {
-                foreach (var node in nodes)
-                {
-                    if (DeleteNodeView(node.Nodes, nodeId))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            var menuItem = (MenuItem)sender;
+            var nodeView = (NodeView)menuItem.Tag;
+            var parentNodeView = GetParentFolder(nodeView);
+            Shared.DeleteNode(parentNodeView, nodeView);
         }
 
         private void ContextMenuNode_ToggleFavorite(object sender, RoutedEventArgs e)
