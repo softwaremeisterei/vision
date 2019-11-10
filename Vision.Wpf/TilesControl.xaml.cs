@@ -77,14 +77,6 @@ namespace Vision.Wpf
 
                 e.Handled = true;
             }
-            else if (e.XButton1 == MouseButtonState.Pressed)
-            {
-                if (Model.Breadcrumbs.Count > 1)
-                {
-                    Model.Breadcrumbs.Remove(Model.Breadcrumbs.Last());
-                    ReplaceRoot(Model.Breadcrumbs.Last().NodeView);
-                }
-            }
         }
 
         public void Init(NodeView root, List<BreadcrumbView> breadcrumbs = null)
@@ -138,6 +130,20 @@ namespace Vision.Wpf
         private NodeView GetParentFolder()
         {
             return Model.Breadcrumbs.Last().NodeView;
+        }
+
+        private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.XButton1 == MouseButtonState.Pressed)
+            {
+                if (Model.Breadcrumbs.Count > 1)
+                {
+                    Model.Breadcrumbs.Remove(Model.Breadcrumbs.Last());
+                    ReplaceRoot(Model.Breadcrumbs.Last().NodeView);
+                }
+
+                e.Handled = true;
+            }
         }
     }
 }
