@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Vision.Wpf"
         mc:Ignorable="d"
+        ShowsNavigationUI="False"
         Title="MainWindow" Width="1200" Height="800"
         WindowStartupLocation="CenterScreen"
-                  Loaded="NavigationWindow_Loaded">
+        Loaded="NavigationWindow_Loaded">
     <NavigationWindow.Content>
         <Grid>
             <Menu Margin="0,0,0,0" Height="22" Name="menu1" VerticalAlignment="Top" HorizontalAlignment="Stretch">
