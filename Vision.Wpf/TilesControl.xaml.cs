@@ -77,6 +77,14 @@ namespace Vision.Wpf
 
                 e.Handled = true;
             }
+            else if (e.XButton1 == MouseButtonState.Pressed)
+            {
+                if (Model.Breadcrumbs.Count > 1)
+                {
+                    Model.Breadcrumbs.Remove(Model.Breadcrumbs.Last());
+                    ReplaceRoot(Model.Breadcrumbs.Last().NodeView);
+                }
+            }
         }
 
         public void Init(NodeView root, List<BreadcrumbView> breadcrumbs = null)
@@ -111,12 +119,12 @@ namespace Vision.Wpf
 
         private void ContextMenuNode_AddFolder(object sender, RoutedEventArgs e)
         {
-
+            // TODO
         }
 
         private void ContextMenuNode_ToggleFavorite(object sender, RoutedEventArgs e)
         {
-
+            // TODO
         }
 
         private void ContextMenuNode_Delete(object sender, RoutedEventArgs e)

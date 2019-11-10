@@ -80,6 +80,8 @@ namespace Vision.Wpf
         {
             try
             {
+                this.NavigationService.RemoveBackEntry();
+
                 var window = Window.GetWindow(this);
                 window.SizeChanged += new SizeChangedEventHandler(Window_SizeChanged);
                 window.Closing += new CancelEventHandler(Window_Closing);
