@@ -27,16 +27,11 @@ namespace Vision.Wpf
                 set
                 {
                     parentNodeView = value;
-                    NotifyPropertyChanged(nameof(ParentNodeView));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ParentNodeView)));
                 }
             }
 
             public ObservableCollection<BreadcrumbView> Breadcrumbs { get; set; }
-
-            private void NotifyPropertyChanged(string propertyName)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
         }
 
         public ViewModel Model { get; set; }

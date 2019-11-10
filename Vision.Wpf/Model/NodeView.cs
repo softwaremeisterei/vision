@@ -23,7 +23,7 @@ namespace Vision.Wpf.Model
             set
             {
                 id = value;
-                NotifyPropertyChanged(nameof(Id));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Id)));
             }
         }
         public string Name
@@ -32,7 +32,7 @@ namespace Vision.Wpf.Model
             set
             {
                 name = value;
-                NotifyPropertyChanged(nameof(Name));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
             }
         }
         public string Url
@@ -41,7 +41,7 @@ namespace Vision.Wpf.Model
             set
             {
                 url = value;
-                NotifyPropertyChanged(nameof(Url));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Url)));
             }
         }
         public bool IsFavorite
@@ -50,7 +50,7 @@ namespace Vision.Wpf.Model
             set
             {
                 isFavorite = value;
-                NotifyPropertyChanged(nameof(IsFavorite));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsFavorite)));
             }
         }
 
@@ -64,7 +64,7 @@ namespace Vision.Wpf.Model
             set
             {
                 icon = value;
-                NotifyPropertyChanged(nameof(Icon));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Icon)));
             }
         }
         public string ImageSource
@@ -73,7 +73,7 @@ namespace Vision.Wpf.Model
             set
             {
                 imageSource = value;
-                NotifyPropertyChanged(nameof(ImageSource));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ImageSource)));
             }
         }
 
@@ -83,7 +83,7 @@ namespace Vision.Wpf.Model
             set
             {
                 backgroundColor = value;
-                NotifyPropertyChanged(nameof(BackgroundColor));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BackgroundColor)));
             }
         }
         public string ForegroundColor
@@ -92,16 +92,11 @@ namespace Vision.Wpf.Model
             set
             {
                 foregroundColor = value;
-                NotifyPropertyChanged(nameof(ForegroundColor));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ForegroundColor)));
             }
         }
 
         public object Tag { get; set; }
-
-        private void NotifyPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
 
     public enum NodeViewType { Folder, Link }
