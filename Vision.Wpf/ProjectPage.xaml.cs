@@ -17,7 +17,6 @@ using Vision.BL.Lib;
 using Vision.BL.Model;
 using Vision.Wpf.Mappers;
 using Vision.Wpf.Model;
-using Vision.Wpf.Styles;
 
 namespace Vision.Wpf
 {
@@ -46,8 +45,6 @@ namespace Vision.Wpf
 
             this.Project = project;
 
-            //Migrate(Project.Root);
-
             this.Root = NodeMappers.MapToView(project.Root);
             this.TilesControl.Init(this.Root);
 
@@ -57,13 +54,6 @@ namespace Vision.Wpf
                 Key.F3, ModifierKeys.None));
 
         }
-        private void Migrate(Node node)
-        {
-            node.ForegroundColor = node.NodeType == NodeType.Folder ? NodeStyles.FolderForegroundColor : NodeStyles.LinkForegroundColor;
-            node.BackgroundColor = node.NodeType == NodeType.Folder ? NodeStyles.FolderBackgroundColor : NodeStyles.LinkBackgroundColor;
-            node.Nodes.ToList().ForEach(n => Migrate(n));
-        }
-
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             try
@@ -255,8 +245,6 @@ namespace Vision.Wpf
                 {
                     Name = "NONAME",
                     NodeType = BL.Model.NodeType.Folder,
-                    BackgroundColor = NodeStyles.FolderBackgroundColor,
-                    ForegroundColor = NodeStyles.FolderForegroundColor
                 };
                 (Root.Tag as Node).Nodes.Add(node);
 
@@ -277,8 +265,6 @@ namespace Vision.Wpf
                 {
                     Name = "Noname",
                     NodeType = BL.Model.NodeType.Link,
-                    BackgroundColor = NodeStyles.LinkBackgroundColor,
-                    ForegroundColor = NodeStyles.LinkForegroundColor
                 };
                 (Root.Tag as Node).Nodes.Add(node);
 
@@ -308,28 +294,11 @@ namespace Vision.Wpf
 
         private void ContextMenuNode_AddNode(object sender, RoutedEventArgs e)
         {
-            var menuItem = (MenuItem)sender;
-            var parentFolderView = (NodeView)menuItem.Tag;
-            Shared.AddNode(Window.GetWindow(this), parentFolderView);
-        }
-
-        private void ContextMenuNode_AddFolder(object sender, RoutedEventArgs e)
-        {
             try
             {
                 var menuItem = (MenuItem)sender;
                 var parentFolderView = (NodeView)menuItem.Tag;
-                var newFolder = new Node
-                {
-                    Name = "Noname",
-                    NodeType = NodeType.Folder,
-                    BackgroundColor = NodeStyles.FolderBackgroundColor,
-                    ForegroundColor = NodeStyles.FolderForegroundColor
-                };
-                (parentFolderView.Tag as Node).Nodes.Add(newFolder);
-                var newFolderView = Global.Mapper.Map<NodeView>(newFolder);
-                parentFolderView.Nodes.Add(newFolderView);
-                Shared.EditNode(Window.GetWindow(this), newFolderView);
+                Shared.AddNewNode(Window.GetWindow(this), parentFolderView);
             }
             catch (Exception ex)
             {
@@ -337,13 +306,33 @@ namespace Vision.Wpf
             }
         }
 
+        private void ContextMenuNode_AddFolder(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var menuItem = (MenuItem)sender;
+                var parentFolderNodeView = (NodeView)menuItem.Tag;
+                Shared.AddNewFolder(Window.GetWindow(this), parentFolderNodeView);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
         private void ContextMenuNode_Delete(object sender, RoutedEventArgs e)
         {
-            var menuItem = (MenuItem)sender;
-            var nodeView = (NodeView)menuItem.Tag;
-            var parentNodeView = GetParentFolder(nodeView);
-            Shared.DeleteNode(parentNodeView, nodeView);
+            try
+            {
+                var menuItem = (MenuItem)sender;
+                var nodeView = (NodeView)menuItem.Tag;
+                var parentNodeView = GetParentFolder(nodeView);
+                Shared.DeleteNode(parentNodeView, nodeView);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ContextMenuNode_ToggleFavorite(object sender, RoutedEventArgs e)
@@ -351,10 +340,8 @@ namespace Vision.Wpf
             try
             {
                 var menuItem = (MenuItem)sender;
-                var node = (NodeView)menuItem.Tag;
-                node.IsFavorite = !node.IsFavorite;
-                (node.Tag as Node).IsFavorite = !(node.Tag as Node).IsFavorite;
-                node.ImageSource = node.IsFavorite ? Global.FavoriteStarUri : "";
+                var nodeView = (NodeView)menuItem.Tag;
+                Shared.ToggleFavorite(nodeView);
             }
             catch (Exception ex)
             {
@@ -687,11 +674,18 @@ namespace Vision.Wpf
 
         private void OpenLinkInWebBrowser(NodeView nodeView)
         {
-            var url = Urls.NormalizeUrl(nodeView.Url);
-            if (url != null)
+            try
             {
-                webBrowser.Tag = nodeView;
-                webBrowser.Navigate(url);
+                var url = Urls.NormalizeUrl(nodeView.Url);
+                if (url != null)
+                {
+                    webBrowser.Tag = nodeView;
+                    webBrowser.Navigate(url);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

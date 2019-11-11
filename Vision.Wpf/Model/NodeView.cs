@@ -12,8 +12,6 @@ namespace Vision.Wpf.Model
         private bool isFavorite;
         private string icon;
         private string imageSource;
-        private string backgroundColor;
-        private string foregroundColor;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -74,25 +72,6 @@ namespace Vision.Wpf.Model
             {
                 imageSource = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ImageSource)));
-            }
-        }
-
-        public string BackgroundColor
-        {
-            get => backgroundColor;
-            set
-            {
-                backgroundColor = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BackgroundColor)));
-            }
-        }
-        public string ForegroundColor
-        {
-            get => foregroundColor;
-            set
-            {
-                foregroundColor = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ForegroundColor)));
             }
         }
 

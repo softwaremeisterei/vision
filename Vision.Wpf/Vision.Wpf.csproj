@@ -95,7 +95,6 @@
     <Compile Include="StartPage.xaml.cs">
       <DependentUpon>StartPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Styles\NodeStyles.cs" />
     <Compile Include="TilesControl.xaml.cs">
       <DependentUpon>TilesControl.xaml</DependentUpon>
     </Compile>

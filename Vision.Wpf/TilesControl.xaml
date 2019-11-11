@@ -40,8 +40,20 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border Margin="0,0,5,5" Width="150" Height="150"
-                                BorderBrush="Black" Background="{Binding BackgroundColor}"
+                                BorderBrush="Black"
                                 BorderThickness="1" UseLayoutRounding="True" MouseDown="Border_MouseDown" Tag="{Binding}">
+                                <Border.Style>
+                                    <Style>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding NodeType}" Value="Folder">
+                                                <Setter Property="Border.Background" Value="#F7630C" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding NodeType}" Value="Link">
+                                                <Setter Property="Border.Background" Value="#038387" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
                                 <DockPanel>
                                     <StackPanel DockPanel.Dock="Bottom"  Orientation="Horizontal">
                                         <TextBlock Text="{Binding Nodes.Count}"/>
@@ -49,7 +61,8 @@
                                     </StackPanel>
                                     <TextBlock Text="{Binding Name}"
                                         TextWrapping="Wrap"
-                                        FontSize="15" FontWeight="Normal" Foreground="{Binding ForegroundColor}"
+                                        FontSize="15" FontWeight="Normal"
+                                        Foreground="White"
                                         HorizontalAlignment="Center" Padding="0,0,0,10"/>
                                 </DockPanel>
                                 <Border.ContextMenu>

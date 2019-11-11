@@ -97,34 +97,73 @@ namespace Vision.Wpf
 
         private void ContextMenuNode_Edit(object sender, RoutedEventArgs e)
         {
-            var menuItem = (MenuItem)sender;
-            var nodeView = (NodeView)menuItem.Tag;
-            Shared.EditNode(Window.GetWindow(this), nodeView);
+            try
+            {
+                var menuItem = (MenuItem)sender;
+                var nodeView = (NodeView)menuItem.Tag;
+                Shared.EditNode(Window.GetWindow(this), nodeView);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ContextMenuNode_AddNode(object sender, RoutedEventArgs e)
         {
-            var menuItem = (MenuItem)sender;
-            var parentFolderView = (NodeView)menuItem.Tag;
-            Shared.AddNode(Window.GetWindow(this), parentFolderView);
+            try
+            {
+                var menuItem = (MenuItem)sender;
+                var parentFolderView = (NodeView)menuItem.Tag;
+                Shared.AddNewNode(Window.GetWindow(this), parentFolderView);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ContextMenuNode_AddFolder(object sender, RoutedEventArgs e)
         {
-            // TODO
+            try
+            {
+                var menuItem = (MenuItem)sender;
+                var parentFolderNodeView = (NodeView)menuItem.Tag;
+                Shared.AddNewFolder(Window.GetWindow(this), parentFolderNodeView);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ContextMenuNode_ToggleFavorite(object sender, RoutedEventArgs e)
         {
-            // TODO
+            try
+            {
+                var menuItem = (MenuItem)sender;
+                var nodeView = (NodeView)menuItem.Tag;
+                Shared.ToggleFavorite(nodeView);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ContextMenuNode_Delete(object sender, RoutedEventArgs e)
         {
-            var menuItem = (MenuItem)sender;
-            var nodeView = (NodeView)menuItem.Tag;
-            var parentNodeView = GetParentFolder();
-            Shared.DeleteNode(parentNodeView, nodeView);
+            try
+            {
+                var menuItem = (MenuItem)sender;
+                var nodeView = (NodeView)menuItem.Tag;
+                var parentNodeView = GetParentFolder();
+                Shared.DeleteNode(parentNodeView, nodeView);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private NodeView GetParentFolder()
