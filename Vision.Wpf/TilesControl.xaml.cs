@@ -109,13 +109,11 @@ namespace Vision.Wpf
             }
         }
 
-        private void ContextMenuNode_AddNode(object sender, RoutedEventArgs e)
+        private void ContextMenu_AddNode(object sender, RoutedEventArgs e)
         {
             try
             {
-                var menuItem = (MenuItem)sender;
-                var parentFolderView = (NodeView)menuItem.Tag;
-                Shared.AddNewNode(Window.GetWindow(this), parentFolderView);
+                Shared.AddNewNode(Window.GetWindow(this), Model.ParentNodeView);
             }
             catch (Exception ex)
             {
@@ -123,13 +121,11 @@ namespace Vision.Wpf
             }
         }
 
-        private void ContextMenuNode_AddFolder(object sender, RoutedEventArgs e)
+        private void ContextMenu_AddFolder(object sender, RoutedEventArgs e)
         {
             try
             {
-                var menuItem = (MenuItem)sender;
-                var parentFolderNodeView = (NodeView)menuItem.Tag;
-                Shared.AddNewFolder(Window.GetWindow(this), parentFolderNodeView);
+                Shared.AddNewFolder(Window.GetWindow(this), Model.ParentNodeView);
             }
             catch (Exception ex)
             {

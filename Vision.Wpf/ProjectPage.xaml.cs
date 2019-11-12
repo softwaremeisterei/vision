@@ -526,18 +526,19 @@ namespace Vision.Wpf
             return false;
         }
 
-        private NodeView GetParentFolder(NodeView folder)
+        private NodeView GetParentFolder(NodeView nodeView)
         {
-            return GetParentFolder(Root.Nodes, folder);
+            if (Root.Nodes.Contains(nodeView)) { return Root; }
+            return GetParentFolder(Root.Nodes, nodeView);
         }
 
-        private NodeView GetParentFolder(ObservableCollection<NodeView> folders, NodeView childFolder)
+        private NodeView GetParentFolder(ObservableCollection<NodeView> folders, NodeView nodeView)
         {
             foreach (var folder in folders)
             {
-                if (folder.Nodes.Contains(childFolder)) { return folder; }
+                if (folder.Nodes.Contains(nodeView)) { return folder; }
 
-                var result = GetParentFolder(folder.Nodes, childFolder);
+                var result = GetParentFolder(folder.Nodes, nodeView);
 
                 if (result != null) { return result; }
             }

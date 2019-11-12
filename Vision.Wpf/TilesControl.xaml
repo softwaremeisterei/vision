@@ -69,9 +69,6 @@
                                     <ContextMenu Name="foo">
                                         <MenuItem Tag="{Binding}" Header="Edit" Click="ContextMenuNode_Edit" />
                                         <Separator/>
-                                        <MenuItem Tag="{Binding}" Header="Add node" Click="ContextMenuNode_AddNode" />
-                                        <MenuItem Tag="{Binding}" Header="Add folder" Click="ContextMenuNode_AddFolder" />
-                                        <Separator/>
                                         <MenuItem Tag="{Binding}" Header="Add/remove favorite" Click="ContextMenuNode_ToggleFavorite" />
                                         <Separator/>
                                         <MenuItem Tag="{Binding}" Header="Delete" Click="ContextMenuNode_Delete" />
@@ -81,6 +78,12 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+                <ScrollViewer.ContextMenu>
+                    <ContextMenu Name="foo">
+                        <MenuItem Tag="{Binding}" Header="Add node" Click="ContextMenu_AddNode" />
+                        <MenuItem Tag="{Binding}" Header="Add folder" Click="ContextMenu_AddFolder" />
+                    </ContextMenu>
+                </ScrollViewer.ContextMenu>
             </ScrollViewer>
         </DockPanel>
     </DockPanel>
