@@ -60,7 +60,6 @@ namespace Vision.Wpf
                     Name = name,
                     Path = dlg.FileName
                 };
-                project.Root.Name = name;
                 persistor.SaveProject(project);
                 navigationService.Navigate(new ProjectPage(project));
                 return project.Path;

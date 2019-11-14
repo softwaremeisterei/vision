@@ -1,4 +1,6 @@
-﻿namespace Vision.BL.Model
+﻿using System.Collections.ObjectModel;
+
+namespace Vision.BL.Model
 {
     public class Project : Entity
     {
@@ -6,11 +8,11 @@
         public bool AutoSave { get; set; }
         public bool Incognito { get; set; }
         public Layout Layout { get; set; }
-        public Node Root { get; set; }
+        public ObservableCollection<Node> Nodes { get; set; }
 
         public Project()
         {
-            Root = new Node { Name = "Root" };
+            Nodes = new ObservableCollection<Node>();
             Layout = new Layout();
         }
 

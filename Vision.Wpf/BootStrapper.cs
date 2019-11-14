@@ -16,7 +16,7 @@ namespace Vision.Wpf
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Node, NodeView>()
-                    .ForMember(nameof(NodeView.Icon), src => src.MapFrom(o => o.NodeType == NodeType.Folder ? "📁" : "≡"))
+                    .ForMember(nameof(NodeView.Icon), src => src.MapFrom(o => "≡"))
                     .ForMember(nameof(NodeView.ImageSource), src => src.MapFrom(o => o.IsFavorite ? Global.FavoriteStarUri : ""))
                     .ForMember(nameof(NodeView.Tag), src => src.MapFrom(o => o));
 

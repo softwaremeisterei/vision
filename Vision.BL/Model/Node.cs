@@ -5,19 +5,17 @@ namespace Vision.BL.Model
 {
     public class Node : Entity
     {
-        public NodeType NodeType { get; set; }
         public string Url { get; set; }
         public bool IsFavorite { get; set; }
         public DateTime CreatedAt { get; set; }
-        public ObservableCollection<Node> Nodes { get; set; }
+        public ObservableCollection<string> Tags  { get; set; }
 
         public Node()
         {
             Id = Guid.NewGuid();
             Name = string.Empty;
             CreatedAt = DateTime.Now;
-            NodeType = NodeType.Folder;
-            Nodes = new ObservableCollection<Node>();
+            Tags = new ObservableCollection<string>();
         }
 
         public virtual Node Copy()
@@ -27,7 +25,7 @@ namespace Vision.BL.Model
             copy.Name = Name;
             copy.Url = Url;
             copy.IsFavorite = IsFavorite;
-            copy.NodeType = NodeType;
+            copy.Tags = new ObservableCollection<string>(Tags);
 
             return copy;
         }

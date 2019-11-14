@@ -56,7 +56,6 @@
     <Compile Include="Migration1.cs" />
     <Compile Include="Model\Entity.cs" />
     <Compile Include="Model\Project.cs" />
-    <Compile Include="Model\DisplayType.cs" />
     <Compile Include="Model\Layout.cs" />
     <Compile Include="Model\Node.cs" />
     <Compile Include="Model\RecentProjects.cs" />

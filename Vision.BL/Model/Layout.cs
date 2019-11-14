@@ -11,11 +11,8 @@ namespace Vision.BL.Model
         public bool IsMaximized { get; set; }
         public double WindowWidth { get; set; }
         public double WindowHeight { get; set; }
-        public List<Guid> ExpandedNodes { get; set; }
-
         public Layout()
         {
-            ExpandedNodes = new List<Guid>();
         }
     }
 }

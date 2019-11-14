@@ -5,35 +5,37 @@ using System.Runtime.Serialization;
 using Vision.BL.Model;
 using Softwaremeisterei.Lib;
 using System.Linq;
+using System.Collections.ObjectModel;
 
 namespace Vision.BL
 {
     public class Migration1
     {
-        public void Migrate(string oldProjectFilePath, BL.Model.Project destProject)
+        public void Migrate(string oldProjectFilePath, List<Node> result)
         {
             var xml = File.ReadAllText(oldProjectFilePath);
             var srcProject = Serialization.ParseXml<Migration1.Project>(xml);
 
-            Migrate(destProject.Root, srcProject.Root);
+            Migrate(result, srcProject.Root, new string[]{});
         }
 
-        private void Migrate(Node destParentNode, Migration1.Project.FolderNode srcFolder)
+        private void Migrate(List<Node> destNodes, Migration1.Project.Node migNode, string[] tags)
         {
-            foreach (var srcSubFolder in srcFolder.Folders)
+            if (migNode.NodeType == Project.NodeType.Link)
             {
-                var destFolder = new Node
+                var destNode = new Node
                 {
-                    Name = srcSubFolder.Name,
-                    NodeType = NodeType.Folder
+                    Name = migNode.Name,
+                    Url = migNode.Url,
+                    IsFavorite = migNode.IsFavorite,
+                    Tags = new ObservableCollection<string>(tags)
                 };
-                destParentNode.Nodes.Add(destFolder);
-                Migrate(destFolder, srcSubFolder);
+                destNodes.Add(destNode);
             }
 
-            foreach (var oldNode in srcFolder.Nodes)
+            foreach (var migSubNode in migNode.Nodes)
             {
-                destParentNode.Nodes.Add(new Node { Name = oldNode.Name, Url = oldNode.Url, NodeType = NodeType.Link });
+                Migrate(destNodes, migSubNode, tags.Union(new[] { migNode.Name }).ToArray());
             }
         }
 
@@ -41,24 +43,14 @@ namespace Vision.BL
         public class Project
         {
             [DataMember]
-            public FolderNode Root { get; set; }
-
-            [DataContract]
-            public class FolderNode
-            {
-                [DataMember]
-                public string Name { get; set; }
-
-                [DataMember]
-                public List<FolderNode> Folders { get; set; }
-
-                [DataMember]
-                public List<Node> Nodes { get; set; }
-            }
+            public Node Root { get; set; }
 
             [DataContract]
             public class Node
             {
+                [DataMember]
+                public NodeType NodeType { get; set; }
+
                 [DataMember]
                 public string Name { get; set; }
 
@@ -66,7 +58,16 @@ namespace Vision.BL
                 public string Url { get; set; }
 
                 [DataMember]
+                public bool IsFavorite { get; set; }
+
+                [DataMember]
                 public List<Node> Nodes { get; set; }
+            }
+
+            public enum NodeType
+            {
+                Folder,
+                Link
             }
         }
 

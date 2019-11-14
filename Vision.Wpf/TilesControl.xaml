@@ -5,33 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Vision.Wpf"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
-             MouseDown="UserControl_MouseDown">
+             d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
         <DockPanel DockPanel.Dock="Left">
-            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-                <ItemsControl ItemsSource="{Binding Model.Breadcrumbs}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Background="Transparent">
-                                <Label Content=">"/>
-                                <TextBlock VerticalAlignment="Center">
-                                    <Hyperlink Tag="{Binding}" Click="Breadcrumb_Click">
-                                        <TextBlock Text="{Binding NodeView.Name}" Margin="0" Padding="0"/>
-                                    </Hyperlink>
-                                </TextBlock>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
+            <DockPanel DockPanel.Dock="Top">
+                <Label Content="Search" DockPanel.Dock="Left"/>
+                <TextBox x:Name="tbSearch"/>
+            </DockPanel>
             <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding Model.ParentNodeView.Nodes}">
+                <ItemsControl ItemsSource="{Binding Model.Nodes}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel/>
@@ -40,20 +22,9 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border Margin="0,0,5,5" Width="150" Height="150"
-                                BorderBrush="Black"
-                                BorderThickness="1" UseLayoutRounding="True" MouseDown="Border_MouseDown" Tag="{Binding}">
-                                <Border.Style>
-                                    <Style>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding NodeType}" Value="Folder">
-                                                <Setter Property="Border.Background" Value="#F7630C" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding NodeType}" Value="Link">
-                                                <Setter Property="Border.Background" Value="#038387" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
+                                BorderBrush="Black" Background="#038387"
+                                BorderThickness="1" UseLayoutRounding="True" 
+                                MouseDown="Border_MouseDown" Tag="{Binding}">
                                 <DockPanel>
                                     <StackPanel DockPanel.Dock="Bottom"  Orientation="Horizontal">
                                         <TextBlock Text="{Binding Nodes.Count}"/>
@@ -81,7 +52,6 @@
                 <ScrollViewer.ContextMenu>
                     <ContextMenu Name="foo">
                         <MenuItem Tag="{Binding}" Header="Add node" Click="ContextMenu_AddNode" />
-                        <MenuItem Tag="{Binding}" Header="Add folder" Click="ContextMenu_AddFolder" />
                     </ContextMenu>
                 </ScrollViewer.ContextMenu>
             </ScrollViewer>

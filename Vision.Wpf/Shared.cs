@@ -12,70 +12,40 @@ namespace Vision.Wpf
 {
     public class Shared
     {
-        public static void AddNewNode(Window owner, NodeView parentNodeView)
+        public static NodeView AddNewNode(Window owner)
         {
             var newNode = new Node
             {
                 Name = "Noname",
-                NodeType = NodeType.Link,
             };
-            (parentNodeView.Tag as Node).Nodes.Add(newNode);
             var newNodeView = Global.Mapper.Map<NodeView>(newNode);
-            parentNodeView.Nodes.Add(newNodeView);
+            newNodeView.Tag = newNode;
             Shared.EditNode(owner, newNodeView);
+            return newNodeView;
         }
 
-        public static void EditNode(Window owner, NodeView node)
+        public static void EditNode(Window owner, NodeView nodeView)
         {
-            if (node.NodeType == NodeViewType.Folder)
+            var dlg = new EditNodeWindow(nodeView)
             {
-                var dlg = new EditFolderWindow(node)
-                {
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner
-                };
-                if (dlg.ShowDialog() == true)
-                { }
-            }
-            else if (node.NodeType == NodeViewType.Link)
-            {
-                var dlg = new EditNodeWindow(node)
-                {
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner
-                };
-                dlg.ShowDialog();
-            }
-        }
-
-        public static void DeleteNode(NodeView parentNodeView, NodeView nodeView)
-        {
-            parentNodeView.Nodes.Remove(nodeView);
-            var parentNode = parentNodeView.Tag as Node;
-            var node = nodeView.Tag as Node;
-            parentNode.Nodes.Remove(node);
-        }
-
-        public static void AddNewFolder(Window owner, NodeView parentNodeView)
-        {
-            var newFolderNode = new Node
-            {
-                Name = "Noname",
-                NodeType = NodeType.Folder,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
-            (parentNodeView.Tag as Node).Nodes.Add(newFolderNode);
-            var newFolderView = Global.Mapper.Map<NodeView>(newFolderNode);
-            parentNodeView.Nodes.Add(newFolderView);
-            parentNodeView.NodeType = NodeViewType.Folder;
-            (parentNodeView.Tag as Node).NodeType = NodeType.Folder;
-            EditNode(owner, newFolderView);
+            dlg.ShowDialog();
+            CopyToNodeBehind(nodeView);
         }
 
-        internal static void ToggleFavorite(NodeView nodeView)
+        public static void ToggleFavorite(NodeView nodeView)
         {
             nodeView.IsFavorite = !nodeView.IsFavorite;
-            (nodeView.Tag as Node).IsFavorite = !(nodeView.Tag as Node).IsFavorite;
             nodeView.ImageSource = nodeView.IsFavorite ? Global.FavoriteStarUri : "";
+            CopyToNodeBehind(nodeView);
         }
+
+        private static void CopyToNodeBehind(NodeView nodeView)
+        {
+            Global.Mapper.Map(nodeView, nodeView.Tag as Node);
+        }
+
     }
 }

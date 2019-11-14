@@ -1,4 +1,5 @@
 ﻿using Microsoft.Expression.Interactivity.Core;
+using Microsoft.Win32;
 using Softwaremeisterei.Lib;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Navigation;
 using Vision.BL;
 using Vision.BL.Lib;
@@ -28,7 +28,7 @@ namespace Vision.Wpf
         public event PropertyChangedEventHandler PropertyChanged;
 
         public Project Project { get; set; }
-        public NodeView Root { get; set; }
+        public ObservableCollection<NodeView> Nodes { get; set; }
 
         private Persistor persistor;
 
@@ -45,8 +45,8 @@ namespace Vision.Wpf
 
             this.Project = project;
 
-            this.Root = NodeMappers.MapToView(project.Root);
-            this.TilesControl.Init(this.Root);
+            this.Nodes = NodeMappers.MapToView(project.Nodes);
+            this.TilesControl.Init(Nodes, Project);
 
             InputBindings.Add(new KeyBinding(new ActionCommand(() => { Search(); }),
                 Key.F, ModifierKeys.Control));
@@ -71,26 +71,17 @@ namespace Vision.Wpf
             try
             {
                 this.NavigationService.RemoveBackEntry();
+                ApplyLayout();
+                UpdateEnablingWebBrowserNavButtons();
 
                 var window = Window.GetWindow(this);
                 window.SizeChanged += new SizeChangedEventHandler(Window_SizeChanged);
                 window.Closing += new CancelEventHandler(Window_Closing);
-
+                webBrowser.LoadCompleted += webBrowser_LoadCompleted;
+                TilesControl.DataChanged += (_1, _2) => { Save(); };
                 _NavigationService = this.NavigationService;
                 _NavigationService.Navigating += NavigationService_Navigating;
                 HideScriptErrors(webBrowser, true);
-
-                Root.Nodes.ToList().ForEach(nodeView =>
-                {
-                    var item = treeView1.ItemContainerGenerator.ContainerFromItem(nodeView) as TreeViewItem;
-                    ApplyLayout(item, nodeView);
-                });
-
-                webBrowser.LoadCompleted += webBrowser_LoadCompleted;
-
-                UpdateEnablingWebBrowserNavButtons();
-
-                treeView1.Focus();
             }
             catch (Exception ex)
             {
@@ -121,8 +112,6 @@ namespace Vision.Wpf
                     nodeView.Name = newName;
                     (nodeView.Tag as Node).Name = newName;
                 }
-
-                treeView1.Focus();
             }
             catch (Exception ex)
             {
@@ -130,7 +119,7 @@ namespace Vision.Wpf
             }
         }
 
-        private void ApplyLayout(TreeViewItem item, NodeView node)
+        private void ApplyLayout()
         {
             var window = Window.GetWindow(this);
 
@@ -145,22 +134,6 @@ namespace Vision.Wpf
             {
                 window.WindowState = WindowState.Maximized;
             }
-
-            if (item != null && node != null)
-            {
-                if (Project.Layout.ExpandedNodes.Contains(node.Id))
-                {
-                    item.IsExpanded = true;
-                    item.UpdateLayout(); // needed, otherwise ContainerFromItem(childnode) will return null
-                    item.UpdateLayout(); // needed, otherwise ContainerFromItem(childnode) will return null
-
-                    foreach (var childNode in node.Nodes)
-                    {
-                        var childItem = item.ItemContainerGenerator.ContainerFromItem(childNode) as TreeViewItem;
-                        ApplyLayout(childItem as TreeViewItem, childNode);
-                    }
-                }
-            }
         }
 
         private void UpdateLayoutSize()
@@ -169,23 +142,6 @@ namespace Vision.Wpf
             Project.Layout.WindowHeight = this.WindowHeight;
             Project.Layout.IsMaximized = Window.GetWindow(this).WindowState == WindowState.Maximized;
         }
-
-        private void UpdateLayoutExpandedNodes(TreeViewItem item, NodeView node)
-        {
-            if (item != null)
-            {
-                if (item.IsExpanded)
-                {
-                    Project.Layout.ExpandedNodes.Add(node.Id);
-                }
-
-                foreach (var childNode in node.Nodes)
-                {
-                    UpdateLayoutExpandedNodes(item.ItemContainerGenerator.ContainerFromItem(childNode) as TreeViewItem, childNode);
-                }
-            }
-        }
-
 
         public void HideScriptErrors(WebBrowser wb, bool hide)
         {
@@ -237,26 +193,6 @@ namespace Vision.Wpf
             }
         }
 
-        private void mnuAddTopLevelFolder_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var node = new Node
-                {
-                    Name = "NONAME",
-                    NodeType = BL.Model.NodeType.Folder,
-                };
-                (Root.Tag as Node).Nodes.Add(node);
-
-                var nodeView = Global.Mapper.Map<NodeView>(node);
-                Root.Nodes.Add(nodeView);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         private void mnuAddTopLevelNode_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -264,12 +200,11 @@ namespace Vision.Wpf
                 var node = new Node
                 {
                     Name = "Noname",
-                    NodeType = BL.Model.NodeType.Link,
                 };
-                (Root.Tag as Node).Nodes.Add(node);
+                Project.Nodes.Add(node);
 
                 var nodeView = Global.Mapper.Map<NodeView>(node);
-                Root.Nodes.Add(nodeView);
+                Nodes.Add(nodeView);
             }
             catch (Exception ex)
             {
@@ -283,7 +218,6 @@ namespace Vision.Wpf
             {
                 var menuItem = (MenuItem)sender;
                 var node = (NodeView)menuItem.Tag;
-
                 Shared.EditNode(Window.GetWindow(this), node);
             }
             catch (Exception ex)
@@ -298,21 +232,8 @@ namespace Vision.Wpf
             {
                 var menuItem = (MenuItem)sender;
                 var parentFolderView = (NodeView)menuItem.Tag;
-                Shared.AddNewNode(Window.GetWindow(this), parentFolderView);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void ContextMenuNode_AddFolder(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var menuItem = (MenuItem)sender;
-                var parentFolderNodeView = (NodeView)menuItem.Tag;
-                Shared.AddNewFolder(Window.GetWindow(this), parentFolderNodeView);
+                var nodeView = Shared.AddNewNode(Window.GetWindow(this));
+                Project.Nodes.Add(nodeView.Tag as Node);
             }
             catch (Exception ex)
             {
@@ -326,8 +247,8 @@ namespace Vision.Wpf
             {
                 var menuItem = (MenuItem)sender;
                 var nodeView = (NodeView)menuItem.Tag;
-                var parentNodeView = GetParentFolder(nodeView);
-                Shared.DeleteNode(parentNodeView, nodeView);
+                Nodes.Remove(nodeView);
+                Project.Nodes.Remove(nodeView.Tag as Node);
             }
             catch (Exception ex)
             {
@@ -371,8 +292,6 @@ namespace Vision.Wpf
 
         private void Save()
         {
-            Project.Layout.ExpandedNodes.Clear();
-            Root.Nodes.ToList().ForEach(nodeView => UpdateLayoutExpandedNodes(treeView1.ItemContainerGenerator.ContainerFromItem(nodeView) as TreeViewItem, nodeView));
             persistor.SaveProject(Project);
         }
 
@@ -380,181 +299,27 @@ namespace Vision.Wpf
         {
             try
             {
-                var dlg = new PromptWindow("Import old format project", "Path to project file");
+                var dlg = new OpenFileDialog();
+                dlg.Title = "Import old format project";
 
                 if (dlg.ShowDialog() == true)
                 {
                     var migration = new Migration1();
-                    migration.Migrate(dlg.ResponseText, Project);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        /// TREEVIEW DRAG & DROP ///
-
-        Point _dragStartPoint;
-        bool _IsTreeNodeDragging = false;
-        readonly string DragDataFormat = "DDF000";
-
-        private void TreeView1_PreviewMouseMove(object sender, MouseEventArgs e)
-        {
-            try
-            {
-                if (e.LeftButton == MouseButtonState.Pressed ||
-                    e.RightButton == MouseButtonState.Pressed && !_IsTreeNodeDragging)
-                {
-                    var position = e.GetPosition(null);
-                    if (Math.Abs(position.X - _dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance
-                        || Math.Abs(position.Y - _dragStartPoint.Y) > SystemParameters.MinimumVerticalDragDistance)
+                    var newNodes = new List<Node>();
+                    migration.Migrate(dlg.FileName, newNodes);
+                    newNodes.ForEach(node =>
                     {
-                        StartDrag(e);
-                    }
+                        Project.Nodes.Add(node);
+                        var nodeView = Global.Mapper.Map<NodeView>(node);
+                        nodeView.Tag = node;
+                        Nodes.Add(nodeView);
+                    });
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        private void TreeView1_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                _dragStartPoint = e.GetPosition(null);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void TreeView1_DragOver(object sender, DragEventArgs e)
-        {
-            try
-            {
-                var source = e.Data.GetData(DragDataFormat);
-                var targetTreeViewItem = GetNearestContainer(e.OriginalSource as UIElement);
-                e.Effects = (source != null && targetTreeViewItem?.Header != null && targetTreeViewItem.Header.GetType() == source.GetType())
-                        ? DragDropEffects.Move : DragDropEffects.None;
-                e.Handled = true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void StartDrag(MouseEventArgs e)
-        {
-            _IsTreeNodeDragging = true;
-            object selectedItem = this.treeView1.SelectedItem;
-            if (selectedItem != null)
-            {
-                DataObject data = null;
-                data = new DataObject(DragDataFormat, selectedItem);
-
-                DragDropEffects dde = DragDropEffects.Move;
-                if (e.RightButton == MouseButtonState.Pressed)
-                {
-                    dde = DragDropEffects.All;
-                }
-                DragDropEffects de = DragDrop.DoDragDrop(this.treeView1, data, dde);
-            }
-            _IsTreeNodeDragging = false;
-        }
-
-        private void TreeView1_Drop(object sender, DragEventArgs e)
-        {
-            try
-            {
-                var source = e.Data.GetData(DragDataFormat);
-                var target = GetNearestContainer(e.OriginalSource as UIElement);
-
-                if (source == null || target == null) { return; }
-
-                var targetNodeView = target.Header as NodeView;
-                var sourceNodeView = source as NodeView;
-
-                if (sourceNodeView == targetNodeView) { return; }
-
-                if (targetNodeView.NodeType == NodeViewType.Folder) // drop on folder
-                {
-                    if (!IsSubNode(sourceNodeView, targetNodeView))
-                    {
-                        var parentSourceFolderView = GetParentFolder(sourceNodeView);
-                        targetNodeView.Nodes.Insert(0, sourceNodeView);
-                        parentSourceFolderView.Nodes.Remove(sourceNodeView);
-
-                        (targetNodeView.Tag as Node).Nodes.Insert(0, sourceNodeView.Tag as Node);
-                        (parentSourceFolderView.Tag as Node).Nodes.Remove(sourceNodeView.Tag as Node);
-                    }
-                }
-                else if (targetNodeView.NodeType == NodeViewType.Link) // drop on link
-                {
-                    var parentSourceFolderView = GetParentFolder(sourceNodeView);
-                    var parentTargetFolderView = GetParentFolder(targetNodeView);
-                    var index = parentTargetFolderView.Nodes.IndexOf(targetNodeView);
-                    parentSourceFolderView.Nodes.Remove(sourceNodeView);
-                    parentTargetFolderView.Nodes.Insert(index, sourceNodeView);
-
-                    (parentSourceFolderView.Tag as Node).Nodes.Remove(sourceNodeView.Tag as Node);
-                    (parentTargetFolderView.Tag as Node).Nodes.Insert(index, sourceNodeView.Tag as Node);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private bool IsSubNode(NodeView node1, NodeView node2)
-        {
-            if (node1.Nodes.Contains(node2))
-            {
-                return true;
-            }
-            var parentOfNode2 = GetParentFolder(node2);
-            if (parentOfNode2 != null)
-            {
-                return IsSubNode(node1, parentOfNode2);
-            }
-            return false;
-        }
-
-        private NodeView GetParentFolder(NodeView nodeView)
-        {
-            if (Root.Nodes.Contains(nodeView)) { return Root; }
-            return GetParentFolder(Root.Nodes, nodeView);
-        }
-
-        private NodeView GetParentFolder(ObservableCollection<NodeView> folders, NodeView nodeView)
-        {
-            foreach (var folder in folders)
-            {
-                if (folder.Nodes.Contains(nodeView)) { return folder; }
-
-                var result = GetParentFolder(folder.Nodes, nodeView);
-
-                if (result != null) { return result; }
-            }
-            return null;
-        }
-
-        private TreeViewItem GetNearestContainer(UIElement element)
-        {
-            // Walk up the element tree to the nearest tree view item.
-            TreeViewItem container = element as TreeViewItem;
-            while ((container == null) && (element != null))
-            {
-                element = VisualTreeHelper.GetParent(element) as UIElement;
-                container = element as TreeViewItem;
-            }
-            return container;
         }
 
         private void TextBoxUrl_KeyDown(object sender, KeyEventArgs e)
@@ -602,50 +367,7 @@ namespace Vision.Wpf
         {
             if (searchText == null) { return; }
 
-            var flatItems = FlattenTree(null, treeView1.Items);
-
-            if (treeView1.SelectedItem != null)
-            {
-                var tvItem = treeView1
-                       .ItemContainerGenerator
-                       .ContainerFromItemRecursive(treeView1.SelectedItem);
-                var index = flatItems.IndexOf(tvItem);
-                index = (index + 1) % flatItems.Count; // start at next item
-                flatItems = flatItems.Skip(index).Union(flatItems.Take(index)).ToList();
-            }
-
-            foreach (var tvItem in flatItems)
-            {
-                var nodeView = tvItem.Header as NodeView;
-                if (nodeView.Name.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    tvItem.IsSelected = true;
-                    tvItem.BringIntoView();
-                    break;
-                }
-            }
-        }
-
-        private List<TreeViewItem> FlattenTree(TreeViewItem parentTvItem, ItemCollection childItemCollection)
-        {
-            var result = new List<TreeViewItem>();
-
-            if (parentTvItem != null)
-            {
-                result.Add(parentTvItem);
-            }
-            foreach (var childItem in childItemCollection)
-            {
-                var childTvItem =
-                    parentTvItem != null
-                    ? parentTvItem.ItemContainerGenerator.ContainerFromItem(childItem) as TreeViewItem
-                    : treeView1.ItemContainerGenerator.ContainerFromItem(childItem) as TreeViewItem;
-                childTvItem.IsExpanded = true;
-                childTvItem.ExpandSubtree();
-                var flatChildren = FlattenTree(childTvItem, childTvItem.Items);
-                result.AddRange(flatChildren);
-            }
-            return result;
+            TilesControl.FindNext(searchText);
         }
 
         private void mnuSearch_Click(object sender, RoutedEventArgs e)

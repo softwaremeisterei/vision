@@ -52,9 +52,9 @@ namespace Vision.Wpf.Model
             }
         }
 
-        public NodeViewType NodeType { get; set; }
-
         public ObservableCollection<NodeView> Nodes { get; set; }
+
+        public ObservableCollection<string> Tags { get; set; }
 
         public string Icon
         {
@@ -77,7 +77,5 @@ namespace Vision.Wpf.Model
 
         public object Tag { get; set; }
     }
-
-    public enum NodeViewType { Folder, Link }
 
 }

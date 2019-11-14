@@ -14,66 +14,14 @@
         <Style x:Key="HyperLinkStyle" TargetType="Hyperlink">
             <EventSetter Event="Hyperlink.Click" Handler="Node_Click"></EventSetter>
         </Style>
-        <HierarchicalDataTemplate x:Key="NodeTemplate" ItemsSource="{Binding Nodes}">
-            <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="{Binding Icon}" VerticalAlignment="Center" />
-                    <Image Source="{Binding ImageSource, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="0,0,4,0" />
-                    <ContentControl VerticalAlignment="Center">
-                        <ContentControl.Style>
-                            <Style TargetType="{x:Type ContentControl}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Path=NodeType}" Value="Link">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate>
-                                                    <TextBlock>
-                                                        <Hyperlink Tag="{Binding}" Style="{DynamicResource HyperLinkStyle}">
-                                                            <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" ToolTip="{Binding Url}"></TextBlock>
-                                                        </Hyperlink>
-                                                    </TextBlock>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding Path=NodeType}" Value="Folder">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate>
-                                                    <Label Content="{Binding Name, UpdateSourceTrigger=PropertyChanged}">
-                                                    </Label>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ContentControl.Style>
-                        <ContentControl.ContextMenu>
-                            <ContextMenu Name="foo">
-                                <MenuItem Tag="{Binding}" Header="Edit" Click="ContextMenuNode_Edit" />
-                                <Separator/>
-                                <MenuItem Tag="{Binding}" Header="Add node" Click="ContextMenuNode_AddNode" />
-                                <MenuItem Tag="{Binding}" Header="Add folder" Click="ContextMenuNode_AddFolder" />
-                                <Separator/>
-                                <MenuItem Tag="{Binding}" Header="Add/remove favorite" Click="ContextMenuNode_ToggleFavorite" />
-                                <Separator/>
-                                <MenuItem Tag="{Binding}" Header="Delete" Click="ContextMenuNode_Delete" />
-                            </ContextMenu>
-                        </ContentControl.ContextMenu>
-                    </ContentControl>
-                </StackPanel>
-            </StackPanel>
-        </HierarchicalDataTemplate>
     </Page.Resources>
     <DockPanel>
         <ToolBar DockPanel.Dock="Top">
             <Menu Margin="0,0,0,0" Height="22" Name="menu1" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                 <MenuItem Header="Content" Height="20">
-                    <MenuItem Header="Add toplevel folder" HorizontalAlignment="Left" Click="mnuAddTopLevelFolder_Click" />
                     <MenuItem Header="Add toplevel node" HorizontalAlignment="Left" Click="mnuAddTopLevelNode_Click" />
                 </MenuItem>
-                <!--<MenuItem Header="Import old format project" HorizontalAlignment="Left" Click="mnuImportOldFormatProject_Click" />-->
+                <MenuItem Header="Import old format project" HorizontalAlignment="Left" Click="mnuImportOldFormatProject_Click" />
                 <MenuItem Header="View" Height="20">
                     <MenuItem Header="Search" HorizontalAlignment="Left" Click="mnuSearch_Click" />
                     <MenuItem Header="Find Next" HorizontalAlignment="Left" Click="mnuFindNext_Click" />
@@ -85,22 +33,8 @@
                 <ColumnDefinition Width="100*"/>
                 <ColumnDefinition Width="200*"/>
             </Grid.ColumnDefinitions>
-            <TabControl Grid.Column="0">
-                <TabItem Header="Tiles">
-                    <local:TilesControl x:Name="TilesControl" LinkClicked="TilesControl_LinkClicked">
-                    </local:TilesControl>
-                </TabItem>
-                <TabItem Header="Tree">
-                    <TreeView Name="treeView1" MinWidth="100"
-                      ItemsSource="{Binding Root.Nodes}" 
-                      ItemTemplate="{StaticResource NodeTemplate}"
-                      PreviewMouseMove="TreeView1_PreviewMouseMove"
-                      DragOver="TreeView1_DragOver"
-                      Drop="TreeView1_Drop"
-                      PreviewMouseLeftButtonDown="TreeView1_PreviewMouseLeftButtonDown"
-                      AllowDrop="True"/>
-                </TabItem>
-            </TabControl>
+            <local:TilesControl x:Name="TilesControl" Grid.Column="0" LinkClicked="TilesControl_LinkClicked">
+            </local:TilesControl>
             <GridSplitter Width="8" Background="Blue" Margin="1.5,0,-1.5,0">
                 <GridSplitter.Template>
                     <ControlTemplate TargetType="{x:Type GridSplitter}">

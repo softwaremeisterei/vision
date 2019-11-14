@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,11 +11,11 @@ namespace Vision.Wpf.Mappers
 {
     class NodeMappers
     {
-        public static NodeView MapToView(Node root)
+        public static ObservableCollection<NodeView> MapToView(ObservableCollection<Node> nodes)
         {
             var mapper = Global.Mapper;
-            var result = mapper.Map<NodeView>(root);
-            return result;
+            var nodeViews = mapper.Map<NodeView[]>(nodes);
+            return new ObservableCollection<NodeView>(nodeViews);
         }
     }
 }

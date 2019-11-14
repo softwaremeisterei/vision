@@ -73,9 +73,6 @@
     <Compile Include="BootStrapper.cs" />
     <Compile Include="Converters\FolderNameConverter.cs" />
     <Compile Include="Converters\ShortNameConverter.cs" />
-    <Compile Include="EditFolderWindow.xaml.cs">
-      <DependentUpon>EditFolderWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Extensions.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Mappers\NodeMappers.cs" />
@@ -98,10 +95,6 @@
     <Compile Include="TilesControl.xaml.cs">
       <DependentUpon>TilesControl.xaml</DependentUpon>
     </Compile>
-    <Page Include="EditFolderWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
