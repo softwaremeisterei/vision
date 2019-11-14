@@ -8,10 +8,15 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
         <DockPanel DockPanel.Dock="Left">
-            <DockPanel DockPanel.Dock="Top">
-                <Label Content="Search" DockPanel.Dock="Left"/>
-                <TextBox x:Name="tbSearch"/>
-            </DockPanel>
+            <Expander Header="Filter" DockPanel.Dock="Top">
+                <StackPanel Orientation="Vertical">
+                    <DockPanel>
+                        <Label Content="Search" DockPanel.Dock="Left"/>
+                        <TextBox x:Name="tbSearch" VerticalContentAlignment="Center" TextChanged="TbSearch_TextChanged"/>
+                    </DockPanel>
+                    <CheckBox x:Name="ckFavorites" Checked="CkFavorites_CheckedChanged" Unchecked="CkFavorites_CheckedChanged">Favorites</CheckBox>
+                </StackPanel>
+            </Expander>
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding Model.Nodes}">
                     <ItemsControl.ItemsPanel>

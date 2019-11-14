@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Vision.BL.Model;
+using Vision.Wpf.Mappers;
 using Vision.Wpf.Model;
 
 namespace Vision.Wpf
@@ -19,7 +22,6 @@ namespace Vision.Wpf
 
         public class ViewModel : INotifyPropertyChanged
         {
-
             public event PropertyChangedEventHandler PropertyChanged;
 
             private ObservableCollection<NodeView> nodes;
@@ -132,6 +134,41 @@ namespace Vision.Wpf
         public void FindNext(string searchText)
         {
             throw new NotImplementedException();
+        }
+
+        private void TbSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplyFilter();
+        }
+
+        private void CkFavorites_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            ApplyFilter();
+        }
+
+        private void ApplyFilter()
+        {
+            Model.Nodes.Clear();
+
+            var nodes = new List<Node>(project.Nodes);
+
+
+            if (ckFavorites.IsChecked ?? false)
+            {
+                nodes.RemoveAll(n => !n.IsFavorite);
+            }
+
+            if (tbSearch.Text.Length > 0)
+            {
+                nodes.RemoveAll(n => n.Name.IndexOf(tbSearch.Text, StringComparison.OrdinalIgnoreCase) < 0);
+            }
+
+            var nodeViews = NodeMappers.MapToView(nodes);
+
+            foreach (var nodeView in nodeViews)
+            {
+                Model.Nodes.Add(nodeView);
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Vision.Wpf.Mappers
 {
     class NodeMappers
     {
-        public static ObservableCollection<NodeView> MapToView(ObservableCollection<Node> nodes)
+        public static ObservableCollection<NodeView> MapToView(IEnumerable<Node> nodes)
         {
             var mapper = Global.Mapper;
             var nodeViews = mapper.Map<NodeView[]>(nodes);
