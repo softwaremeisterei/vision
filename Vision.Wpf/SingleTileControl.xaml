@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="Vision.Wpf.SingleTileControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Vision.Wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Border x:Name="LayoutRoot" 
+            Margin="0,0,5,5" Width="{Binding Size}" Height="{Binding Size}"
+            BorderBrush="Black" Background="#038387"
+            BorderThickness="1" UseLayoutRounding="True" 
+            MouseDown="Border_MouseDown" Tag="{Binding NodeView}">
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+                <Image Source="{Binding NodeView.ImageSource, UpdateSourceTrigger=PropertyChanged}" Width="{Binding RelativeImageSize}" Height="{Binding RelativeImageSize}" />
+            </StackPanel>
+            <TextBlock Text="{Binding NodeView.Name}"
+                TextWrapping="Wrap"
+                FontSize="{Binding RelativeFontSize}" FontWeight="Normal"
+                Foreground="White"
+                HorizontalAlignment="Center" Padding="0,0,0,10"/>
+        </DockPanel>
+        <Border.ContextMenu>
+            <ContextMenu Name="foo">
+                <MenuItem Tag="{Binding NodeView}" Header="Edit" Click="ContextMenuNode_Edit" />
+                <Separator/>
+                <MenuItem Tag="{Binding NodeView}" Header="Add/remove favorite" Click="ContextMenuNode_ToggleFavorite" />
+                <Separator/>
+                <MenuItem Tag="{Binding NodeView}" Header="Delete" Click="ContextMenuNode_Delete" />
+            </ContextMenu>
+        </Border.ContextMenu>
+    </Border>
+</UserControl>

@@ -89,6 +89,9 @@
     </Compile>
     <Compile Include="Shared.cs" />
     <Compile Include="SharedServices.cs" />
+    <Compile Include="SingleTileControl.xaml.cs">
+      <DependentUpon>SingleTileControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="StartPage.xaml.cs">
       <DependentUpon>StartPage.xaml</DependentUpon>
     </Compile>
@@ -118,6 +121,10 @@
     <Page Include="PromptWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="SingleTileControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="StartPage.xaml">
       <SubType>Designer</SubType>

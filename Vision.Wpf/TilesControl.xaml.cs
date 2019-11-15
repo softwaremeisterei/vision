@@ -17,9 +17,6 @@ namespace Vision.Wpf
     /// </summary>
     public partial class TilesControl : UserControl
     {
-        public delegate void DataChangedEventHandler(object sender, EventArgs e);
-        public event DataChangedEventHandler DataChanged;
-
         public class ViewModel : INotifyPropertyChanged
         {
             public event PropertyChangedEventHandler PropertyChanged;
@@ -34,11 +31,25 @@ namespace Vision.Wpf
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Nodes)));
                 }
             }
+
+            private ObservableCollection<NodeView> historyNodes;
+            public ObservableCollection<NodeView> HistoryNodes
+            {
+                get => historyNodes;
+                set
+                {
+                    historyNodes = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HistoryNodes)));
+                }
+            }
         }
 
         private Project project;
 
         public ViewModel Model { get; set; }
+
+        public delegate void DataChangedEventHandler(object sender, EventArgs e);
+        public event DataChangedEventHandler DataChanged;
 
         public delegate void LinkClickedHandler(NodeView nodeView);
         public event LinkClickedHandler LinkClicked;
@@ -49,22 +60,12 @@ namespace Vision.Wpf
             this.Model = new ViewModel();
         }
 
-        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                var uiElement = sender as Border;
-                var nodeView = uiElement.Tag as NodeView;
-                LinkClicked?.Invoke(nodeView);
-                e.Handled = true;
-            }
-        }
-
         public void Init(ObservableCollection<NodeView> nodes, Project project)
         {
             this.Model = new ViewModel
             {
                 Nodes = nodes,
+                HistoryNodes = new ObservableCollection<NodeView>()
             };
             this.project = project;
             DataContext = this;
@@ -115,22 +116,6 @@ namespace Vision.Wpf
             }
         }
 
-        private void ContextMenuNode_Delete(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var menuItem = (MenuItem)sender;
-                var nodeView = (NodeView)menuItem.Tag;
-                Model.Nodes.Remove(nodeView);
-                project.Nodes.Remove(nodeView.Tag as Node);
-                DataChanged?.Invoke(this, new EventArgs());
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         public void FindNext(string searchText)
         {
             throw new NotImplementedException();
@@ -168,6 +153,33 @@ namespace Vision.Wpf
             foreach (var nodeView in nodeViews)
             {
                 Model.Nodes.Add(nodeView);
+            }
+        }
+
+        private void SingleTileControl_LinkClicked(NodeView nodeView)
+        {
+            Model.HistoryNodes.Remove(nodeView);
+            Model.HistoryNodes.Insert(0, nodeView);
+            while (Model.HistoryNodes.Count > 7)
+            {
+                var lastIndex = Model.HistoryNodes.Count - 1;
+                Model.HistoryNodes.RemoveAt(lastIndex);
+            }
+            LinkClicked?.Invoke(nodeView);
+        }
+
+        private void SingleTileControl_DeleteMe(object sender, EventArgs e)
+        {
+            try
+            {
+                var nodeView = (sender as SingleTileControl).NodeView;
+                Model.Nodes.Remove(nodeView);
+                project.Nodes.Remove(nodeView.Tag as Node);
+                DataChanged?.Invoke(this, new EventArgs());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

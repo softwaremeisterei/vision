@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 
 namespace Vision.BL.Model
 {
@@ -10,10 +11,13 @@ namespace Vision.BL.Model
         public Layout Layout { get; set; }
         public ObservableCollection<Node> Nodes { get; set; }
 
+        public ObservableCollection<Guid> History { get; set; }
+
         public Project()
         {
-            Nodes = new ObservableCollection<Node>();
             Layout = new Layout();
+            Nodes = new ObservableCollection<Node>();
+            History = new ObservableCollection<Guid>();
         }
 
         public Project(string fileName) : base()

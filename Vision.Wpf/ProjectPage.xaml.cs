@@ -28,6 +28,7 @@ namespace Vision.Wpf
         public event PropertyChangedEventHandler PropertyChanged;
 
         public Project Project { get; set; }
+
         public ObservableCollection<NodeView> Nodes { get; set; }
 
         private Persistor persistor;
@@ -43,10 +44,11 @@ namespace Vision.Wpf
 
             persistor = new Persistor();
 
-            this.Project = project;
+            Project = project;
 
-            this.Nodes = NodeMappers.MapToView(project.Nodes);
-            this.TilesControl.Init(Nodes, Project);
+            Nodes = NodeMappers.MapToView(project.Nodes);
+
+            TilesControl.Init(Nodes, Project);
 
             InputBindings.Add(new KeyBinding(new ActionCommand(() => { Search(); }),
                 Key.F, ModifierKeys.Control));
@@ -82,6 +84,15 @@ namespace Vision.Wpf
                 _NavigationService = this.NavigationService;
                 _NavigationService.Navigating += NavigationService_Navigating;
                 HideScriptErrors(webBrowser, true);
+
+                foreach(var nodeId in Project.History)
+                {
+                    var nodeView = Nodes.FirstOrDefault(n => n.Id == nodeId);
+                    if(nodeView != null)
+                    {
+                        TilesControl.Model.HistoryNodes.Add(nodeView);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -115,7 +126,7 @@ namespace Vision.Wpf
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                //MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -392,6 +403,12 @@ namespace Vision.Wpf
 
         private void TilesControl_LinkClicked(NodeView nodeView)
         {
+            Project.History.Remove(nodeView.Id);
+            Project.History.Insert(0, nodeView.Id);
+            while (Project.History.Count > 7) {
+                var lastIndex = Project.History.Count - 1;
+                Project.History.RemoveAt(lastIndex);
+            }
             OpenLinkInWebBrowser(nodeView);
         }
 

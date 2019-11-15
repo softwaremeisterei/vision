@@ -33,8 +33,10 @@
                 <ColumnDefinition Width="100*"/>
                 <ColumnDefinition Width="200*"/>
             </Grid.ColumnDefinitions>
-            <local:TilesControl x:Name="TilesControl" Grid.Column="0" LinkClicked="TilesControl_LinkClicked">
-            </local:TilesControl>
+            <DockPanel>
+                <local:TilesControl x:Name="TilesControl" Grid.Column="0" LinkClicked="TilesControl_LinkClicked">
+                </local:TilesControl>
+            </DockPanel>
             <GridSplitter Width="8" Background="Blue" Margin="1.5,0,-1.5,0">
                 <GridSplitter.Template>
                     <ControlTemplate TargetType="{x:Type GridSplitter}">
