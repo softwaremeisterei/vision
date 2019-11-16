@@ -48,12 +48,12 @@
                 </GridSplitter.Template>
             </GridSplitter>
             <DockPanel Grid.Column="1">
-                <TextBlock Name="tbLinkTitle" DockPanel.Dock="Top"/>
+                <TextBlock Text="{Binding PageTitle}" DockPanel.Dock="Top"/>
                 <DockPanel DockPanel.Dock="Top">
                     <Button Name="btnBack" Content="⇦" Click="BtnBack_Click" DockPanel.Dock="Left" />
                     <Button Name="btnForward" Content="⇨" Click="BtnForward_Click" DockPanel.Dock="Left"/>
                     <Button Name="btnAddLink" Content="*" Click="BtnAddLink_Click" DockPanel.Dock="Right"/>
-                    <TextBox Name="tbLinkUrl" Width="Auto" Text="{Binding Url}" KeyDown="TextBoxUrl_KeyDown"/>
+                    <TextBox Width="Auto" Text="{Binding Url}" KeyDown="TextBoxUrl_KeyDown"/>
                 </DockPanel>
                 <WebBrowser Name="webBrowser" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" 
                             Navigating="WebBrowser_Navigating" Navigated="WebBrowser_Navigated" />

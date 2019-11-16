@@ -37,7 +37,13 @@ namespace Vision.Wpf.Model
 
         public String Shortcut
         {
-            get { return new string(Name.Split(' ').Select(tok => tok[0]).Where(c => Char.IsLetter(c)).Take(3).Select(c => Char.ToUpper(c)).ToArray());  }
+            get {
+                if (!string.IsNullOrWhiteSpace(name))
+                {
+                    return new string(Name.Split(' ').Select(tok => tok[0]).Where(c => Char.IsLetter(c)).Take(3).Select(c => Char.ToUpper(c)).ToArray());
+                }
+                else { return "-"; }
+            }
             set { }
         }
 
