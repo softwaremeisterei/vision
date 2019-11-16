@@ -176,6 +176,7 @@ namespace Vision.Wpf
                 Model.Nodes.Remove(nodeView);
                 project.Nodes.Remove(nodeView.Tag as Node);
                 DataChanged?.Invoke(this, new EventArgs());
+                Model.HistoryNodes.Remove(nodeView);
             }
             catch (Exception ex)
             {

@@ -12,9 +12,11 @@
             BorderThickness="1" UseLayoutRounding="True" 
             MouseDown="Border_MouseDown" Tag="{Binding NodeView}">
         <DockPanel>
-            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
-                <Image Source="{Binding NodeView.ImageSource, UpdateSourceTrigger=PropertyChanged}" Width="{Binding RelativeImageSize}" Height="{Binding RelativeImageSize}" />
-            </StackPanel>
+            <DockPanel DockPanel.Dock="Bottom">
+                <Image Source="{Binding NodeView.ImageSource, UpdateSourceTrigger=PropertyChanged}" Width="{Binding RelativeImageSize}" Height="{Binding RelativeImageSize}" DockPanel.Dock="Left" />
+                <TextBlock Text="{Binding NodeView.Shortcut}" Foreground="WhiteSmoke"  DockPanel.Dock="Right"/>
+                <TextBlock Text="" />
+            </DockPanel>
             <TextBlock Text="{Binding NodeView.Name}"
                 TextWrapping="Wrap"
                 FontSize="{Binding RelativeFontSize}" FontWeight="Normal"

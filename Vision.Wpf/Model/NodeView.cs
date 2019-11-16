@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Vision.Wpf.Model
 {
@@ -33,6 +34,13 @@ namespace Vision.Wpf.Model
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
             }
         }
+
+        public String Shortcut
+        {
+            get { return new string(Name.Split(' ').Select(tok => tok[0]).Where(c => Char.IsLetter(c)).Take(3).Select(c => Char.ToUpper(c)).ToArray());  }
+            set { }
+        }
+
         public string Url
         {
             get => url;

@@ -18,7 +18,7 @@
                 </StackPanel>
             </Expander>
             <!-- History -->
-            <Expander Header="History" DockPanel.Dock="Bottom">
+            <Expander Header="History" IsExpanded="True" DockPanel.Dock="Bottom">
                 <ItemsControl ItemsSource="{Binding Model.HistoryNodes}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
