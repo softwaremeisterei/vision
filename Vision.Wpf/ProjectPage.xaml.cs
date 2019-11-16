@@ -1,5 +1,6 @@
 ﻿using Microsoft.Expression.Interactivity.Core;
 using Microsoft.Win32;
+using mshtml;
 using Softwaremeisterei.Lib;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -29,7 +32,7 @@ namespace Vision.Wpf
 
         public Project Project { get; set; }
 
-        public ObservableCollection<NodeView> Nodes { get; set; }
+        public ObservableCollection<LinkView> Links { get; set; }
 
         private Persistor persistor;
 
@@ -46,9 +49,9 @@ namespace Vision.Wpf
 
             Project = project;
 
-            Nodes = NodeMappers.MapToView(project.Nodes);
+            Links = LinkMappers.MapToView(project.Links);
 
-            TilesControl.Init(Nodes, Project);
+            TilesControl.Init(Links, Project);
 
             InputBindings.Add(new KeyBinding(new ActionCommand(() => { Search(); }),
                 Key.F, ModifierKeys.Control));
@@ -85,14 +88,20 @@ namespace Vision.Wpf
                 _NavigationService.Navigating += NavigationService_Navigating;
                 HideScriptErrors(webBrowser, true);
 
-                foreach(var nodeId in Project.History)
+                foreach (var linkId in Project.History)
                 {
-                    var nodeView = Nodes.FirstOrDefault(n => n.Id == nodeId);
-                    if(nodeView != null)
+                    var linkView = Links.FirstOrDefault(n => n.Id == linkId);
+                    if (linkView != null)
                     {
-                        TilesControl.Model.HistoryNodes.Add(nodeView);
+                        TilesControl.Model.HistoryLinks.Add(linkView);
                     }
                 }
+
+                Task.Run(() =>
+                {
+                    Worker();
+                });
+
             }
             catch (Exception ex)
             {
@@ -114,14 +123,14 @@ namespace Vision.Wpf
                     return;
                 }
 
-                var nodeView = (NodeView)webBrowser.Tag;
+                var linkView = (LinkView)webBrowser.Tag;
                 webBrowser.Tag = null;
 
                 if (webBrowser.Document != null)
                 {
                     var newName = ((dynamic)webBrowser.Document).Title;
-                    nodeView.Name = newName;
-                    (nodeView.Tag as Node).Name = newName;
+                    linkView.Name = newName;
+                    (linkView.Tag as Link).Name = newName;
                 }
             }
             catch (Exception ex)
@@ -204,18 +213,18 @@ namespace Vision.Wpf
             }
         }
 
-        private void mnuAddTopLevelNode_Click(object sender, RoutedEventArgs e)
+        private void mnuAddLink_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var node = new Node
+                var link = new Link
                 {
                     Name = "Noname",
                 };
-                Project.Nodes.Add(node);
+                Project.Links.Add(link);
 
-                var nodeView = Global.Mapper.Map<NodeView>(node);
-                Nodes.Add(nodeView);
+                var linkView = Global.Mapper.Map<LinkView>(link);
+                Links.Add(linkView);
             }
             catch (Exception ex)
             {
@@ -223,13 +232,13 @@ namespace Vision.Wpf
             }
         }
 
-        private void ContextMenuNode_Edit(object sender, RoutedEventArgs e)
+        private void ContextMenuLink_Edit(object sender, RoutedEventArgs e)
         {
             try
             {
                 var menuItem = (MenuItem)sender;
-                var node = (NodeView)menuItem.Tag;
-                Shared.EditNode(Window.GetWindow(this), node);
+                var link = (LinkView)menuItem.Tag;
+                Shared.EditLink(Window.GetWindow(this), link);
             }
             catch (Exception ex)
             {
@@ -237,14 +246,14 @@ namespace Vision.Wpf
             }
         }
 
-        private void ContextMenuNode_AddNode(object sender, RoutedEventArgs e)
+        private void ContextMenuLink_AddLink(object sender, RoutedEventArgs e)
         {
             try
             {
                 var menuItem = (MenuItem)sender;
-                var parentFolderView = (NodeView)menuItem.Tag;
-                var nodeView = Shared.AddNewNode(Window.GetWindow(this));
-                Project.Nodes.Add(nodeView.Tag as Node);
+                var parentFolderView = (LinkView)menuItem.Tag;
+                var linkView = Shared.AddNewLink(Window.GetWindow(this));
+                Project.Links.Add(linkView.Tag as Link);
             }
             catch (Exception ex)
             {
@@ -252,14 +261,14 @@ namespace Vision.Wpf
             }
         }
 
-        private void ContextMenuNode_Delete(object sender, RoutedEventArgs e)
+        private void ContextMenuLink_Delete(object sender, RoutedEventArgs e)
         {
             try
             {
                 var menuItem = (MenuItem)sender;
-                var nodeView = (NodeView)menuItem.Tag;
-                Nodes.Remove(nodeView);
-                Project.Nodes.Remove(nodeView.Tag as Node);
+                var linkView = (LinkView)menuItem.Tag;
+                Links.Remove(linkView);
+                Project.Links.Remove(linkView.Tag as Link);
             }
             catch (Exception ex)
             {
@@ -267,13 +276,13 @@ namespace Vision.Wpf
             }
         }
 
-        private void ContextMenuNode_ToggleFavorite(object sender, RoutedEventArgs e)
+        private void ContextMenuLink_ToggleFavorite(object sender, RoutedEventArgs e)
         {
             try
             {
                 var menuItem = (MenuItem)sender;
-                var nodeView = (NodeView)menuItem.Tag;
-                Shared.ToggleFavorite(nodeView);
+                var linkView = (LinkView)menuItem.Tag;
+                Shared.ToggleFavorite(linkView);
             }
             catch (Exception ex)
             {
@@ -282,13 +291,13 @@ namespace Vision.Wpf
         }
 
 
-        private void Node_Click(object sender, RoutedEventArgs e)
+        private void Link_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 var hyperlink = (Hyperlink)sender;
-                var nodeView = (NodeView)hyperlink.Tag;
-                OpenLinkInWebBrowser(nodeView);
+                var linkView = (LinkView)hyperlink.Tag;
+                OpenLinkInWebBrowser(linkView);
                 var tvItem = WpfHelper.GetParentOfType<TreeViewItem>(hyperlink.Parent);
                 if (tvItem != null)
                 {
@@ -315,16 +324,6 @@ namespace Vision.Wpf
 
                 if (dlg.ShowDialog() == true)
                 {
-                    var migration = new Migration1();
-                    var newNodes = new List<Node>();
-                    migration.Migrate(dlg.FileName, newNodes);
-                    newNodes.ForEach(node =>
-                    {
-                        Project.Nodes.Add(node);
-                        var nodeView = Global.Mapper.Map<NodeView>(node);
-                        nodeView.Tag = node;
-                        Nodes.Add(nodeView);
-                    });
                 }
             }
             catch (Exception ex)
@@ -337,9 +336,9 @@ namespace Vision.Wpf
         {
             if (e.Key == Key.Enter)
             {
-                if (!string.IsNullOrEmpty(tbUrl.Text))
+                if (!string.IsNullOrEmpty(tbLinkUrl.Text))
                 {
-                    var builder = new UriBuilder(tbUrl.Text);
+                    var builder = new UriBuilder(tbLinkUrl.Text);
                     webBrowser.Tag = null;
                     webBrowser.Navigate(builder.Uri);
                 }
@@ -401,25 +400,26 @@ namespace Vision.Wpf
             window.Top = (screenHeight / 2) - (windowHeight / 2);
         }
 
-        private void TilesControl_LinkClicked(NodeView nodeView)
+        private void TilesControl_LinkClicked(LinkView linkView)
         {
-            Project.History.Remove(nodeView.Id);
-            Project.History.Insert(0, nodeView.Id);
-            while (Project.History.Count > 7) {
+            Project.History.Remove(linkView.Id);
+            Project.History.Insert(0, linkView.Id);
+            while (Project.History.Count > 7)
+            {
                 var lastIndex = Project.History.Count - 1;
                 Project.History.RemoveAt(lastIndex);
             }
-            OpenLinkInWebBrowser(nodeView);
+            OpenLinkInWebBrowser(linkView);
         }
 
-        private void OpenLinkInWebBrowser(NodeView nodeView)
+        private void OpenLinkInWebBrowser(LinkView linkView)
         {
             try
             {
-                var url = Urls.NormalizeUrl(nodeView.Url);
+                var url = Urls.NormalizeUrl(linkView.Url);
                 if (url != null)
                 {
-                    webBrowser.Tag = nodeView;
+                    webBrowser.Tag = linkView;
                     webBrowser.Navigate(url);
                 }
             }
@@ -447,13 +447,51 @@ namespace Vision.Wpf
 
         private void WebBrowser_Navigated(object sender, NavigationEventArgs e)
         {
+            try
+            {
+            }
+            catch { }
             UpdateEnablingWebBrowserNavButtons();
+        }
+
+        private void Worker()
+        {
+            while (true)
+            {
+                try
+                {
+                    this.Dispatcher.Invoke((Action)(() =>
+                    {
+                        try
+                        {
+                            var doc = webBrowser.Document as IHTMLDocument2;
+
+                            if (doc != null)
+                            {
+                                if (tbLinkUrl.Text != webBrowser.Source.AbsoluteUri)
+                                    tbLinkUrl.Text = webBrowser.Source.AbsoluteUri;
+                                if (tbLinkTitle.Text != doc.title)
+                                    tbLinkTitle.Text = doc.title;
+                            }
+                        }
+                        catch { }
+                    }));
+
+                    Thread.Sleep(500);
+                }
+                catch { }
+            }
         }
 
         private void UpdateEnablingWebBrowserNavButtons()
         {
             btnBack.IsEnabled = webBrowser.CanGoBack;
             btnForward.IsEnabled = webBrowser.CanGoForward;
+        }
+
+        private void BtnAddLink_Click(object sender, RoutedEventArgs e)
+        {
+            TilesControl.AddNewLink(tbLinkTitle.Text, tbLinkUrl.Text);
         }
     }
 }

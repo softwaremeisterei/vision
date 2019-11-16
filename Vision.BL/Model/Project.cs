@@ -9,14 +9,14 @@ namespace Vision.BL.Model
         public bool AutoSave { get; set; }
         public bool Incognito { get; set; }
         public Layout Layout { get; set; }
-        public ObservableCollection<Node> Nodes { get; set; }
+        public ObservableCollection<Link> Links { get; set; }
 
         public ObservableCollection<Guid> History { get; set; }
 
         public Project()
         {
             Layout = new Layout();
-            Nodes = new ObservableCollection<Node>();
+            Links = new ObservableCollection<Link>();
             History = new ObservableCollection<Guid>();
         }
 

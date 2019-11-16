@@ -12,39 +12,39 @@ namespace Vision.Wpf
 {
     public class Shared
     {
-        public static NodeView AddNewNode(Window owner)
+        public static LinkView AddNewLink(Window owner)
         {
-            var newNode = new Node
+            var newLink = new Link
             {
                 Name = "Noname",
             };
-            var newNodeView = Global.Mapper.Map<NodeView>(newNode);
-            newNodeView.Tag = newNode;
-            Shared.EditNode(owner, newNodeView);
-            return newNodeView;
+            var newLinkView = Global.Mapper.Map<LinkView>(newLink);
+            newLinkView.Tag = newLink;
+            Shared.EditLink(owner, newLinkView);
+            return newLinkView;
         }
 
-        public static void EditNode(Window owner, NodeView nodeView)
+        public static void EditLink(Window owner, LinkView linkView)
         {
-            var dlg = new EditNodeWindow(nodeView)
+            var dlg = new EditLinkWindow(linkView)
             {
                 Owner = owner,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             dlg.ShowDialog();
-            CopyToNodeBehind(nodeView);
+            CopyToLinkBehind(linkView);
         }
 
-        public static void ToggleFavorite(NodeView nodeView)
+        public static void ToggleFavorite(LinkView linkView)
         {
-            nodeView.IsFavorite = !nodeView.IsFavorite;
-            nodeView.ImageSource = nodeView.IsFavorite ? Global.FavoriteStarUri : "";
-            CopyToNodeBehind(nodeView);
+            linkView.IsFavorite = !linkView.IsFavorite;
+            linkView.ImageSource = linkView.IsFavorite ? Global.FavoriteStarUri : "";
+            CopyToLinkBehind(linkView);
         }
 
-        private static void CopyToNodeBehind(NodeView nodeView)
+        private static void CopyToLinkBehind(LinkView linkView)
         {
-            Global.Mapper.Map(nodeView, nodeView.Tag as Node);
+            Global.Mapper.Map(linkView, linkView.Tag as Link);
         }
 
     }

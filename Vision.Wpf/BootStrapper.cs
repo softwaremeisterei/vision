@@ -15,12 +15,12 @@ namespace Vision.Wpf
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<Node, NodeView>()
-                    .ForMember(nameof(NodeView.Icon), src => src.MapFrom(o => "≡"))
-                    .ForMember(nameof(NodeView.ImageSource), src => src.MapFrom(o => o.IsFavorite ? Global.FavoriteStarUri : ""))
-                    .ForMember(nameof(NodeView.Tag), src => src.MapFrom(o => o));
+                cfg.CreateMap<Link, LinkView>()
+                    .ForMember(nameof(LinkView.Icon), src => src.MapFrom(o => "≡"))
+                    .ForMember(nameof(LinkView.ImageSource), src => src.MapFrom(o => o.IsFavorite ? Global.FavoriteStarUri : ""))
+                    .ForMember(nameof(LinkView.Tag), src => src.MapFrom(o => o));
 
-                cfg.CreateMap<NodeView, Node>();
+                cfg.CreateMap<LinkView, Link>();
             });
 
             Global.Mapper = config.CreateMapper();

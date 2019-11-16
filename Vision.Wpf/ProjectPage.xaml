@@ -12,14 +12,14 @@
       Loaded="Page_Loaded" Unloaded="Page_Unloaded">
     <Page.Resources>
         <Style x:Key="HyperLinkStyle" TargetType="Hyperlink">
-            <EventSetter Event="Hyperlink.Click" Handler="Node_Click"></EventSetter>
+            <EventSetter Event="Hyperlink.Click" Handler="Link_Click"></EventSetter>
         </Style>
     </Page.Resources>
     <DockPanel>
         <ToolBar DockPanel.Dock="Top">
             <Menu Margin="0,0,0,0" Height="22" Name="menu1" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                 <MenuItem Header="Content" Height="20">
-                    <MenuItem Header="Add toplevel node" HorizontalAlignment="Left" Click="mnuAddTopLevelNode_Click" />
+                    <MenuItem Header="Add link" HorizontalAlignment="Left" Click="mnuAddLink_Click" />
                 </MenuItem>
                 <MenuItem Header="Import old format project" HorizontalAlignment="Left" Click="mnuImportOldFormatProject_Click" />
                 <MenuItem Header="View" Height="20">
@@ -48,12 +48,15 @@
                 </GridSplitter.Template>
             </GridSplitter>
             <DockPanel Grid.Column="1">
+                <TextBlock Name="tbLinkTitle" DockPanel.Dock="Top"/>
                 <DockPanel DockPanel.Dock="Top">
                     <Button Name="btnBack" Content="⇦" Click="BtnBack_Click" DockPanel.Dock="Left" />
                     <Button Name="btnForward" Content="⇨" Click="BtnForward_Click" DockPanel.Dock="Left"/>
-                    <TextBox Name="tbUrl" Width="Auto" Text="{Binding Url}" KeyDown="TextBoxUrl_KeyDown"/>
+                    <Button Name="btnAddLink" Content="*" Click="BtnAddLink_Click" DockPanel.Dock="Right"/>
+                    <TextBox Name="tbLinkUrl" Width="Auto" Text="{Binding Url}" KeyDown="TextBoxUrl_KeyDown"/>
                 </DockPanel>
-                <WebBrowser Name="webBrowser" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Navigating="WebBrowser_Navigating" Navigated="WebBrowser_Navigated" />
+                <WebBrowser Name="webBrowser" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" 
+                            Navigating="WebBrowser_Navigating" Navigated="WebBrowser_Navigated" />
             </DockPanel>
         </Grid>
     </DockPanel>

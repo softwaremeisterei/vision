@@ -21,25 +21,25 @@ namespace Vision.Wpf
         {
             public event PropertyChangedEventHandler PropertyChanged;
 
-            private ObservableCollection<NodeView> nodes;
-            public ObservableCollection<NodeView> Nodes
+            private ObservableCollection<LinkView> links;
+            public ObservableCollection<LinkView> Links
             {
-                get => nodes;
+                get => links;
                 set
                 {
-                    nodes = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Nodes)));
+                    links = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Links)));
                 }
             }
 
-            private ObservableCollection<NodeView> historyNodes;
-            public ObservableCollection<NodeView> HistoryNodes
+            private ObservableCollection<LinkView> historyLinks;
+            public ObservableCollection<LinkView> HistoryLinks
             {
-                get => historyNodes;
+                get => historyLinks;
                 set
                 {
-                    historyNodes = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HistoryNodes)));
+                    historyLinks = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HistoryLinks)));
                 }
             }
         }
@@ -51,7 +51,7 @@ namespace Vision.Wpf
         public delegate void DataChangedEventHandler(object sender, EventArgs e);
         public event DataChangedEventHandler DataChanged;
 
-        public delegate void LinkClickedHandler(NodeView nodeView);
+        public delegate void LinkClickedHandler(LinkView linkView);
         public event LinkClickedHandler LinkClicked;
 
         public TilesControl()
@@ -60,24 +60,24 @@ namespace Vision.Wpf
             this.Model = new ViewModel();
         }
 
-        public void Init(ObservableCollection<NodeView> nodes, Project project)
+        public void Init(ObservableCollection<LinkView> linkViews, Project project)
         {
             this.Model = new ViewModel
             {
-                Nodes = nodes,
-                HistoryNodes = new ObservableCollection<NodeView>()
+                Links = linkViews,
+                HistoryLinks = new ObservableCollection<LinkView>()
             };
             this.project = project;
             DataContext = this;
         }
 
-        private void ContextMenuNode_Edit(object sender, RoutedEventArgs e)
+        private void ContextMenuLink_Edit(object sender, RoutedEventArgs e)
         {
             try
             {
                 var menuItem = (MenuItem)sender;
-                var nodeView = (NodeView)menuItem.Tag;
-                Shared.EditNode(Window.GetWindow(this), nodeView);
+                var linkView = (LinkView)menuItem.Tag;
+                Shared.EditLink(Window.GetWindow(this), linkView);
                 DataChanged?.Invoke(this, new EventArgs());
             }
             catch (Exception ex)
@@ -86,13 +86,13 @@ namespace Vision.Wpf
             }
         }
 
-        private void ContextMenu_AddNode(object sender, RoutedEventArgs e)
+        private void ContextMenu_AddLink(object sender, RoutedEventArgs e)
         {
             try
             {
-                var nodeView = Shared.AddNewNode(Window.GetWindow(this));
-                Model.Nodes.Add(nodeView);
-                project.Nodes.Add(nodeView.Tag as Node);
+                var linkView = Shared.AddNewLink(Window.GetWindow(this));
+                Model.Links.Add(linkView);
+                project.Links.Add(linkView.Tag as Link);
                 DataChanged?.Invoke(this, new EventArgs());
             }
             catch (Exception ex)
@@ -101,13 +101,13 @@ namespace Vision.Wpf
             }
         }
 
-        private void ContextMenuNode_ToggleFavorite(object sender, RoutedEventArgs e)
+        private void ContextMenuLink_ToggleFavorite(object sender, RoutedEventArgs e)
         {
             try
             {
                 var menuItem = (MenuItem)sender;
-                var nodeView = (NodeView)menuItem.Tag;
-                Shared.ToggleFavorite(nodeView);
+                var linkView = (LinkView)menuItem.Tag;
+                Shared.ToggleFavorite(linkView);
                 DataChanged?.Invoke(this, new EventArgs());
             }
             catch (Exception ex)
@@ -133,55 +133,62 @@ namespace Vision.Wpf
 
         private void ApplyFilter()
         {
-            Model.Nodes.Clear();
+            Model.Links.Clear();
 
-            var nodes = new List<Node>(project.Nodes);
+            var links = new List<Link>(project.Links);
 
 
             if (ckFavorites.IsChecked ?? false)
             {
-                nodes.RemoveAll(n => !n.IsFavorite);
+                links.RemoveAll(n => !n.IsFavorite);
             }
 
             if (tbSearch.Text.Length > 0)
             {
-                nodes.RemoveAll(n => n.Name.IndexOf(tbSearch.Text, StringComparison.OrdinalIgnoreCase) < 0);
+                links.RemoveAll(n => n.Name.IndexOf(tbSearch.Text, StringComparison.OrdinalIgnoreCase) < 0);
             }
 
-            var nodeViews = NodeMappers.MapToView(nodes);
+            var linkViews = LinkMappers.MapToView(links);
 
-            foreach (var nodeView in nodeViews)
+            foreach (var linkView in linkViews)
             {
-                Model.Nodes.Add(nodeView);
+                Model.Links.Add(linkView);
             }
         }
 
-        private void SingleTileControl_LinkClicked(NodeView nodeView)
+        private void SingleTileControl_LinkClicked(LinkView linkView)
         {
-            Model.HistoryNodes.Remove(nodeView);
-            Model.HistoryNodes.Insert(0, nodeView);
-            while (Model.HistoryNodes.Count > 7)
+            Model.HistoryLinks.Remove(linkView);
+            Model.HistoryLinks.Insert(0, linkView);
+            while (Model.HistoryLinks.Count > 7)
             {
-                var lastIndex = Model.HistoryNodes.Count - 1;
-                Model.HistoryNodes.RemoveAt(lastIndex);
+                var lastIndex = Model.HistoryLinks.Count - 1;
+                Model.HistoryLinks.RemoveAt(lastIndex);
             }
-            LinkClicked?.Invoke(nodeView);
+            LinkClicked?.Invoke(linkView);
         }
 
         private void SingleTileControl_DeleteMe(object sender, EventArgs e)
         {
             try
             {
-                var nodeView = (sender as SingleTileControl).NodeView;
-                Model.Nodes.Remove(nodeView);
-                project.Nodes.Remove(nodeView.Tag as Node);
+                var linkView = (sender as SingleTileControl).LinkView;
+                Model.Links.Remove(linkView);
+                project.Links.Remove(linkView.Tag as Link);
                 DataChanged?.Invoke(this, new EventArgs());
-                Model.HistoryNodes.Remove(nodeView);
+                Model.HistoryLinks.Remove(linkView);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        public void AddNewLink(string name, string url)
+        {
+            var link = new Link { Name = name, Url = url };
+            project.Links.Add(link);
+            Model.Links.Add(LinkMappers.MapToView(link));
         }
     }
 }

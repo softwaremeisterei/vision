@@ -21,7 +21,7 @@ namespace Vision.Wpf
     /// </summary>
     public partial class SingleTileControl : UserControl
     {
-        public delegate void LinkClickedHandler(NodeView nodeView);
+        public delegate void LinkClickedHandler(LinkView linkView);
         public event LinkClickedHandler LinkClicked;
 
         public delegate void DataChangedEventHandler(object sender, EventArgs e);
@@ -30,8 +30,8 @@ namespace Vision.Wpf
         public delegate void DeleteMeEventHandler(object sender, EventArgs e);
         public event DeleteMeEventHandler DeleteMe;
 
-        public static readonly DependencyProperty NodeViewProperty = 
-            DependencyProperty.Register("NodeView", typeof(NodeView), typeof(SingleTileControl), new PropertyMetadata(default(NodeView)));
+        public static readonly DependencyProperty LinkViewProperty = 
+            DependencyProperty.Register("LinkView", typeof(LinkView), typeof(SingleTileControl), new PropertyMetadata(default(LinkView)));
 
         public static readonly DependencyProperty SizeProperty = 
             DependencyProperty.Register("Size", typeof(int), typeof(SingleTileControl), new PropertyMetadata(default(int)));
@@ -45,10 +45,10 @@ namespace Vision.Wpf
 
         public int RelativeImageSize { get { return Size / 7; } set { } }
 
-        public NodeView NodeView
+        public LinkView LinkView
         {
-            get { return (NodeView)GetValue(NodeViewProperty); }
-            set { SetValue(NodeViewProperty, value); }
+            get { return (LinkView)GetValue(LinkViewProperty); }
+            set { SetValue(LinkViewProperty, value); }
         }
 
         public SingleTileControl()
@@ -57,13 +57,13 @@ namespace Vision.Wpf
             LayoutRoot.DataContext = this;
         }
 
-        private void ContextMenuNode_Edit(object sender, RoutedEventArgs e)
+        private void ContextMenu_Edit(object sender, RoutedEventArgs e)
         {
             try
             {
                 var menuItem = (MenuItem)sender;
-                var nodeView = (NodeView)menuItem.Tag;
-                Shared.EditNode(Window.GetWindow(this), nodeView);
+                var linkView = (LinkView)menuItem.Tag;
+                Shared.EditLink(Window.GetWindow(this), linkView);
                 DataChanged?.Invoke(this, new EventArgs());
             }
             catch (Exception ex)
@@ -72,13 +72,13 @@ namespace Vision.Wpf
             }
         }
 
-        private void ContextMenuNode_ToggleFavorite(object sender, RoutedEventArgs e)
+        private void ContextMenu_ToggleFavorite(object sender, RoutedEventArgs e)
         {
             try
             {
                 var menuItem = (MenuItem)sender;
-                var nodeView = (NodeView)menuItem.Tag;
-                Shared.ToggleFavorite(nodeView);
+                var linkView = (LinkView)menuItem.Tag;
+                Shared.ToggleFavorite(linkView);
                 DataChanged?.Invoke(this, new EventArgs());
             }
             catch (Exception ex)
@@ -87,7 +87,7 @@ namespace Vision.Wpf
             }
         }
 
-        private void ContextMenuNode_Delete(object sender, RoutedEventArgs e)
+        private void ContextMenu_Delete(object sender, RoutedEventArgs e)
         {
             DeleteMe?.Invoke(this, new EventArgs());
         }
@@ -97,8 +97,8 @@ namespace Vision.Wpf
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 var uiElement = sender as Border;
-                var nodeView = uiElement.Tag as NodeView;
-                LinkClicked?.Invoke(nodeView);
+                var linkView = uiElement.Tag as LinkView;
+                LinkClicked?.Invoke(linkView);
                 e.Handled = true;
             }
         }

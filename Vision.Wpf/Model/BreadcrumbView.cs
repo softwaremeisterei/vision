@@ -8,11 +8,11 @@ namespace Vision.Wpf.Model
 {
     public class BreadcrumbView
     {
-        public NodeView NodeView { get; set; }
+        public LinkView LinkView { get; set; }
 
-        public BreadcrumbView(NodeView nodeView)
+        public BreadcrumbView(LinkView linkView)
         {
-            NodeView = nodeView;
+            LinkView = linkView;
         }
     }
 }

@@ -19,7 +19,7 @@
             </Expander>
             <!-- History -->
             <Expander Header="History" IsExpanded="True" DockPanel.Dock="Bottom">
-                <ItemsControl ItemsSource="{Binding Model.HistoryNodes}">
+                <ItemsControl ItemsSource="{Binding Model.HistoryLinks}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel/>
@@ -27,7 +27,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <local:SingleTileControl NodeView="{Binding}" Size="80" ToolTip="{Binding Path=Name}"
+                            <local:SingleTileControl LinkView="{Binding}" Size="80" ToolTip="{Binding Path=Name}"
                                 LinkClicked="SingleTileControl_LinkClicked"
                                 DeleteMe="SingleTileControl_DeleteMe"/>
                         </DataTemplate>
@@ -36,7 +36,7 @@
             </Expander>
             <!-- ScrollView -->
             <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding Model.Nodes}">
+                <ItemsControl ItemsSource="{Binding Model.Links}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel/>
@@ -45,7 +45,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <local:SingleTileControl 
-                                NodeView="{Binding}" Size="120" 
+                                LinkView="{Binding}" Size="120" 
                                 LinkClicked="SingleTileControl_LinkClicked"
                                 DeleteMe="SingleTileControl_DeleteMe">
                             </local:SingleTileControl>
@@ -54,7 +54,7 @@
                 </ItemsControl>
                 <ScrollViewer.ContextMenu>
                     <ContextMenu Name="foo">
-                        <MenuItem Tag="{Binding}" Header="Add node" Click="ContextMenu_AddNode" />
+                        <MenuItem Tag="{Binding}" Header="Add link" Click="ContextMenu_AddLink" />
                     </ContextMenu>
                 </ScrollViewer.ContextMenu>
             </ScrollViewer>

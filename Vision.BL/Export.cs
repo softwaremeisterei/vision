@@ -8,29 +8,29 @@ namespace Vision.BL
 {
     public class Export
     {
-        public static void ToTextFile(ObservableCollection<Node> nodes, string filename)
+        public static void ToTextFile(ObservableCollection<Link> link, string filename)
         {
             using (var stream = new FileStream(filename, FileMode.Create))
             {
                 using (var writer = new StreamWriter(stream))
                 {
-                    Write(nodes, writer, 0);
+                    Write(link, writer, 0);
                 }
             }
         }
 
-        private static void Write(ObservableCollection<Node> nodes, StreamWriter writer, int indent)
+        private static void Write(ObservableCollection<Link> links, StreamWriter writer, int indent)
         {
             var indentSpaces = new String(' ', indent * 4);
             var indentSpacesContent = new String(' ', (indent + 1) * 4);
 
-            foreach (var node in nodes)
+            foreach (var link in links)
             {
-                writer.WriteLine("{0}+ {1}", indentSpaces, node.Name);
+                writer.WriteLine("{0}+ {1}", indentSpaces, link.Name);
 
-                if (!string.IsNullOrWhiteSpace(node.Url))
+                if (!string.IsNullOrWhiteSpace(link.Url))
                 {
-                    writer.WriteLine("{0}{1}", indentSpacesContent, node.Url);
+                    writer.WriteLine("{0}{1}", indentSpacesContent, link.Url);
                 }
             }
         }
