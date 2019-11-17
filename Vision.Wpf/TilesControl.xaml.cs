@@ -148,7 +148,7 @@ namespace Vision.Wpf
                 links.RemoveAll(n => n.Name.IndexOf(tbSearch.Text, StringComparison.OrdinalIgnoreCase) < 0);
             }
 
-            var linkViews = LinkMappers.MapToView(links);
+            var linkViews = LinkMappers.MapToView(links.OrderBy(link => link.Name));
 
             foreach (var linkView in linkViews)
             {

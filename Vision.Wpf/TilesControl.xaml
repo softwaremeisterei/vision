@@ -45,7 +45,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <local:SingleTileControl 
-                                LinkView="{Binding}" Size="120" 
+                                LinkView="{Binding}" Size="150" 
                                 LinkClicked="SingleTileControl_LinkClicked"
                                 DeleteMe="SingleTileControl_DeleteMe">
                             </local:SingleTileControl>

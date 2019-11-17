@@ -8,9 +8,15 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Border x:Name="LayoutRoot" 
             Margin="0,0,5,5" Width="{Binding Size}" Height="{Binding Size}"
-            BorderBrush="Black" Background="#038387"
+            BorderBrush="Black" CornerRadius="4"
             BorderThickness="1" UseLayoutRounding="True" 
             MouseDown="Border_MouseDown" Tag="{Binding LinkView}">
+        <Border.Background>
+            <LinearGradientBrush EndPoint="0,0.5" StartPoint="1,0.5">
+                <GradientStop Color="#20507C" Offset="0"/>
+                <GradientStop Color="#3C7198" Offset="0.567"/>
+            </LinearGradientBrush>
+        </Border.Background>
         <DockPanel>
             <DockPanel DockPanel.Dock="Bottom">
                 <Image Source="{Binding LinkView.ImageSource, UpdateSourceTrigger=PropertyChanged}" Width="{Binding RelativeImageSize}" Height="{Binding RelativeImageSize}" DockPanel.Dock="Left" />

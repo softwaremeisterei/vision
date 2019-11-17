@@ -67,7 +67,6 @@ namespace Vision.Wpf
 
         private Timer timer;
 
-
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             try
