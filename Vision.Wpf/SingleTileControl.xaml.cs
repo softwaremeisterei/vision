@@ -92,15 +92,11 @@ namespace Vision.Wpf
             DeleteMe?.Invoke(this, new EventArgs());
         }
 
-        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                var uiElement = sender as Border;
-                var linkView = uiElement.Tag as LinkView;
-                LinkClicked?.Invoke(linkView);
-                e.Handled = true;
-            }
+            var uiElement = sender as Button;
+            var linkView = uiElement.Tag as LinkView;
+            LinkClicked?.Invoke(linkView);
         }
     }
 }
