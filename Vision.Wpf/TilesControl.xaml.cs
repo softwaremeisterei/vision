@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Vision.BL.Lib;
 using Vision.BL.Model;
 using Vision.Wpf.Mappers;
 using Vision.Wpf.Model;
@@ -189,6 +190,24 @@ namespace Vision.Wpf
             var link = new Link { Name = name, Url = url };
             project.Links.Add(link);
             Model.Links.Add(LinkMappers.MapToView(link));
+        }
+
+        private void UserControl_Drop(object sender, DragEventArgs e)
+        {
+            var data = e.Data;
+            var formats = e.Data.GetFormats();
+            if (formats.Contains("Text"))
+            {
+                var text = e.Data.GetData("Text") as string;
+
+                if (Regexes.URL.IsMatch(text))
+                {
+                    var linkView = Shared.AddNewLink(Window.GetWindow(this), text);
+                    Model.Links.Add(linkView);
+                    project.Links.Add(linkView.Tag as Link);
+                    DataChanged?.Invoke(this, new EventArgs());
+                }
+            }
         }
     }
 }

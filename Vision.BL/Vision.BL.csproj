@@ -47,6 +47,7 @@
     <Compile Include="Export.cs" />
     <Compile Include="Lib\KeyHelper.cs" />
     <Compile Include="Lib\Paths.cs" />
+    <Compile Include="Lib\Regexes.cs" />
     <Compile Include="Lib\RichTextStripper.cs" />
     <Compile Include="Lib\Serialization.cs" />
     <Compile Include="Lib\StringExtensions.cs" />

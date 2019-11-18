@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:Vision.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             Background="#0A2F51" Foreground="White">
+             Background="#0A2F51" Foreground="White"
+             AllowDrop="True" Drop="UserControl_Drop">
     <DockPanel>
         <DockPanel DockPanel.Dock="Left">
             <Expander Header="Filter" DockPanel.Dock="Top" Foreground="White">

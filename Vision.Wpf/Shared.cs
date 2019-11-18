@@ -12,11 +12,12 @@ namespace Vision.Wpf
 {
     public class Shared
     {
-        public static LinkView AddNewLink(Window owner)
+        public static LinkView AddNewLink(Window owner, string url = null)
         {
             var newLink = new Link
             {
                 Name = "Noname",
+                Url = url
             };
             var newLinkView = Global.Mapper.Map<LinkView>(newLink);
             newLinkView.Tag = newLink;

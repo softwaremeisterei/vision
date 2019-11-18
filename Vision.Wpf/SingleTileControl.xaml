@@ -10,6 +10,7 @@
             Margin="0,0,5,5" Width="{Binding Size}" Height="{Binding Size}"
             BorderBrush="Black"
             BorderThickness="1" UseLayoutRounding="True" 
+            ToolTip="{Binding LinkView.Url}"
             Click="Button_Click" Tag="{Binding LinkView}">
         <Button.Background>
             <LinearGradientBrush EndPoint="0,0.5" StartPoint="1,0.5">

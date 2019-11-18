@@ -154,7 +154,7 @@ namespace Vision.Wpf
                 webBrowser.Tag = null;
                 var doc = webBrowser.Document as IHTMLDocument2;
 
-                if (doc != null && string.Equals(linkView.Url, doc.url))
+                if (doc != null)
                 {
                     var newName = doc.title;
                     linkView.Name = newName;

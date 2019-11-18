@@ -94,8 +94,8 @@ namespace Vision.Wpf
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var uiElement = sender as Button;
-            var linkView = uiElement.Tag as LinkView;
+            var button = sender as Button;
+            var linkView = button.Tag as LinkView;
             LinkClicked?.Invoke(linkView);
         }
     }
