@@ -16,6 +16,9 @@
                     <MenuItem Header="New Project..." HorizontalAlignment="Left" Click="mnuFileNewProject_Click" />
                     <MenuItem Header="Open Project..." HorizontalAlignment="Left" Click="mnuFileOpenProject_Click" />
                 </MenuItem>
+                <MenuItem Header="View" Height="20">
+                    <MenuItem Header="Start Page" HorizontalAlignment="Left" Click="mnuViewStartPage_Click" />
+                </MenuItem>
             </Menu>
             <Border BorderThickness="1" Margin="0,22,0,0"
                     BorderBrush="DarkGray">

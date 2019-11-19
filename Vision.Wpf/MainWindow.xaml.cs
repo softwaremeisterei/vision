@@ -50,5 +50,11 @@ namespace Vision.Wpf
         {
             frame.Navigate(new StartPage());
         }
+
+        private void mnuViewStartPage_Click(object sender, RoutedEventArgs e)
+        {
+            var page = new StartPage();
+            this.NavigationService.Navigate(page);
+        }
     }
 }
