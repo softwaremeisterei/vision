@@ -30,7 +30,10 @@ namespace Vision.Wpf
             DataContext = LinkView;
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
-        { }
+        {
+            tbUrl.Focus();
+            tbUrl.SelectAll();
+        }
 
         private void BtnOK_Click(object sender, RoutedEventArgs e)
         {
@@ -38,5 +41,43 @@ namespace Vision.Wpf
             DialogResult = true;
         }
 
+        private void AddTag_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new PromptWindow("Add tag");
+            dlg.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            if (dlg.ShowDialog() == true)
+            {
+                LinkView.Tags.Add(dlg.ResponseText);
+            }
+        }
+
+        private void EditTag_Click(object sender, RoutedEventArgs e)
+        {
+            var index = lbTags.SelectedIndex;
+            if (index >= 0)
+            {
+                var dlg = new PromptWindow("Edit tag", null, lbTags.Items[index].ToString());
+                dlg.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                if (dlg.ShowDialog() == true)
+                {
+                    LinkView.Tags[index] = dlg.ResponseText;
+                }
+            }
+        }
+
+        private void RemoveTag_Click(object sender, RoutedEventArgs e)
+        {
+            var index = lbTags.SelectedIndex;
+            if (index >= 0)
+            {
+                LinkView.Tags.RemoveAt(index);
+            }
+        }
+
+        private void BtnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
+        }
     }
 }
