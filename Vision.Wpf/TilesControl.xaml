@@ -56,7 +56,7 @@
                 </ItemsControl>
                 <ScrollViewer.ContextMenu>
                     <ContextMenu Name="foo">
-                        <MenuItem Tag="{Binding}" Header="Add link" Click="ContextMenu_AddLink" />
+                        <MenuItem Tag="{Binding}" Header="Add" Click="ContextMenu_AddLink" />
                     </ContextMenu>
                 </ScrollViewer.ContextMenu>
             </ScrollViewer>

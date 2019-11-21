@@ -16,9 +16,8 @@ namespace Vision.Wpf
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Link, LinkView>()
-                    .ForMember(nameof(LinkView.Icon), src => src.MapFrom(o => "≡"))
-                    .ForMember(nameof(LinkView.ImageSource), src => src.MapFrom(o => o.IsFavorite ? Global.FavoriteStarUri : ""))
-                    .ForMember(nameof(LinkView.Tag), src => src.MapFrom(o => o));
+                    .ForMember(nameof(LinkView.Tag), src => src.MapFrom(o => o))
+                    .ForMember(nameof(LinkView.Icon), src => src.MapFrom(o => "≡"));
 
                 cfg.CreateMap<LinkView, Link>();
             });

@@ -39,7 +39,6 @@ namespace Vision.Wpf
         public static void ToggleFavorite(LinkView linkView)
         {
             linkView.IsFavorite = !linkView.IsFavorite;
-            linkView.ImageSource = linkView.IsFavorite ? Global.FavoriteStarUri : "";
             CopyToLinkBehind(linkView);
         }
 

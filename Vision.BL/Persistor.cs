@@ -1,10 +1,7 @@
 ﻿using Softwaremeisterei.Lib;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Vision.BL.Model;
 using Vision.Data;
 
@@ -32,6 +29,7 @@ namespace Vision.BL
         public Project LoadProject(string filename)
         {
             var result = _storage.Load<Project>(filename);
+            result.Path = filename;
             return result;
         }
 

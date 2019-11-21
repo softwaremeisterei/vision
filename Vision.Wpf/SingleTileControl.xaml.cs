@@ -43,7 +43,7 @@ namespace Vision.Wpf
 
         public int RelativeFontSize { get { return Size / 9; } set { } }
 
-        public int RelativeImageSize { get { return Size / 7; } set { } }
+        public int RelativeImageSize { get { return Size / 12; } set { } }
 
         public LinkView LinkView
         {
@@ -64,21 +64,6 @@ namespace Vision.Wpf
                 var menuItem = (MenuItem)sender;
                 var linkView = (LinkView)menuItem.Tag;
                 Shared.EditLink(Window.GetWindow(this), linkView);
-                DataChanged?.Invoke(this, new EventArgs());
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void ContextMenu_ToggleFavorite(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var menuItem = (MenuItem)sender;
-                var linkView = (LinkView)menuItem.Tag;
-                Shared.ToggleFavorite(linkView);
                 DataChanged?.Invoke(this, new EventArgs());
             }
             catch (Exception ex)

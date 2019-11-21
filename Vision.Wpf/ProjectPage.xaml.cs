@@ -273,20 +273,6 @@ namespace Vision.Wpf
             }
         }
 
-        private void ContextMenuLink_ToggleFavorite(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var menuItem = (MenuItem)sender;
-                var linkView = (LinkView)menuItem.Tag;
-                Shared.ToggleFavorite(linkView);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         private void Link_Click(object sender, RoutedEventArgs e)
         {
             try

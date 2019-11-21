@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using Vision.BL.Model;
 
 namespace Vision.Wpf.Model
 {
@@ -12,7 +13,6 @@ namespace Vision.Wpf.Model
         private string url;
         private bool isFavorite;
         private string icon;
-        private string imageSource;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -22,6 +22,7 @@ namespace Vision.Wpf.Model
             set
             {
                 id = value;
+                if (Tag != null) Tag.Id = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Id)));
             }
         }
@@ -31,6 +32,7 @@ namespace Vision.Wpf.Model
             set
             {
                 name = value;
+                if (Tag != null) Tag.Name = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
             }
         }
@@ -40,7 +42,8 @@ namespace Vision.Wpf.Model
             get {
                 if (!string.IsNullOrWhiteSpace(name))
                 {
-                    return new string(Name.Split(' ').Select(tok => tok[0]).Where(c => Char.IsLetter(c)).Take(3).Select(c => Char.ToUpper(c)).ToArray());
+                    var chars = Name.Split(' ').Select(tok => tok[0]).Where(c => Char.IsLetter(c)).Take(3).Select(c => Char.ToUpper(c)).ToArray();
+                    return new string(chars.Length > 0 ? chars : new[]{' '});
                 }
                 else { return "-"; }
             }
@@ -53,6 +56,7 @@ namespace Vision.Wpf.Model
             set
             {
                 url = value;
+                if (Tag != null) Tag.Url = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Url)));
             }
         }
@@ -62,6 +66,7 @@ namespace Vision.Wpf.Model
             set
             {
                 isFavorite = value;
+                if (Tag != null) Tag.IsFavorite = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsFavorite)));
             }
         }
@@ -79,17 +84,8 @@ namespace Vision.Wpf.Model
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Icon)));
             }
         }
-        public string ImageSource
-        {
-            get => imageSource;
-            set
-            {
-                imageSource = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ImageSource)));
-            }
-        }
 
-        public object Tag { get; set; }
+        public Link Tag { get; set; }
     }
 
 }

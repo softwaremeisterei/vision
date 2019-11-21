@@ -19,7 +19,7 @@
         <ToolBar DockPanel.Dock="Top">
             <Menu Margin="0,0,0,0" Height="22" Name="menu1" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                 <MenuItem Header="Content" Height="20">
-                    <MenuItem Header="Add link" HorizontalAlignment="Left" Click="mnuAddLink_Click" />
+                    <MenuItem Header="Add" HorizontalAlignment="Left" Click="mnuAddLink_Click" />
                 </MenuItem>
                 <MenuItem Header="Import old format project" HorizontalAlignment="Left" Click="mnuImportOldFormatProject_Click" />
                 <MenuItem Header="View" Height="20">
