@@ -7,16 +7,19 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              Background="#0A2F51" Foreground="White"
-             AllowDrop="True" Drop="UserControl_Drop">
+             Focusable="True" IsTabStop="True"
+             AllowDrop="True" Drop="UserControl_Drop"
+             PreviewMouseWheel="UserControl_PreviewMouseWheel"
+             Name="TilesControl1">
     <DockPanel>
         <DockPanel DockPanel.Dock="Left">
-            <Expander Header="Filter" DockPanel.Dock="Top" Foreground="White">
-                <StackPanel Orientation="Vertical">
+            <Expander x:Name="expFilter" Header="Filter" DockPanel.Dock="Top" Foreground="White">
+                <StackPanel Orientation="Horizontal">
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Search" DockPanel.Dock="Left" Foreground="White"/>
-                        <TextBox x:Name="tbSearch" VerticalContentAlignment="Center" TextChanged="TbSearch_TextChanged" Width="300"/>
+                        <Label Content="Keywords" DockPanel.Dock="Left" Foreground="White"/>
+                        <TextBox x:Name="tbKeywords" VerticalContentAlignment="Center" TextChanged="TbSearch_TextChanged" Width="300"/>
                     </StackPanel>
-                    <CheckBox x:Name="ckFavorites" Checked="CkFavorites_CheckedChanged" Unchecked="CkFavorites_CheckedChanged" Foreground="White">Favorites</CheckBox>
+                    <CheckBox x:Name="ckFavorites" Checked="CkFavorites_CheckedChanged" Unchecked="CkFavorites_CheckedChanged" Foreground="White" VerticalContentAlignment="Center" Margin="10,0,0,0" >Favorites</CheckBox>
                 </StackPanel>
             </Expander>
             <!-- History -->
@@ -47,7 +50,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <local:SingleTileControl 
-                                LinkView="{Binding}" Size="150" 
+                                LinkView="{Binding}" Size="{Binding DataContext.Model.TileSize,ElementName=TilesControl1}" 
                                 LinkClicked="SingleTileControl_LinkClicked"
                                 DeleteMe="SingleTileControl_DeleteMe">
                             </local:SingleTileControl>

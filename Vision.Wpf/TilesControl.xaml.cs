@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Expression.Interactivity.Core;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -43,6 +44,17 @@ namespace Vision.Wpf
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HistoryLinks)));
                 }
             }
+
+            private double tileSize = 150f;
+            public double TileSize
+            {
+                get => tileSize;
+                set
+                {
+                    tileSize = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TileSize)));
+                }
+            }
         }
 
         private Project project;
@@ -59,6 +71,11 @@ namespace Vision.Wpf
         {
             InitializeComponent();
             this.Model = new ViewModel();
+
+            InputBindings.Add(new KeyBinding(new ActionCommand(() =>
+            {
+                ToggleSearch();
+            }), Key.F3, ModifierKeys.None));
         }
 
         public void Init(ObservableCollection<LinkView> linkViews, Project project)
@@ -84,6 +101,20 @@ namespace Vision.Wpf
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ToggleSearch()
+        {
+            if (!expFilter.IsExpanded)
+            {
+                expFilter.IsExpanded = true;
+                tbKeywords.Focus();
+                tbKeywords.SelectAll();
+            }
+            else
+            {
+                expFilter.IsExpanded = false;
             }
         }
 
@@ -144,9 +175,11 @@ namespace Vision.Wpf
                 links.RemoveAll(n => !n.IsFavorite);
             }
 
-            if (tbSearch.Text.Length > 0)
+            var keywords = tbKeywords.Text.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (keywords.Any())
             {
-                links.RemoveAll(n => n.Name.IndexOf(tbSearch.Text, StringComparison.OrdinalIgnoreCase) < 0);
+                links.RemoveAll(n => !keywords.Any(keyword => n.Name.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0));
             }
 
             var linkViews = LinkMappers.MapToView(links.OrderBy(link => link.Name));
@@ -208,6 +241,23 @@ namespace Vision.Wpf
                     DataChanged?.Invoke(this, new EventArgs());
                 }
             }
+        }
+
+        private void UserControl_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (Keyboard.Modifiers != ModifierKeys.Control)
+                return;
+
+            const double deltaFactor = 1.10;
+            if (e.Delta > 0)
+            {
+                Model.TileSize *= deltaFactor;
+            }
+            else if (e.Delta < 0)
+            {
+                Model.TileSize /= deltaFactor;
+            }
+            e.Handled = true;
         }
     }
 }

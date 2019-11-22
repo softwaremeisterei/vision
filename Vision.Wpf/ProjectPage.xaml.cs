@@ -51,19 +51,12 @@ namespace Vision.Wpf
             Links = linkViews;
 
             TilesControl.Init(Links, Project);
-
-            InputBindings.Add(new KeyBinding(new ActionCommand(() => { Search(); }),
-                Key.F, ModifierKeys.Control));
-            InputBindings.Add(new KeyBinding(new ActionCommand(() => { if (searchText == null) Search(); else FindNext(); }),
-                Key.F3, ModifierKeys.None));
         }
 
 
         private Persistor persistor;
 
         private NavigationService _NavigationService;
-
-        private string searchText = null;
 
         private Timer timer;
 
@@ -97,6 +90,8 @@ namespace Vision.Wpf
                     }
                 }
 
+                TilesControl.Focus();
+
                 timer = new Timer(500);
                 timer.Elapsed += Timer_Elapsed;
                 timer.Start();
@@ -128,7 +123,9 @@ namespace Vision.Wpf
         {
             try
             {
+                timer.Stop();
                 Save();
+                Environment.Exit(Environment.ExitCode);
             }
             catch (Exception ex)
             {
@@ -292,12 +289,12 @@ namespace Vision.Wpf
             }
         }
 
-        private void mnuImportOldFormatProject_Click(object sender, RoutedEventArgs e)
+        private void mnuImport_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 var dlg = new OpenFileDialog();
-                dlg.Title = "Import old format project";
+                dlg.Title = "Import";
 
                 if (dlg.ShowDialog() == true)
                 {
@@ -320,16 +317,6 @@ namespace Vision.Wpf
                     webBrowser.Navigate(builder.Uri);
                 }
             }
-        }
-
-        private void mnuSearch_Click(object sender, RoutedEventArgs e)
-        {
-            Search();
-        }
-
-        private void mnuFindNext_Click(object sender, RoutedEventArgs e)
-        {
-            FindNext();
         }
 
         private void TilesControl_LinkClicked(LinkView linkView)
@@ -407,34 +394,6 @@ namespace Vision.Wpf
         private void NotifyPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private void Search()
-        {
-            try
-            {
-                var dlg = new PromptWindow("Search", "Search text")
-                {
-                    WindowStartupLocation = WindowStartupLocation.CenterScreen
-                };
-
-                if (dlg.ShowDialog() == true)
-                {
-                    searchText = dlg.ResponseText;
-                    FindNext();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void FindNext()
-        {
-            if (searchText == null) { return; }
-
-            TilesControl.FindNext(searchText);
         }
 
         public void HideScriptErrors(WebBrowser wb, bool hide)
