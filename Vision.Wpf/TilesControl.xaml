@@ -23,7 +23,7 @@
                 </StackPanel>
             </Expander>
             <!-- History -->
-            <Expander Header="History" IsExpanded="True" DockPanel.Dock="Bottom">
+            <Expander Header="History" IsExpanded="True" DockPanel.Dock="Bottom" Foreground="White">
                 <ItemsControl ItemsSource="{Binding Model.HistoryLinks}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -32,7 +32,10 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <local:SingleTileControl LinkView="{Binding}" Size="80" ToolTip="{Binding Path=Name}"
+                            <local:SingleTileControl LinkView="{Binding}" 
+                                Size="{Binding DataContext.Model.SmallTileSize, ElementName=TilesControl1}"
+                                FontSize="{Binding DataContext.Model.SmallFontSize, ElementName=TilesControl1}" 
+                                ToolTip="{Binding Path=Name}"
                                 LinkClicked="SingleTileControl_LinkClicked"
                                 DeleteMe="SingleTileControl_DeleteMe"/>
                         </DataTemplate>
@@ -50,7 +53,9 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <local:SingleTileControl 
-                                LinkView="{Binding}" Size="{Binding DataContext.Model.TileSize,ElementName=TilesControl1}" 
+                                LinkView="{Binding}" 
+                                Size="{Binding DataContext.Model.TileSize, ElementName=TilesControl1}"
+                                FontSize="{Binding DataContext.Model.FontSize, ElementName=TilesControl1}" 
                                 LinkClicked="SingleTileControl_LinkClicked"
                                 DeleteMe="SingleTileControl_DeleteMe">
                             </local:SingleTileControl>
@@ -58,7 +63,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
                 <ScrollViewer.ContextMenu>
-                    <ContextMenu Name="foo">
+                    <ContextMenu>
                         <MenuItem Tag="{Binding}" Header="Add" Click="ContextMenu_AddLink" />
                     </ContextMenu>
                 </ScrollViewer.ContextMenu>

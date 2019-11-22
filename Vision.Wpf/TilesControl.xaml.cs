@@ -45,7 +45,7 @@ namespace Vision.Wpf
                 }
             }
 
-            private double tileSize = 150f;
+            private double tileSize = 160d;
             public double TileSize
             {
                 get => tileSize;
@@ -53,6 +53,39 @@ namespace Vision.Wpf
                 {
                     tileSize = value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TileSize)));
+                }
+            }
+
+            private double fontSize = 16d;
+            public double FontSize
+            {
+                get => fontSize;
+                set
+                {
+                    fontSize = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FontSize)));
+                }
+            }
+
+            private double smallTileSize = 80d;
+            public double SmallTileSize
+            {
+                get => smallTileSize;
+                set
+                {
+                    smallTileSize = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SmallTileSize)));
+                }
+            }
+
+            private double smallFontSize = 8d;
+            public double SmallFontSize
+            {
+                get => smallFontSize;
+                set
+                {
+                    smallFontSize = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SmallFontSize)));
                 }
             }
         }
@@ -83,7 +116,11 @@ namespace Vision.Wpf
             this.Model = new ViewModel
             {
                 Links = linkViews,
-                HistoryLinks = new ObservableCollection<LinkView>()
+                HistoryLinks = new ObservableCollection<LinkView>(),
+                TileSize = project.TileSize,
+                FontSize = project.FontSize,
+                SmallTileSize = project.SmallTileSize,
+                SmallFontSize = project.SmallFontSize
             };
             this.project = project;
             DataContext = this;
@@ -249,14 +286,27 @@ namespace Vision.Wpf
                 return;
 
             const double deltaFactor = 1.10;
+
             if (e.Delta > 0)
             {
                 Model.TileSize *= deltaFactor;
+                Model.FontSize *= deltaFactor;
+                Model.SmallTileSize *= deltaFactor;
+                Model.SmallFontSize *= deltaFactor;
             }
             else if (e.Delta < 0)
             {
                 Model.TileSize /= deltaFactor;
+                Model.FontSize /= deltaFactor;
+                Model.SmallTileSize /= deltaFactor;
+                Model.SmallFontSize /= deltaFactor;
             }
+
+            project.TileSize = Model.TileSize;
+            project.FontSize = Model.FontSize;
+            project.SmallTileSize = Model.SmallTileSize;
+            project.SmallFontSize = Model.SmallFontSize;
+
             e.Handled = true;
         }
     }

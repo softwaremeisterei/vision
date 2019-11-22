@@ -12,12 +12,20 @@ namespace Vision.BL.Model
         public ObservableCollection<Link> Links { get; set; }
 
         public ObservableCollection<Guid> History { get; set; }
+        public double TileSize { get; set; }
+        public double FontSize { get; set; }
+        public double SmallTileSize { get; set; }
+        public double SmallFontSize { get; set; }
 
         public Project()
         {
             Layout = new Layout();
             Links = new ObservableCollection<Link>();
             History = new ObservableCollection<Guid>();
+            TileSize = 160d;
+            FontSize = 16d;
+            SmallTileSize = 80d;
+            SmallFontSize = 8d;
         }
 
         public Project(string fileName) : base()

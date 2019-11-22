@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace Vision.Wpf
     /// <summary>
     /// Interaction logic for SingleTileControl.xaml
     /// </summary>
-    public partial class SingleTileControl : UserControl
+    public partial class SingleTileControl : UserControl, INotifyPropertyChanged
     {
         public delegate void LinkClickedHandler(LinkView linkView);
         public event LinkClickedHandler LinkClicked;
@@ -30,20 +31,21 @@ namespace Vision.Wpf
         public delegate void DeleteMeEventHandler(object sender, EventArgs e);
         public event DeleteMeEventHandler DeleteMe;
 
-        public static readonly DependencyProperty LinkViewProperty = 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public static readonly DependencyProperty LinkViewProperty =
             DependencyProperty.Register("LinkView", typeof(LinkView), typeof(SingleTileControl), new PropertyMetadata(default(LinkView)));
 
-        public static readonly DependencyProperty SizeProperty = 
+        public static readonly DependencyProperty SizeProperty =
             DependencyProperty.Register("Size", typeof(int), typeof(SingleTileControl), new PropertyMetadata(default(int)));
 
-        public int Size {
+        public int Size
+        {
             get { return (int)GetValue(SizeProperty); }
             set { SetValue(SizeProperty, value); }
         }
 
-        public int RelativeFontSize { get { return Size / 9; } set { } }
-
-        public int RelativeImageSize { get { return Size / 12; } set { } }
+        public int ImageSize { get { return (int)GetValue(SizeProperty) / 12; } set { } }
 
         public LinkView LinkView
         {

@@ -35,7 +35,7 @@
         </Button.Background>
         <DockPanel LastChildFill="True" Height="{Binding Height, ElementName=LayoutRoot}" Width="{Binding Width, ElementName=LayoutRoot}">
             <DockPanel LastChildFill="True" DockPanel.Dock="Bottom" Margin="5" >
-                <ContentControl Width="{Binding RelativeImageSize}" Height="{Binding RelativeImageSize}" DockPanel.Dock="Left">
+                <ContentControl Width="{Binding RelativeImageSize}" Height="{Binding ImageSize}" DockPanel.Dock="Left">
                     <ContentControl.Style>
                         <Style TargetType="ContentControl">
                             <Style.Triggers>
@@ -47,12 +47,12 @@
                         </Style>
                     </ContentControl.Style>
                 </ContentControl>
-                <TextBlock Text="{Binding LinkView.Shortcut}" FontSize="{Binding RelativeFontSize}" Foreground="#88AFCC" DockPanel.Dock="Right" />
-                <TextBlock Text="" FontSize="{Binding RelativeFontSize}" />
+                <TextBlock Text="{Binding LinkView.Shortcut}" FontSize="{Binding FontSize}" Foreground="#88AFCC" DockPanel.Dock="Right" />
+                <TextBlock Text="" FontSize="{Binding FontSize}" />
             </DockPanel>
             <TextBlock Text="{Binding LinkView.Name}"
                 TextWrapping="Wrap"
-                FontSize="{Binding RelativeFontSize}" FontWeight="Normal"
+                FontSize="{Binding FontSize}" FontWeight="Normal"
                 Foreground="White"
                 HorizontalAlignment="Center"/>
         </DockPanel>
