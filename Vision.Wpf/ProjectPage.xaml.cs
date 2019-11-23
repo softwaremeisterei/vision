@@ -192,21 +192,6 @@ namespace Vision.Wpf
             }
         }
 
-        private void WebBrowser_Navigating(object sender, NavigatingCancelEventArgs e)
-        {
-            try
-            {
-                var doc = webBrowser.Document as IHTMLDocument2;
-                Url = e.Uri.AbsoluteUri;
-                PageTitle = string.Empty;
-                NotifyPropertyChanged(nameof(Url));
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         private void mnuAddLink_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -347,8 +332,29 @@ namespace Vision.Wpf
             }
         }
 
+        private void WebBrowser_Navigating(object sender, NavigatingCancelEventArgs e)
+        {
+            SetPageTitle(e.Uri.AbsoluteUri);
+        }
+
+        private void SetPageTitle(string uri)
+        {
+            try
+            {
+                var doc = webBrowser.Document as IHTMLDocument2;
+                Url = uri;
+                PageTitle = string.Empty;
+                NotifyPropertyChanged(nameof(Url));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void WebBrowser_Navigated(object sender, NavigationEventArgs e)
         {
+            SetPageTitle(e.Uri.AbsoluteUri);
             UpdateEnablingWebBrowserNavButtons();
         }
 
