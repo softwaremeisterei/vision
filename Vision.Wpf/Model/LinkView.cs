@@ -86,6 +86,11 @@ namespace Vision.Wpf.Model
         }
 
         public Link Tag { get; set; }
+
+        public string ToolTip
+        {
+            get { return string.Concat(Url, "\r\n", "# " + string.Join(" ", Tags));  }
+        }
     }
 
 }

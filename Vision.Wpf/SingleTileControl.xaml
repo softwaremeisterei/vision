@@ -15,7 +15,7 @@
             Margin="0,0,5,5" Width="{Binding Size}" Height="{Binding Size}"
             BorderBrush="Black"
             BorderThickness="1" UseLayoutRounding="True" 
-            ToolTip="{Binding LinkView.Url}"
+            ToolTip="{Binding LinkView.ToolTip}"
             Click="Button_Click" Tag="{Binding LinkView}">
         <Button.ContextMenu>
             <ContextMenu Name="foo">
