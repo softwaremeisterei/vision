@@ -112,7 +112,7 @@ namespace Vision.Wpf
                     if (doc != null)
                     {
                         PageTitle = doc.title;
-                        NotifyPropertyChanged(nameof(PageTitle));
+                        RaisePropertyChanged(nameof(PageTitle));
                     }
                 });
             }
@@ -158,8 +158,8 @@ namespace Vision.Wpf
                     (linkView.Tag as Link).Name = newName;
                     PageTitle = newName;
                     Url = doc.url;
-                    NotifyPropertyChanged(nameof(PageTitle));
-                    NotifyPropertyChanged(nameof(Url));
+                    RaisePropertyChanged(nameof(PageTitle));
+                    RaisePropertyChanged(nameof(Url));
                 }
             }
             catch (Exception ex)
@@ -344,7 +344,7 @@ namespace Vision.Wpf
                 var doc = webBrowser.Document as IHTMLDocument2;
                 Url = uri;
                 PageTitle = string.Empty;
-                NotifyPropertyChanged(nameof(Url));
+                RaisePropertyChanged(nameof(Url));
             }
             catch (Exception ex)
             {
@@ -397,7 +397,7 @@ namespace Vision.Wpf
             btnForward.IsEnabled = webBrowser.CanGoForward;
         }
 
-        private void NotifyPropertyChanged(string propertyName)
+        private void RaisePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

@@ -39,7 +39,6 @@ namespace Vision.Wpf
             FocusFirstRecentProjectLink();
         }
 
-
         private void FocusFirstRecentProjectLink()
         {
             if (icRecentProjects.Items.Count > 0)
@@ -64,7 +63,7 @@ namespace Vision.Wpf
             }
             else
             {
-                if (sharedServices.AskYesNoCancel("File not found", "Remove this entry from recent project list?") == MessageBoxResult.Yes)
+                if (sharedServices.PromptYesNoCancel("File not found", "Remove from the project list?") == MessageBoxResult.Yes)
                 {
                     persistor.RemoveRecentProject(recentProject);
                     RecentProjects.Remove(recentProject);
@@ -80,6 +79,7 @@ namespace Vision.Wpf
         private void btnCreateNewProject_Click(object sender, RoutedEventArgs e)
         {
             var filePath = sharedServices.CreateNewProject(NavigationService);
+
             if (filePath != null)
             {
                 persistor.AddRecentProject(filePath);

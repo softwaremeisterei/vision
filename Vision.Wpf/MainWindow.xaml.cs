@@ -1,14 +1,7 @@
-﻿using Softwaremeisterei.Lib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Navigation;
 using Vision.BL;
-using Vision.BL.Model;
-using Vision.Wpf.Mappers;
 
 namespace Vision.Wpf
 {
@@ -51,10 +44,9 @@ namespace Vision.Wpf
             frame.Navigate(new StartPage());
         }
 
-        private void mnuViewStartPage_Click(object sender, RoutedEventArgs e)
+        private void mnuGotoStart_Click(object sender, RoutedEventArgs e)
         {
-            var page = new StartPage();
-            this.NavigationService.Navigate(page);
+            this.NavigationService.Navigate(new StartPage());
         }
     }
 }

@@ -12,12 +12,10 @@
     <NavigationWindow.Content>
         <Grid>
             <Menu Margin="0,0,0,0" Height="22" Name="menu1" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                <MenuItem Header="Start" HorizontalAlignment="Left" Click="mnuGotoStart_Click" />
                 <MenuItem Header="File" Height="20">
                     <MenuItem Header="New Project..." HorizontalAlignment="Left" Click="mnuFileNewProject_Click" />
                     <MenuItem Header="Open Project..." HorizontalAlignment="Left" Click="mnuFileOpenProject_Click" />
-                </MenuItem>
-                <MenuItem Header="View" Height="20">
-                    <MenuItem Header="Start Page" HorizontalAlignment="Left" Click="mnuViewStartPage_Click" />
                 </MenuItem>
             </Menu>
             <Border BorderThickness="1" Margin="0,22,0,0"

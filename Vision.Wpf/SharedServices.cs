@@ -78,7 +78,7 @@ namespace Vision.Wpf
             MessageBox.Show(message, caption, MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        public MessageBoxResult AskYesNoCancel(string caption, string message)
+        public MessageBoxResult PromptYesNoCancel(string caption, string message)
         {
             return MessageBox.Show(message, caption, MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
         }
