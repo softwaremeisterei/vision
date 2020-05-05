@@ -6,6 +6,8 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{78B8C7BD-1B4E-48B8-9E73-096E1D643557}"
 	ProjectSection(SolutionItems) = preProject
 		Backlog.txt = Backlog.txt
+		README.md = README.md
+		RegisterFeatureBrowserEmulation.reg = RegisterFeatureBrowserEmulation.reg
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vision.Wpf", "Vision.Wpf\Vision.Wpf.csproj", "{3CB83D82-1A79-4BB3-A96A-69915B5B4898}"
