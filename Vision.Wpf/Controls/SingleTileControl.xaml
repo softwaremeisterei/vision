@@ -19,12 +19,12 @@
             Click="Button_Click" Tag="{Binding LinkView}">
         <Button.ContextMenu>
             <ContextMenu Name="foo">
-                <MenuItem Tag="{Binding LinkView}" Header="Edit" Click="ContextMenu_Edit" />
+                <MenuItem Tag="{Binding LinkView}" Header="_Edit" Click="ContextMenu_Edit" />
                 <Separator/>
-                <MenuItem Tag="{Binding LinkView}" Header="Add/remove favorite" 
+                <MenuItem Tag="{Binding LinkView}" Header="Add/remove _favorite" 
                           IsCheckable="True" IsChecked="{Binding LinkView.IsFavorite, UpdateSourceTrigger=PropertyChanged}"/>
                 <Separator/>
-                <MenuItem Tag="{Binding LinkView}" Header="Delete" Click="ContextMenu_Delete" />
+                <MenuItem Tag="{Binding LinkView}" Header="_Delete" Click="ContextMenu_Delete" />
             </ContextMenu>
         </Button.ContextMenu>
         <Button.Background>

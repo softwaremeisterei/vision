@@ -1,18 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Vision.Wpf.Model;
 
 namespace Vision.Wpf
@@ -38,6 +27,8 @@ namespace Vision.Wpf
 
         public static readonly DependencyProperty SizeProperty =
             DependencyProperty.Register("Size", typeof(int), typeof(SingleTileControl), new PropertyMetadata(default(int)));
+        
+        private LinkViewService linkViewService;
 
         public int Size
         {
@@ -57,6 +48,7 @@ namespace Vision.Wpf
         {
             InitializeComponent();
             LayoutRoot.DataContext = this;
+            linkViewService = new LinkViewService();
         }
 
         private void ContextMenu_Edit(object sender, RoutedEventArgs e)
@@ -65,7 +57,7 @@ namespace Vision.Wpf
             {
                 var menuItem = (MenuItem)sender;
                 var linkView = (LinkView)menuItem.Tag;
-                Shared.EditLink(Window.GetWindow(this), linkView);
+                linkViewService.EditLink(Window.GetWindow(this), linkView);
                 DataChanged?.Invoke(this, new EventArgs());
             }
             catch (Exception ex)

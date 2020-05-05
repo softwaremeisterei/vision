@@ -9,11 +9,11 @@ using Vision.BL.Model;
 
 namespace Vision.Wpf
 {
-    class SharedServices
+    class ProjectService
     {
         private readonly Persistor persistor;
 
-        public SharedServices()
+        public ProjectService()
         {
             this.persistor = new Persistor();
         }

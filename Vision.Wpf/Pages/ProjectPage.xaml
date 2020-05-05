@@ -18,10 +18,9 @@
     <DockPanel>
         <ToolBar DockPanel.Dock="Top">
             <Menu Margin="0,0,0,0" Height="22" Name="menu1" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                <MenuItem Header="Content" Height="20">
-                    <MenuItem Header="Add" HorizontalAlignment="Left" Click="mnuAddLink_Click" />
+                <MenuItem Header="Tiles" Height="20">
+                    <MenuItem Header="Add" HorizontalAlignment="Left" Click="mnuTilesAddLink_Click" />
                 </MenuItem>
-                <MenuItem Header="Import" HorizontalAlignment="Left" Click="mnuImport_Click" />
             </Menu>
         </ToolBar>
         <Grid>
@@ -49,7 +48,7 @@
                     <Button Name="btnBack" Content="⇦" Click="BtnBack_Click" DockPanel.Dock="Left" />
                     <Button Name="btnForward" Content="⇨" Click="BtnForward_Click" DockPanel.Dock="Left"/>
                     <Button Name="btnAddLink" Content="*" Click="BtnAddLink_Click" DockPanel.Dock="Right"/>
-                    <TextBox Width="Auto" Text="{Binding Url}" KeyDown="TextBoxUrl_KeyDown"/>
+                    <TextBox x:Name="UrlTextBox" Width="Auto" Text="{Binding Url}" KeyDown="TextBoxUrl_KeyDown"/>
                 </DockPanel>
                 <WebBrowser Name="webBrowser" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top"
                             Navigating="WebBrowser_Navigating" Navigated="WebBrowser_Navigated" />

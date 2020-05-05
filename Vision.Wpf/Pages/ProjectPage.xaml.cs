@@ -36,12 +36,20 @@ namespace Vision.Wpf
 
         public string PageTitle { get; set; }
 
+        private Persistor persistor;
+
+        private NavigationService _NavigationService;
+        private LinkViewService linkViewService;
+
+        private Timer timer;
+
         public ProjectPage(Project project)
         {
             InitializeComponent();
             DataContext = this;
 
             persistor = new Persistor();
+            linkViewService = new LinkViewService();
 
             Project = project;
 
@@ -53,12 +61,6 @@ namespace Vision.Wpf
             TilesControl.Init(Links, Project);
         }
 
-
-        private Persistor persistor;
-
-        private NavigationService _NavigationService;
-
-        private Timer timer;
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
@@ -192,18 +194,18 @@ namespace Vision.Wpf
             }
         }
 
-        private void mnuAddLink_Click(object sender, RoutedEventArgs e)
+        private void mnuTilesAddLink_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 var link = new Link
                 {
-                    Name = "Noname",
+                    Name = "_Noname_",
                 };
-                Project.Links.Add(link);
+                Project.Links.Insert(0, link);
 
                 var linkView = Global.Mapper.Map<LinkView>(link);
-                Links.Add(linkView);
+                Links.Insert(0, linkView);
             }
             catch (Exception ex)
             {
@@ -217,7 +219,7 @@ namespace Vision.Wpf
             {
                 var menuItem = (MenuItem)sender;
                 var link = (LinkView)menuItem.Tag;
-                Shared.EditLink(Window.GetWindow(this), link);
+                linkViewService.EditLink(Window.GetWindow(this), link);
             }
             catch (Exception ex)
             {
@@ -231,7 +233,7 @@ namespace Vision.Wpf
             {
                 var menuItem = (MenuItem)sender;
                 var parentFolderView = (LinkView)menuItem.Tag;
-                var linkView = Shared.AddNewLink(Window.GetWindow(this));
+                var linkView = linkViewService.AddNewLink(Window.GetWindow(this));
                 Project.Links.Add(linkView.Tag as Link);
             }
             catch (Exception ex)
@@ -274,31 +276,15 @@ namespace Vision.Wpf
             }
         }
 
-        private void mnuImport_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var dlg = new OpenFileDialog();
-                dlg.Title = "Import";
-
-                if (dlg.ShowDialog() == true)
-                {
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         private void TextBoxUrl_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
-                if (!string.IsNullOrEmpty(Url))
+                string url = UrlTextBox.Text;
+                if (!string.IsNullOrEmpty(url))
                 {
                     webBrowser.Tag = null;
-                    var builder = new UriBuilder(Url);
+                    var builder = new UriBuilder(url);
                     webBrowser.Navigate(builder.Uri);
                 }
             }

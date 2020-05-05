@@ -22,7 +22,6 @@ namespace Vision.Wpf
         public class ViewModel : INotifyPropertyChanged
         {
             public event PropertyChangedEventHandler PropertyChanged;
-
             private ObservableCollection<LinkView> links;
             public ObservableCollection<LinkView> Links
             {
@@ -33,7 +32,6 @@ namespace Vision.Wpf
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Links)));
                 }
             }
-
             private ObservableCollection<LinkView> historyLinks;
             public ObservableCollection<LinkView> HistoryLinks
             {
@@ -44,7 +42,6 @@ namespace Vision.Wpf
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HistoryLinks)));
                 }
             }
-
             private double tileSize = 160d;
             public double TileSize
             {
@@ -55,7 +52,6 @@ namespace Vision.Wpf
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TileSize)));
                 }
             }
-
             private double fontSize = 16d;
             public double FontSize
             {
@@ -66,7 +62,6 @@ namespace Vision.Wpf
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FontSize)));
                 }
             }
-
             private double smallTileSize = 80d;
             public double SmallTileSize
             {
@@ -77,7 +72,6 @@ namespace Vision.Wpf
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SmallTileSize)));
                 }
             }
-
             private double smallFontSize = 8d;
             public double SmallFontSize
             {
@@ -91,6 +85,7 @@ namespace Vision.Wpf
         }
 
         private Project project;
+        private LinkViewService linkViewService;
 
         public ViewModel Model { get; set; }
 
@@ -102,6 +97,8 @@ namespace Vision.Wpf
 
         public TilesControl()
         {
+            linkViewService = new LinkViewService();
+
             InitializeComponent();
             this.Model = new ViewModel();
 
@@ -132,7 +129,7 @@ namespace Vision.Wpf
             {
                 var menuItem = (MenuItem)sender;
                 var linkView = (LinkView)menuItem.Tag;
-                Shared.EditLink(Window.GetWindow(this), linkView);
+                linkViewService.EditLink(Window.GetWindow(this), linkView);
                 DataChanged?.Invoke(this, new EventArgs());
             }
             catch (Exception ex)
@@ -141,25 +138,11 @@ namespace Vision.Wpf
             }
         }
 
-        private void ToggleSearch()
-        {
-            if (!expFilter.IsExpanded)
-            {
-                expFilter.IsExpanded = true;
-                tbKeywords.Focus();
-                tbKeywords.SelectAll();
-            }
-            else
-            {
-                expFilter.IsExpanded = false;
-            }
-        }
-
         private void ContextMenu_AddLink(object sender, RoutedEventArgs e)
         {
             try
             {
-                var linkView = Shared.AddNewLink(Window.GetWindow(this));
+                var linkView = linkViewService.AddNewLink(Window.GetWindow(this));
                 Model.Links.Add(linkView);
                 project.Links.Add(linkView.Tag as Link);
                 DataChanged?.Invoke(this, new EventArgs());
@@ -176,7 +159,7 @@ namespace Vision.Wpf
             {
                 var menuItem = (MenuItem)sender;
                 var linkView = (LinkView)menuItem.Tag;
-                Shared.ToggleFavorite(linkView);
+                linkViewService.ToggleFavorite(linkView);
                 DataChanged?.Invoke(this, new EventArgs());
             }
             catch (Exception ex)
@@ -185,46 +168,14 @@ namespace Vision.Wpf
             }
         }
 
-        public void FindNext(string searchText)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void TbSearch_TextChanged(object sender, TextChangedEventArgs e)
+        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             ApplyFilter();
         }
 
-        private void CkFavorites_CheckedChanged(object sender, RoutedEventArgs e)
+        private void FavoritesCheckBox_CheckedChanged(object sender, RoutedEventArgs e)
         {
             ApplyFilter();
-        }
-
-        private void ApplyFilter()
-        {
-            Model.Links.Clear();
-
-            var links = new List<Link>(project.Links);
-
-
-            if (ckFavorites.IsChecked ?? false)
-            {
-                links.RemoveAll(n => !n.IsFavorite);
-            }
-
-            var keywords = tbKeywords.Text.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-            if (keywords.Any())
-            {
-                links.RemoveAll(n => !keywords.Any(keyword => n.Name.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0));
-            }
-
-            var linkViews = LinkMappers.MapToView(links.OrderBy(link => link.Name));
-
-            foreach (var linkView in linkViews)
-            {
-                Model.Links.Add(linkView);
-            }
         }
 
         private void SingleTileControl_LinkClicked(LinkView linkView)
@@ -255,13 +206,6 @@ namespace Vision.Wpf
             }
         }
 
-        public void AddNewLink(string name, string url)
-        {
-            var link = new Link { Name = name, Url = url };
-            project.Links.Add(link);
-            Model.Links.Add(LinkMappers.MapToView(link));
-        }
-
         private void UserControl_Drop(object sender, DragEventArgs e)
         {
             var data = e.Data;
@@ -272,7 +216,7 @@ namespace Vision.Wpf
 
                 if (Regexes.URL.IsMatch(text))
                 {
-                    var linkView = Shared.AddNewLink(Window.GetWindow(this), text);
+                    var linkView = linkViewService.AddNewLink(Window.GetWindow(this), text);
                     Model.Links.Add(linkView);
                     project.Links.Add(linkView.Tag as Link);
                     DataChanged?.Invoke(this, new EventArgs());
@@ -309,5 +253,64 @@ namespace Vision.Wpf
 
             e.Handled = true;
         }
+
+        private void ApplyFilter()
+        {
+            Model.Links.Clear();
+
+            var links = new List<Link>(project.Links);
+
+
+            if (ckFavorites.IsChecked ?? false)
+            {
+                links.RemoveAll(n => !n.IsFavorite);
+            }
+
+            var keywords = tbKeywords.Text.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (keywords.Any())
+            {
+                links.RemoveAll(n => !keywords.Any(keyword => n.Name.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0));
+            }
+
+            var linkViews = LinkMappers.MapToView(links.OrderBy(link => link.Name));
+
+            foreach (var linkView in linkViews)
+            {
+                Model.Links.Add(linkView);
+            }
+        }
+
+        public void AddNewLink(string name, string url)
+        {
+            var link = new Link { Name = name, Url = url };
+            project.Links.Add(link);
+            Model.Links.Add(LinkMappers.MapToView(link));
+        }
+
+        private void ToggleSearch()
+        {
+            if (!expFilter.IsExpanded)
+            {
+                expFilter.IsExpanded = true;
+                tbKeywords.Focus();
+                tbKeywords.SelectAll();
+            }
+            else
+            {
+                expFilter.IsExpanded = false;
+            }
+        }
+
+        public void FindNext(string searchText)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void ScrollToBottom()
+        {
+            ScrollViewer.ScrollToBottom();
+        }
+
     }
 }

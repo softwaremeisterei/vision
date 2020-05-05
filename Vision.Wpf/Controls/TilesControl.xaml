@@ -13,17 +13,17 @@
              Name="TilesControl1">
     <DockPanel>
         <DockPanel DockPanel.Dock="Left">
-            <Expander x:Name="expFilter" Header="Filter" DockPanel.Dock="Top" Foreground="White">
+            <Expander x:Name="expFilter" Header="Filter" DockPanel.Dock="Top" Foreground="White" Padding="5">
                 <StackPanel Orientation="Horizontal">
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Keywords" DockPanel.Dock="Left" Foreground="White"/>
-                        <TextBox x:Name="tbKeywords" VerticalContentAlignment="Center" TextChanged="TbSearch_TextChanged" Width="300"/>
+                        <TextBox x:Name="tbKeywords" VerticalContentAlignment="Center" TextChanged="SearchTextBox_TextChanged" Width="300"/>
                     </StackPanel>
-                    <CheckBox x:Name="ckFavorites" Checked="CkFavorites_CheckedChanged" Unchecked="CkFavorites_CheckedChanged" Foreground="White" VerticalContentAlignment="Center" Margin="10,0,0,0" >Favorites</CheckBox>
+                    <CheckBox x:Name="ckFavorites" Checked="FavoritesCheckBox_CheckedChanged" Unchecked="FavoritesCheckBox_CheckedChanged" Foreground="White" VerticalContentAlignment="Center" Margin="10,0,0,0" >Favorites</CheckBox>
                 </StackPanel>
             </Expander>
             <!-- History -->
-            <Expander Header="History" IsExpanded="True" DockPanel.Dock="Bottom" Foreground="White">
+            <Expander Header="History" IsExpanded="True" DockPanel.Dock="Bottom" Foreground="White" Padding="5">
                 <ItemsControl ItemsSource="{Binding Model.HistoryLinks}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -43,7 +43,7 @@
                 </ItemsControl>
             </Expander>
             <!-- ScrollView -->
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <ScrollViewer x:Name="ScrollViewer" VerticalScrollBarVisibility="Auto" Padding="5">
                 <ItemsControl ItemsSource="{Binding Model.Links}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>

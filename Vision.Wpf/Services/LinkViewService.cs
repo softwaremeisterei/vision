@@ -10,22 +10,22 @@ using Vision.Wpf.Model;
 
 namespace Vision.Wpf
 {
-    public class Shared
+    public class LinkViewService
     {
-        public static LinkView AddNewLink(Window owner, string url = null)
+        public LinkView AddNewLink(Window owner, string url = null)
         {
             var newLink = new Link
             {
-                Name = "Noname",
+                Name = "_Noname_",
                 Url = url
             };
             var newLinkView = Global.Mapper.Map<LinkView>(newLink);
             newLinkView.Tag = newLink;
-            Shared.EditLink(owner, newLinkView);
+            EditLink(owner, newLinkView);
             return newLinkView;
         }
 
-        public static void EditLink(Window owner, LinkView linkView)
+        public void EditLink(Window owner, LinkView linkView)
         {
             var dlg = new EditLinkWindow(linkView)
             {
@@ -36,13 +36,13 @@ namespace Vision.Wpf
             CopyToLinkBehind(linkView);
         }
 
-        public static void ToggleFavorite(LinkView linkView)
+        public void ToggleFavorite(LinkView linkView)
         {
             linkView.IsFavorite = !linkView.IsFavorite;
             CopyToLinkBehind(linkView);
         }
 
-        private static void CopyToLinkBehind(LinkView linkView)
+        private void CopyToLinkBehind(LinkView linkView)
         {
             Global.Mapper.Map(linkView, linkView.Tag as Link);
         }

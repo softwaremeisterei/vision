@@ -14,7 +14,7 @@ namespace Vision.BL.Model
         public Entity()
         {
             Id = Guid.NewGuid();
-            Name = "Noname";
+            Name = "_Noname_";
             DateCreated = DateTime.Now;
         }
     }

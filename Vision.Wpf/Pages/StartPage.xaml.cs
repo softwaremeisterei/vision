@@ -19,14 +19,14 @@ namespace Vision.Wpf
         public ObservableCollection<RecentProject> RecentProjects { get; set; }
 
         private Persistor persistor;
-        private SharedServices sharedServices;
+        private ProjectService sharedServices;
 
         public StartPage()
         {
             InitializeComponent();
 
             persistor = new Persistor();
-            sharedServices = new SharedServices();
+            sharedServices = new ProjectService();
 
             // Get recent projects
             var recentProjects = persistor.LoadRecentProjects();

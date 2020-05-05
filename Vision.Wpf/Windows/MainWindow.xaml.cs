@@ -11,7 +11,7 @@ namespace Vision.Wpf
     public partial class MainWindow : NavigationWindow
     {
         private Persistor persistor;
-        private SharedServices sharedServices;
+        private ProjectService sharedServices;
 
         public MainWindow()
         {
@@ -19,7 +19,7 @@ namespace Vision.Wpf
             DataContext = this;
 
             persistor = new Persistor();
-            sharedServices = new SharedServices();
+            sharedServices = new ProjectService();
 
             Title = "Vision " + Assembly.GetExecutingAssembly().GetName().Version.ToString(2);
         }
