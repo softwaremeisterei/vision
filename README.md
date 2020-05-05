@@ -1,5 +1,5 @@
 
-# Softwaremeisterei's Web Bookmark Manager written in C#/WPF
+# Project based Web Links Manager with integrated web browser, written in C# / WPF
 
 ![ScreenShot](https://github.com/softwaremeisterei/vision/blob/master/Screenshot.png?raw=true)
 
