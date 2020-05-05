@@ -162,9 +162,9 @@ namespace Vision.Wpf
                     RaisePropertyChanged(nameof(Url));
                 }
             }
-            catch (Exception ex)
+            catch // (Exception ex)
             {
-                //MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                // MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

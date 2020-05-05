@@ -37,7 +37,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Logo2.ico</ApplicationIcon>
+    <ApplicationIcon>Logo6.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoMapper, Version=9.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
@@ -167,6 +167,7 @@
     <None Include="FodyWeavers.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Images\Lab\Logo.psd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -183,15 +184,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Logo2.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Logo2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Logo2.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\OrangeStar.png" />
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +194,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\OrangeStarS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Logo4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Logo6.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Logo6.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
