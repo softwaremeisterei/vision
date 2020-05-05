@@ -1,3 +1,0 @@
-- Drag & drop data on richtextbox
-- Attachments (images, files), view attachments
-- Bookmarks
