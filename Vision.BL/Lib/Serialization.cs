@@ -1,33 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
-using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Serialization;
-using Vision.BL.Lib;
 
 namespace Softwaremeisterei.Lib
 {
     public class Serialization
     {
-        public static string ToXml<T>(T obj)
+        public static string ToXml(Object obj)
         {
-            var xmlSerializer = new XmlSerializer(obj.GetType());
-
-            using (var textWriter = new Utf8StringWriter())
+            var xmlWriterSettings = new XmlWriterSettings
             {
-                xmlSerializer.Serialize(textWriter, obj);
-                return textWriter.ToString();
+                Indent = true,
+                OmitXmlDeclaration = false,
+                Encoding = Encoding.UTF8
+            };
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var xmlWriter = XmlWriter.Create(memoryStream, xmlWriterSettings))
+                {
+                    var xmlSerializer = new XmlSerializer(obj.GetType());
+                    xmlSerializer.Serialize(xmlWriter, obj);
+                }
+                memoryStream.Position = 0;
+                using (StreamReader sr = new StreamReader(memoryStream))
+                {
+                    var result = sr.ReadToEnd();
+                    return result;
+                }
             }
         }
 
-        public static T ParseXml<T>(string obj)
+        public static T ParseXml<T>(string xml)
         {
             var xmlSerializer = new XmlSerializer(typeof(T));
 
-            using (var textReader = new StringReader(obj))
+            using (var textReader = new StringReader(xml))
             {
                 return (T)xmlSerializer.Deserialize(textReader);
             }

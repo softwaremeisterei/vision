@@ -1,5 +1,3 @@
-# ignore databases
-
 # User-specific files
 
 *.suo
@@ -15,3 +13,11 @@ x64/
 build/
 [Bb]in/
 [Oo]bj/
+
+# Packages
+
+packages/
+
+# Git
+
+.git/
